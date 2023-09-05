@@ -1,0 +1,61 @@
+﻿@using Piipan.Dashboard.Client.Components
+@model BasePageModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/styles.css" />
+    <link href="/Piipan.Dashboard.styles.css" rel="stylesheet" asp-append-version="true" />
+    <link href="/Piipan.Dashboard.Client.styles.css" rel="stylesheet" asp-append-version="true" />
+    <script src="~/js/uswds-init.min.js" asp-append-version="true"></script>
+</head>
+<body>
+    <a class="usa-skipnav" href="#main-content">Skip to main content</a>
+    <partial name="_UsaBanner" />
+    <div class="usa-overlay"></div>
+    <header class="usa-header usa-header--extended border-bottom-1px border-base-light">
+        <div class="usa-navbar">
+            <div class="usa-logo" id="extended-logo">
+                <a href="/" class="agency">
+                    <img class="usa-banner__header-flag" src="/images/18f-symbol-color.svg" alt="United States General Service Administration">
+                    <div>
+                        <div class="agency__text--top">
+                            Piipan
+                        </div>
+                        <div class="agency__text--bottom">
+                            U.S. General Service Administration
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <button class="usa-menu-btn">Menu</button>
+            <div class="usa-nav" style="">
+                <ul class="usa-nav__primary usa-accordion flex-justify-end">
+                    @if(!String.IsNullOrEmpty(Model.WebAppDataServiceProvider.Email))
+                    {
+                        <li class="usa-nav__primary-item">
+                            <button class="usa-accordion__button usa-nav__link usa-current" aria-expanded="false" aria-controls="nav-user">
+                                <span>@Model.WebAppDataServiceProvider.Email</span>
+                            </button>
+                            <ul id="nav-user" class="usa-nav__submenu" hidden>
+                                <li class="usa-nav__submenu-item">
+                                    <a href="/.auth/logout?post_logout_redirect_uri=@(Model.WebAppDataServiceProvider.BaseUrl)/SignedOut">Sign out</a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <main id="main-content" tabindex=-1>
+            @RenderBody()
+        </main>
+    </div>
+    <script src="~/js/uswds.min.js" asp-append-version="true"></script>
+</body>
+</html>

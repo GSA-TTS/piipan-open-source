@@ -1,0 +1,34 @@
+<!-- Generated via IaC -->
+
+<policies>
+    <inbound>
+        <base />
+        
+
+        <!--
+            Required blob storage API headers
+            See: https://docs.microsoft.com/en-us/rest/api/storageservices/put-blob#request-headers-all-blob-types
+        -->
+        <set-header name="Date" exists-action="override">
+            <value>@(System.DateTime.UtcNow.ToString("r"))</value>
+        </set-header>
+        <!-- See: https://docs.microsoft.com/en-us/rest/api/storageservices/previous-azure-storage-service-versions#available-versions -->
+        <set-header name="x-ms-version" exists-action="override">
+            <value>2020-04-08</value>
+        </set-header>
+        
+
+        <!-- APIM has used this header to authenticate the request, drop it as we forward the request to our internal endpoint, as it has no use for the client's private API key -->
+        <set-header name="Ocp-Apim-Subscription-Key" exists-action="delete" />
+       
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

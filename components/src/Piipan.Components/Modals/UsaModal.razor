@@ -1,0 +1,29 @@
+﻿@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [CascadingParameter] public ModalInfo ModalInfo { get; set; }
+}
+
+  <div
+    class="usa-modal"
+    id="@ModalInfo.ModalId"
+    aria-labelledby="@ModalInfo.ModalId-heading"
+    aria-describedby="@ModalInfo.ModalId-description"
+    @onclick:stopPropagation="true">
+    <div class="usa-modal__content">
+      <div class="usa-modal__main">
+        @ChildContent
+      </div>
+      @if (!ModalInfo.ForceAction)
+        {
+          <button
+            class="usa-button usa-modal__close"
+            aria-label="Close this window"
+            @onclick="() => ModalManager.Close(ModalInfo)"
+          >
+            <svg class="usa-icon" aria-hidden="true" focusable="false" role="img">
+              <use xlink:href="/images/sprite.svg#close"></use>
+            </svg>
+          </button>            
+        }
+    </div>
+  </div>

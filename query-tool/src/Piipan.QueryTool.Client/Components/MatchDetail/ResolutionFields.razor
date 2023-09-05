@@ -1,0 +1,11 @@
+﻿@using Piipan.Match.Api.Models.Resolution
+@code {
+    [Parameter] public string State { get; set; }
+    [Parameter] public bool InitiatingState { get; set; }
+    [Parameter] public DispositionModel DispositionData { get; set; }
+}
+<h3>Update information about this match for @State</h3>
+<p class="infoSavedText">After the information is saved, it will appear in the <b>Match Information</b> panel.</p>
+<VulnerableInvalidStatus DispositionData="@DispositionData"></VulnerableInvalidStatus>
+<InitialAction InitiatingState="@InitiatingState" DispositionData="@DispositionData"></InitialAction>
+<FinalDisposition InitiatingState="@InitiatingState" DispositionData="@DispositionData"></FinalDisposition>

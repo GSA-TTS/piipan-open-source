@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  app:
+    image: mcr.microsoft.com/dotnet/sdk:6.0
+    volumes:
+      - ../../:/code
+    depends_on:
+      - statedb
+      - collabdb
+    environment:
+      ParticipantsDatabaseConnectionString: "Server=statedb;Database=ea;Port=5432;User Id=postgres;Password=securepass;"
+      CollaborationDatabaseConnectionString: "Server=collabdb;Database=collaboration;Port=5432;User Id=postgres;Password=securepass;"
+      States: ea
+  statedb:
+    image: postgres:11-alpine
+    environment:
+      POSTGRES_PASSWORD: securepass
+      POSTGRES_DB: ea
+  collabdb:
+    image: postgres:11-alpine
+    environment:
+      POSTGRES_PASSWORD: securepass
+      POSTGRES_DB: collaboration

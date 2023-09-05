@@ -1,0 +1,17 @@
+﻿@using System.Linq.Expressions
+@using Piipan.Components.Helpers
+@using System.ComponentModel.DataAnnotations
+
+@code {
+    [CascadingParameter] public UsaFormGroup FormGroup { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public InputStatus Status { get; set; }
+}
+
+<label class="usa-label" for="@FormGroup?.InputElementId">
+    @ChildContent
+    @if (FormGroup?.Required ?? false)
+    {
+        <span class="usa-required">*</span>
+    }
+</label>

@@ -1,0 +1,221 @@
+﻿@using Piipan.Components
+@using System.Linq.Expressions
+@using Piipan.Components.Forms
+@using Piipan.Components.Layout
+@using Piipan.Components.Modals
+@using Piipan.Components.Routing
+@using Piipan.QueryTool.Client.Modals
+@using System.IO
+@using static Piipan.Components.Layout.LayoutConstants
+@using static Piipan.Components.Forms.FormConstants
+@inherits BaseComponentTest<ConfirmModalWrapper>
+
+@code {
+    public class TestModel {
+        [UsaRequired]
+        [Display(Name = "Required Field")]
+        public string? RequiredField { get; set; }
+    }
+    const string JSFileRelativePath = "/Modals/ConfirmModalWrapper.razor.js";
+    private IElement? inputElement = null;
+    private TestModel model = new TestModel();
+    private IRenderedComponent<ModalContainer> modalContainer;
+    BunitJSModuleInterop moduleInterop;
+
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public ConfirmModalWrapperTests() : base()
+    {
+        moduleInterop = this.JSInterop.SetupModule($".{JSFileRelativePath}");
+    }
+
+    /// <summary>
+    /// Sometimes when generating the package-lock.json file the peer dependencies for uswds-gulp get added back in.
+    /// If this test is failing, manually remove the peer dependencies from the node_modules/uswds-gulp file.
+    /// </summary>
+    [Fact]
+    public void VerifyConfirmModalWrapperJSExists()
+    {
+        // Assert
+        Assert.True(File.Exists($"../../../../../src/Piipan.QueryTool.Client{JSFileRelativePath}"));
+    }
+
+    /// <summary>
+    /// Verify the default markup of the modal wrapper
+    /// </summary>
+    [Fact]
+    public void ConfirmModalWrapper_ShouldExist_And_HaveCorrectMarkup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div class="usa-form-group ">
+              <label class="usa-label" for="model_RequiredField">Required Field<span class="usa-required">*</span>
+              </label>
+              <input class="usa-input" required="" id="model_RequiredField" name="model.RequiredField" style=""  >
+            </div>
+        );
+        modalContainer.MarkupMatches(@<text></text>);
+    }
+
+    /// <summary>
+    /// Verify the default markup of the confirm modal does NOT appear when navigation changes and the form is NOT dirty
+    /// </summary>
+    [Fact]
+    public void ConfirmModalWrapper_ShouldNotDisplayModal_When_NavigationChangesAndFormNotDirty()
+    {
+        // Arrange
+        CreateTestComponent();
+        var navigationManager = Services.GetService<PiipanNavigationManager>();
+
+        // Act
+        navigationManager.NavigateTo("/test");
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div class="usa-form-group ">
+              <label class="usa-label" for="model_RequiredField">Required Field<span class="usa-required">*</span>
+              </label>
+              <input class="usa-input" required="" id="model_RequiredField" name="model.RequiredField" style=""  >
+            </div>
+        );
+        modalContainer.MarkupMatches(@<text></text>);
+    }
+
+    /// <summary>
+    /// Verify the default markup of the confirm modal appears when navigation changes and the form is dirty
+    /// </summary>
+    [Fact]
+    public void ConfirmModalWrapper_ShouldDisplayModal_When_NavigationChangesAndFormDirty()
+    {
+        // Arrange
+        CreateTestComponent();
+        var navigationManager = Services.GetService<PiipanNavigationManager>();
+        var inputElement = Component.Find($".{InputClass}");
+        inputElement!.Change("Test");
+        inputElement!.Blur();
+
+        // Act
+        navigationManager.NavigateTo("/test");
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div class="usa-form-group ">
+              <label class="usa-label" for="model_RequiredField">Required Field<span class="usa-required">*</span>
+              </label>
+              <input class="usa-input" required="" id="model_RequiredField" name="model.RequiredField" style="" value="Test" >
+            </div>
+        );
+        modalContainer.MarkupMatches(
+            @<div class="usa-modal-wrapper is-visible" role="dialog">
+              <div class="usa-modal-overlay" aria-controls="ConfirmModal" >
+                <div class="usa-modal" id="ConfirmModal" aria-labelledby="ConfirmModal-heading" aria-describedby="ConfirmModal-description"  >
+                  <div class="usa-modal__content" >
+                    <div class="usa-modal__main" >
+                      <h2 class="usa-modal__heading" id="ConfirmModal-heading">
+                        Continue Without Saving?
+                      </h2>
+                      <div class="usa-prose">
+                        <p id="ConfirmModal-description">
+                          Any unsaved changes will be lost.
+                        </p>
+                      </div>
+                      <div class="usa-modal__footer">
+                        <ul class="usa-button-group">
+                          <li class="usa-button-group__item">
+                            <button type="button" class="usa-button" >
+                              Continue
+                            </button>
+                          </li>
+                          <li class="usa-button-group__item">
+                            <button type="button" class="usa-button usa-button--unstyled padding-105 text-center" >
+                              Cancel and return to form
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    <button class="usa-button usa-modal__close" aria-label="Close this window"  >
+                      <svg class="usa-icon" aria-hidden="true" focusable="false" role="img" >
+                        <use xlink:href="/images/sprite.svg#close" ></use>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        );
+    }
+
+    /// <summary>
+    /// Verify the confirmation modal closes when the cancel button is clicked
+    /// </summary>
+    [Fact]
+    public void ConfirmModal_ShouldClose_When_CancelButtonIsClicked()
+    {
+        // Arrange
+        CreateTestComponent();
+        var navigationManager = Services.GetService<PiipanNavigationManager>();
+        var inputElement = Component.Find($".{InputClass}");
+        inputElement!.Change("Test");
+        inputElement!.Blur();
+
+        // Act
+        navigationManager.NavigateTo("/test");
+
+        var buttons = modalContainer.FindAll($".usa-button");
+        buttons[1].Click();
+
+        Assert.DoesNotContain("/test", navigationManager.Uri);
+        modalContainer.MarkupMatches(@<text></text>);
+    }
+
+    /// <summary>
+    /// Verify the confirmation modal closes and continues navigation when the continue button is clicked
+    /// </summary>
+    [Fact]
+    public void ConfirmModal_ShouldCloseAndContinue_When_ContinueButtonIsClicked()
+    {
+        // Arrange
+        CreateTestComponent();
+        var navigationManager = Services.GetService<PiipanNavigationManager>();
+        var inputElement = Component.Find($".{InputClass}");
+        inputElement!.Change("Test");
+        inputElement!.Blur();
+
+        // Act
+        navigationManager.NavigateTo("/test");
+
+        var buttons = modalContainer.FindAll($".usa-button");
+        buttons[0].Click();
+
+        Assert.EndsWith("/test", navigationManager.Uri);
+        modalContainer.MarkupMatches(@<text></text>);
+    }
+
+    /// <summary>
+    /// Create a confirm modal component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        moduleInterop.SetupVoid("SetUnloadListener", _ => true).SetVoidResult();
+            
+        var htmlFragment = Render(
+            @<div><div id="inert-area">
+                <UsaForm Model="model">
+                    <ConfirmModalWrapper>
+                        <UsaFormGroup>
+                            <UsaInputText @bind-Value="model.RequiredField" />
+                        </UsaFormGroup>
+                    </ConfirmModalWrapper>
+                </UsaForm>
+            </div><Piipan.Components.Modals.ModalContainer /></div>
+        );
+        modalContainer = htmlFragment.FindComponent<ModalContainer>();
+        Component = htmlFragment.FindComponent<ConfirmModalWrapper>();
+    }
+}

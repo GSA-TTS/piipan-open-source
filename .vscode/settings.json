@@ -1,0 +1,9 @@
+{
+    "azureFunctions.deploySubpath": "metrics/src/Piipan.Metrics/Piipan.Metrics.Api/bin/Release/net6.0/publish",
+    "azureFunctions.projectLanguage": "C#",
+    "azureFunctions.projectRuntime": "~4",
+    "debug.internalConsoleOptions": "neverOpen",
+    "azureFunctions.projectSubpath": "metrics/src/Piipan.Metrics/Piipan.Metrics.Api",
+    "azureFunctions.preDeployTask": "publish",
+    "coverage-gutters.coverageFileNames": ["coverage.info"]
+}

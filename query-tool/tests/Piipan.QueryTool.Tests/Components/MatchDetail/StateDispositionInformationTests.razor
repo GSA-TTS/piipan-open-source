@@ -1,0 +1,301 @@
+﻿@using Piipan.Components.Alerts
+@using Piipan.Components.Enums
+@using System.Linq.Expressions
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Components.MatchDetail
+@using Piipan.QueryTool.Client.Models
+@using Piipan.Shared.API.Utilities
+@inherits BaseComponentTest<StateDispositionInformation>
+
+@code {
+
+    public DateTime testMatchDate = DateTime.Parse("06/19/2022");
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public StateDispositionInformationTests() : base()
+    {
+        InitialValues = new StateDispositionInformation()
+        {
+            InitiatingState = true,
+            Disposition = new Disposition
+            {
+                State = "ea",
+                FinalDisposition = "Benefits Approved",
+                FinalDispositionDate = DateTime.Parse("02/02/2022"),
+                VulnerableIndividual = false,
+                InvalidMatch = false,
+                InitialActionAt = DateTime.Parse("01/01/2022"),
+                InitialActionTaken = "Notice Sent"
+            }
+        };
+    }
+
+    /// <summary>
+    /// Create a StateParticipantInformation component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        Component = Render<StateDispositionInformation>(
+            @<StateDispositionInformation InitiatingState="InitialValues.InitiatingState" Disposition="InitialValues.Disposition" InitiatingStateName="Echo Alpha" InitiatingStateAbbr="EA">
+        </StateDispositionInformation>
+    );
+    }
+
+    /// <summary>
+    /// Create a StateParticipantInformation component
+    /// </summary>
+    protected void CreateTestComponent_withMatchDate()
+    {
+        base.CreateTestComponent();
+        Component = Render<StateDispositionInformation>(
+            @<StateDispositionInformation InitiatingState="InitialValues.InitiatingState" Disposition="InitialValues.Disposition" InitiatingStateName="Echo Alpha" InitiatingStateAbbr="EA" MatchDate=testMatchDate>
+            </StateDispositionInformation>
+        );
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of the state disposition information
+    /// </summary>
+    [Fact]
+    public void State_Contact_Info_Should_Exist_And_Have_Correct_Markup_With_Match_Date()
+    {
+        // Arrange
+        CreateTestComponent_withMatchDate();
+        DateTime currentDate = DateTime.Today;                
+        string daysSinceMatch = (currentDate - testMatchDate).TotalDays.ToString();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div>
+                <h5>Echo Alpha <span>(Initiating State)</span></h5>
+                <dl>
+                    <div>
+                        <dt>Vulnerable Individual:</dt>
+                        <dd>No</dd>
+                    </div>
+                    <div>
+                        <dt>Invalid Match:</dt>
+                        <dd>No</dd>
+                    </div>
+                    <div>
+                        <dt>Initial Action Taken:</dt>
+                        <dd>Notice Sent</dd>
+                    </div>
+                    <div>
+                        <dt>Initial Action Date:</dt>
+                        <dd>01/01/2022</dd>
+                    </div>
+                    <div>
+                        <dt>Final Disposition Taken:</dt>
+                        <dd>Benefits Approved</dd>
+                    </div>
+                    <div>
+                        <dt>Benefits Start Date:</dt>
+                        <dd>02/02/2022</dd>
+                    </div>
+                </dl>
+            </div>
+        );
+    }
+
+    /// <summary>
+    /// Verify the default markup of the state disposition information
+    /// </summary>
+    [Fact]
+    public void State_Contact_Info_Should_Exist_And_Have_Correct_Markup_When_Initiating_State()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div>
+                <h5>Echo Alpha <span>(Initiating State)</span></h5>
+                <dl>
+                    <div>
+                        <dt>Vulnerable Individual:</dt>
+                        <dd>No</dd>
+                    </div>
+                    <div>
+                        <dt>Invalid Match:</dt>
+                        <dd>No</dd>
+                    </div>
+                    <div>
+                        <dt>Initial Action Taken:</dt>
+                        <dd>Notice Sent</dd>
+                    </div>
+                    <div>
+                        <dt>Initial Action Date:</dt>
+                        <dd>01/01/2022</dd>
+                    </div>
+                    <div>
+                        <dt>Final Disposition Taken:</dt>
+                        <dd>Benefits Approved</dd>
+                    </div>
+                    <div>
+                        <dt>Benefits Start Date:</dt>
+                        <dd>02/02/2022</dd>
+                    </div>
+                </dl>
+            </div>
+        );
+    }
+
+    /// <summary>
+    /// Verify the markup of the state disposition information when not the initiating state
+    /// </summary>
+    [Fact]
+    public void State_Disposition_Info_Should_Exist_And_Have_Correct_Markup_When_Matching_State()
+    {
+        // Arrange
+        InitialValues.InitiatingState = false;
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div>
+                <h5>Echo Alpha <span>(Matching State)</span></h5>
+                <dl>
+                    <div>
+                        <dt>Vulnerable Individual:</dt>
+                        <dd>No</dd>
+                    </div>
+                    <div>
+                        <dt>Invalid Match:</dt>
+                        <dd>No</dd>
+                    </div>
+                    <div>
+                        <dt>Initial Action Taken:</dt>
+                        <dd>Notice Sent</dd>
+                    </div>
+                    <div>
+                        <dt>Initial Action Date:</dt>
+                        <dd>01/01/2022</dd>
+                    </div>
+                    <div>
+                        <dt>Final Disposition Taken:</dt>
+                        <dd>Benefits Approved</dd>
+                    </div>
+                    <div>
+                        <dt>Benefits Start Date:</dt>
+                        <dd>02/02/2022</dd>
+                    </div>
+                </dl>
+        </div>
+    );
+    }
+
+    /// <summary>
+    /// Verify that when Invalid Other Reason is filled out it is displayed correctly on the screen
+    /// </summary>
+    [Fact]
+    public void State_Disposition_Info_Should_Have_Correct_Text_For_Invalid_OtherReason()
+    {
+        // Arrange
+        InitialValues.Disposition.InvalidMatch = true;
+        InitialValues.Disposition.InvalidMatchReason = "Other";
+        InitialValues.Disposition.OtherReasoningForInvalidMatch = "Some Other Reason";
+        CreateTestComponent();
+
+        // Assert
+        var invalidMatchLine = Component.FindAll("dd")[1];
+        Assert.Equal("Yes, Other: Some Other Reason", invalidMatchLine.TextContent);
+    }
+
+    /// <summary>
+    /// Verify that when Invalid Other Reason is filled out it is displayed correctly on the screen
+    /// </summary>
+    [Fact]
+    public void State_Disposition_Info_Should_Have_Correct_Text_For_Invalid_SystemError()
+    {
+        // Arrange
+        InitialValues.Disposition.InvalidMatch = true;
+        InitialValues.Disposition.InvalidMatchReason = "System Error";
+        CreateTestComponent();
+
+        // Assert
+        var invalidMatchLine = Component.FindAll("dd")[1];
+        Assert.Equal("Yes, System Error", invalidMatchLine.TextContent);
+    }
+
+    /// <summary>
+    /// Verify the markup of the state disposition information when its fields are empty
+    /// </summary>
+    [Fact]
+    public void State_Disposition_Info_Should_Exist_And_Have_Correct_Markup_When_Initiating_State_No_Values()
+    {
+        // Arrange
+        InitialValues.Disposition = new()
+            {
+                State = "ea",
+            };
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div>
+                <h5>Echo Alpha <span>(Initiating State)</span></h5>
+                <dl>
+                    <div>
+                        <dt>Vulnerable Individual:</dt>
+                        <dd>-</dd>
+                    </div>
+                    <div>
+                        <dt>Invalid Match:</dt>
+                        <dd>-</dd>
+                    </div>
+                    <div>
+                        <dt>Initial Action Taken:</dt>
+                        <dd>-</dd>
+                    </div>
+                    <div>
+                        <dt>Initial Action Date:</dt>
+                        <dd>-</dd>
+                    </div>
+                    <div>
+                        <dt>Final Disposition Taken:</dt>
+                        <dd>-</dd>
+                    </div>
+                    <div>
+                        <dt> </dt>
+                        <dd> </dd>
+                    </div>
+                </dl>
+        </div>
+    );
+    }
+
+    /// <summary>
+    /// Verify the markup contains Benefits End Date as a label when the Final Disposition is Benefits Terminated
+    /// </summary>
+    [Fact]
+    public void State_Disposition_Info_Should_Have_Benefits_End_Date_When_Benefits_Terminated()
+    {
+        // Arrange
+        InitialValues.Disposition.FinalDisposition = "Benefits Terminated";
+        CreateTestComponent();
+
+        // Assert
+        Assert.Contains("Benefits End Date", Component!.Markup);
+    }
+
+    /// <summary>
+    /// Verify the markup contains Final Disposition Taken as a label when the Final Disposition is Benefits Unchanged
+    /// </summary>
+    [Fact]
+    public void State_Disposition_Info_Should_Have_Final_Disposition_Taken_When_Benefits_Unchanged()
+    {
+        // Arrange
+        InitialValues.Disposition.FinalDisposition = "Benefits Unchanged";
+        CreateTestComponent();
+
+        // Assert
+        Assert.Contains("Final Disposition Taken", Component!.Markup);
+    }
+
+    #endregion
+}

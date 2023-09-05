@@ -1,0 +1,20 @@
+# Orchestrator API base spec
+openapi: 3.0.0
+info:
+  title: "Active Matching API"
+  version: 2.0.0
+  description: "API for finding matching participant records across all participating states."
+tags:
+  - name: "Match"
+servers:
+  - url: "/v2"
+paths:
+  /find_matches:
+    $ref: './find.yaml'
+security:
+  - BearerAuth: []
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

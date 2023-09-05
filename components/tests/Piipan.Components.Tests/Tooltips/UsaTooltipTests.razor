@@ -1,0 +1,262 @@
+﻿@using Microsoft.JSInterop
+@using Piipan.Components.Tooltips
+@using static Piipan.Components.Tooltips.UsaTooltip
+@inherits BaseTest<UsaTooltip>
+@code {
+    #region Tests
+
+    BunitJSModuleInterop moduleInterop;
+    private const string JSFileRelativePath = "/Tooltips/UsaTooltip.razor.js";
+    IElement tooltipTrigger;
+    IElement tooltipBody;
+
+
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public UsaTooltipTests() : base()
+    {
+        InitialValues = new UsaTooltip()
+        {
+            TooltipText = "This is a test tooltip",
+            ChildContent = @<p>Tooltip Hit Area</p>
+        };
+        moduleInterop = this.JSInterop.SetupModule($"./_content/Piipan.Components{JSFileRelativePath}");
+    }
+
+    /// <summary>
+    /// Verify the default markup of a tooltip
+    /// </summary>
+    [Fact]
+    public void Tooltip_Should_Exist_And_Have_Correct_Markup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<span class="usa-tooltip" >
+              <button tabindex="0"      type="button" class="usa-tooltip__trigger usa-button usa-button--unstyled" style="margin-top: 0;" data-position="top" aria-labelledby="tooltip-" >
+                <p>Tooltip Hit Area</p>
+              </button>
+              <span id="tooltip-" class="usa-tooltip__body usa-tooltip__body--top " role="tooltip" aria-hidden="true" style="--translateXPercent: 0%"  >This is a test tooltip</span>
+        </span>
+    );
+    }
+
+    /// <summary>
+    /// Verify the tooltip should be visible when the trigger is hovered
+    /// </summary>
+    [Fact]
+    public void Tooltip_Should_Have_Aria_DescribedBy_IfSet()
+    {
+        // Arrange
+        InitialValues.TooltipRole = TooltipRole.Description;
+        CreateTestComponent();
+
+        // Assert
+        Component.Find(".usa-tooltip__trigger").HasAttribute("aria-describedby");
+    }
+
+    /// <summary>
+    /// Verify the tooltip should be visible when the trigger is hovered
+    /// </summary>
+    [Fact]
+    public void Tooltip_Should_Be_Visible_When_Hovered()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        tooltipTrigger.MouseOver();
+
+        // Assert
+        Assert.True(tooltipBody.ClassList.Contains("is-set"));
+        Assert.True(tooltipBody.ClassList.Contains("is-visible"));
+        Assert.Equal("false", tooltipBody.GetAttribute("aria-hidden"));
+
+        // Act
+        tooltipTrigger.MouseOut();
+
+        // Assert
+        Assert.False(tooltipBody.ClassList.Contains("is-set"));
+        Assert.False(tooltipBody.ClassList.Contains("is-visible"));
+        Assert.Equal("true", tooltipBody.GetAttribute("aria-hidden"));
+    }
+
+    /// <summary>
+    /// Verify the tooltip should be visible when the trigger is focused
+    /// </summary>
+    [Fact]
+    public void Tooltip_Should_Be_Visible_When_Focused()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        tooltipTrigger.Focus();
+
+        // Assert
+        Assert.True(tooltipBody.ClassList.Contains("is-set"));
+        Assert.True(tooltipBody.ClassList.Contains("is-visible"));
+        Assert.Equal("false", tooltipBody.GetAttribute("aria-hidden"));
+
+        // Act
+        tooltipTrigger.Blur();
+
+        // Assert
+        Assert.False(tooltipBody.ClassList.Contains("is-set"));
+        Assert.False(tooltipBody.ClassList.Contains("is-visible"));
+        Assert.Equal("true", tooltipBody.GetAttribute("aria-hidden"));
+    }
+
+    /// <summary>
+    /// Verify the tooltip should be visible when the trigger is focused. If the user then goes in and hovers, the tooltip won't close until the field loses focus
+    /// </summary>
+    [Fact]
+    public void Tooltip_Should_Be_Only_Close_When_Blurred_When_Initially_Focused()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        tooltipTrigger.Focus();
+        tooltipTrigger.MouseOver();
+        tooltipTrigger.MouseOut();
+
+        // Assert still visible. When focused, hovering and de-hovering should not hide tooltip
+        Assert.True(tooltipBody.ClassList.Contains("is-set"));
+        Assert.True(tooltipBody.ClassList.Contains("is-visible"));
+        Assert.Equal("false", tooltipBody.GetAttribute("aria-hidden"));
+
+        // Act
+        tooltipTrigger.Blur();
+
+        // Assert
+        Assert.False(tooltipBody.ClassList.Contains("is-set"));
+        Assert.False(tooltipBody.ClassList.Contains("is-visible"));
+        Assert.Equal("true", tooltipBody.GetAttribute("aria-hidden"));
+    }
+
+    /// <summary>
+    /// Verify the tooltip should be visible when the trigger is hovered. If the user then goes in and focuses on the trigger, the tooltip won't close until the field loses hover
+    /// </summary>
+    [Fact]
+    public void Tooltip_Should_Be_Only_Close_When_MouseOut_When_Initially_Hovered()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        tooltipTrigger.MouseOver();
+        tooltipTrigger.Focus();
+        tooltipTrigger.Blur();
+
+        // Assert still visible. When hovering, focusing/blurring should not change the tooltip
+        Assert.True(tooltipBody.ClassList.Contains("is-set"));
+        Assert.True(tooltipBody.ClassList.Contains("is-visible"));
+        Assert.Equal("false", tooltipBody.GetAttribute("aria-hidden"));
+
+        // Act
+        tooltipTrigger.MouseOut();
+
+        // Assert
+        Assert.False(tooltipBody.ClassList.Contains("is-set"));
+        Assert.False(tooltipBody.ClassList.Contains("is-visible"));
+        Assert.Equal("true", tooltipBody.GetAttribute("aria-hidden"));
+    }
+
+    /// <summary>
+    /// Verify the tooltip should close down when the escape key is pressed if it was initially focused
+    /// </summary>
+    [Fact]
+    public void Tooltip_Should_Close_On_Focus_And_EscapeKey()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        tooltipTrigger.Focus();
+        tooltipTrigger.KeyDown("Escape");
+
+        // Assert
+        Assert.False(tooltipBody.ClassList.Contains("is-set"));
+        Assert.False(tooltipBody.ClassList.Contains("is-visible"));
+        Assert.Equal("true", tooltipBody.GetAttribute("aria-hidden"));
+    }
+
+    /// <summary>
+    /// Verify the tooltip should close down when the escape key is pressed if it was initially hovered but subsequently focused
+    /// </summary>
+    [Fact]
+    public void Tooltip_Should_Close_On_Hover_Then_Focus_And_EscapeKey()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        tooltipTrigger.MouseOver();
+        tooltipTrigger.Focus();
+        tooltipTrigger.KeyDown("Escape");
+
+        // Assert
+        Assert.False(tooltipBody.ClassList.Contains("is-set"));
+        Assert.False(tooltipBody.ClassList.Contains("is-visible"));
+        Assert.Equal("true", tooltipBody.GetAttribute("aria-hidden"));
+    }
+
+    /// <summary>
+    /// Verify the tooltip should appear under the element when the javascript returns that it's partially above the screen
+    /// </summary>
+    [Fact]
+    public void Tooltip_Should_Display_Upside_Down_On_Vertical_Overflow()
+    {
+        // Arrange
+        CreateTestComponent();
+        moduleInterop.Setup<TooltipDisplayAttributes>("ShowTooltip", _ => true).SetResult(new TooltipDisplayAttributes() { Flip = true });
+
+        // Act
+        tooltipTrigger.MouseOver();
+
+        // Assert
+        Assert.False(tooltipBody.ClassList.Contains("usa-tooltip__body--top"));
+        Assert.True(tooltipBody.ClassList.Contains("usa-tooltip__body--bottom"));
+    }
+
+    /// <summary>
+    /// Verify the tooltip should appear translated left when the javascript returns that it's partially off the right side of the screen
+    /// </summary>
+    [Fact]
+    public void Tooltip_Should_Move_Left_On_Horizontal_Overflow()
+    {
+        // Arrange
+        CreateTestComponent();
+        moduleInterop.Setup<TooltipDisplayAttributes>("ShowTooltip", _ => true).SetResult(new TooltipDisplayAttributes() { XPercent = 0.5M });
+
+        // Act
+        tooltipTrigger.MouseOver();
+
+        // Assert
+        Assert.Equal("--translateXPercent: 50.0%", tooltipBody.GetAttribute("style"));
+    }
+
+    #endregion Tests
+
+    #region Helper Function
+    /// <summary>
+    /// Setup the component and register Javascript mocks
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        JSInterop.SetupVoid("piipan.utilities.registerFormValidation", _ => true);
+        Component = Render<UsaTooltip>(
+            @<UsaTooltip TooltipText="@InitialValues.TooltipText" ChildContent="@InitialValues.ChildContent">
+            </UsaTooltip>
+        );
+        moduleInterop.Setup<TooltipDisplayAttributes>("ShowTooltip", _ => true).SetResult(new TooltipDisplayAttributes());
+        tooltipTrigger = Component.Find(".usa-tooltip__trigger");
+        tooltipBody = Component.Find(".usa-tooltip__body");
+    }
+
+    #endregion Helper Functions
+}

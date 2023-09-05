@@ -1,0 +1,173 @@
+﻿@using Piipan.Components.Alerts
+@using Piipan.Components.Enums
+@using System.Linq.Expressions
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Components.MatchDetail
+@using Piipan.QueryTool.Client.Models
+@using Piipan.Shared.API.Utilities
+@using static Piipan.Components.Alerts.AlertConstants
+@inherits BaseComponentTest<StateParticipantInformation>
+
+@code {
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public StateParticipantInformationTests() : base()
+    {
+        InitialValues = new StateParticipantInformation()
+        {
+            InitiatingState = true,
+            Participant = new Participant
+            {
+                State = "ea",
+                CaseId = "c123",
+                ParticipantId = "p123",
+                ParticipantClosingDate = DateTime.Parse("01/01/2022"),
+                RecentBenefitIssuanceDates = new List<DateRange>
+                {
+                    new DateRange
+                    {
+                        Start = DateTime.Parse("01/01/2022"),
+                        End = DateTime.Parse("02/02/2022")
+                    },
+                    new DateRange
+                    {
+                        Start = DateTime.Parse("03/03/2022"),
+                        End = DateTime.Parse("04/04/2022")
+                    }
+                }
+            }
+        };
+    }
+
+    /// <summary>
+    /// Create a StateParticipantInformation component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        Component = Render<StateParticipantInformation>(
+            @<StateParticipantInformation InitiatingState="InitialValues.InitiatingState" Participant="InitialValues.Participant">
+            </StateParticipantInformation>
+        );
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of the state participation information
+    /// </summary>
+    [Fact]
+    public void State_Participant_Info_Should_Exist_And_Have_Correct_Markup_When_Initiating_State()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div>
+                <h5>Echo Alpha <span>(Initiating State)</span></h5>
+                <dl>
+                    <div>
+                        <dt>Case Number:</dt>
+                        <dd>c123</dd>
+                    </div>
+                    <div>
+                        <dt>Participant ID:</dt>
+                        <dd>p123</dd>
+                    </div>
+                    <div>
+                        <dt>Participant Closing Date:</dt>
+                        <dd>N/A</dd>
+                    </div>
+                    <div>
+                        <dt>Recent Benefits Issuance Dates:</dt>
+                        <dd>01/01/2022 - 02/02/2022
+                        03/03/2022 - 04/04/2022
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        );
+    }
+
+    /// <summary>
+    /// Verify the markup of the state participant information when not the initiating state
+    /// </summary>
+    [Fact]
+    public void State_Participant_Info_Should_Exist_And_Have_Correct_Markup_When_Matching_State()
+    {
+        // Arrange
+        InitialValues.InitiatingState = false;
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div>
+                <h5>Echo Alpha <span>(Matching State)</span></h5>
+                <dl>
+                    <div>
+                        <dt>Case Number:</dt>
+                        <dd>c123</dd>
+                    </div>
+                    <div>
+                        <dt>Participant ID:</dt>
+                        <dd>p123</dd>
+                    </div>
+                    <div>
+                        <dt>Participant Closing Date:</dt>
+                        <dd>01/01/2022</dd>
+                    </div>
+                    <div>
+                        <dt>Recent Benefits Issuance Dates:</dt>
+                        <dd>01/01/2022 - 02/02/2022
+                        03/03/2022 - 04/04/2022
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        );
+    }
+
+    /// <summary>
+    /// Verify the markup of the state participant information when not the initiating state
+    /// </summary>
+    [Fact]
+    public void State_Participant_Info_Should_Exist_And_Have_Correct_Markup_When_Matching_State_No_Values()
+    {
+        // Arrange
+        InitialValues.InitiatingState = false;
+        InitialValues.Participant = new Participant()
+            {
+                State = "ea"
+            };
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div>
+                <h5>Echo Alpha <span>(Matching State)</span></h5>
+                <dl>
+                    <div>
+                        <dt>Case Number:</dt>
+                        <dd>-</dd>
+                    </div>
+                    <div>
+                        <dt>Participant ID:</dt>
+                        <dd>-</dd>
+                    </div>
+                    <div>
+                        <dt>Participant Closing Date:</dt>
+                        <dd>-</dd>
+                    </div>
+                    <div>
+                        <dt>Recent Benefits Issuance Dates:</dt>
+                        <dd>-</dd>
+                    </div>
+                </dl>
+            </div>
+        );
+    }
+
+    #endregion
+}

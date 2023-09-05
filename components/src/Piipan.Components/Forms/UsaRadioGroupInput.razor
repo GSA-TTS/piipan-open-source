@@ -1,0 +1,24 @@
+﻿@using static FormConstants
+@typeparam TValue
+@inherits UsaInputBase<TValue>
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+
+    private void UpdateValueChanged(TValue newValue)
+    {
+        Value = newValue;
+        ValueChanged.InvokeAsync(newValue);
+        _ = BlurField();
+    }
+}
+
+<CascadingValue Value="EditContext">
+    <fieldset class="@FieldsetClass"
+        aria-errormessage="@(FormGroup.Status == InputStatus.Error ? $"{Id}-message" : null)"
+        aria-invalid="@(FormGroup.Status == InputStatus.Error ? "true" : null)"
+        @attributes="AdditionalAttributes" style="@(Width != null ? $"width: {Width}px;" : "");">
+        <TemporaryRadioGroup Value="Value" ValueChanged="(TValue newValue) => UpdateValueChanged(newValue)" ValueExpression="ValueExpression" Name="@Id.Replace("_", ".")" id="@Id">
+            @ChildContent
+        </TemporaryRadioGroup>
+    </fieldset>
+</CascadingValue>

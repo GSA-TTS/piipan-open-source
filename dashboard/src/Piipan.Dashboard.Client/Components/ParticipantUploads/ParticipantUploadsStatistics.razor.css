@@ -1,0 +1,43 @@
+﻿#statistic-wrapper {
+    display: grid;
+    grid-template-columns: 20.625rem 20.625rem;
+    grid-gap: 2rem;
+    gap: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #ADADAD;
+}
+
+.statistic-card {
+    background: #004785;
+    color: white;
+    padding: 1.75rem .75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+h2 {
+    display: inline-block;
+    margin-top: 0;
+    margin-right: .5rem;
+}
+
+h2 ~ span {
+    font-style: italic;
+    font-size: .75rem;
+}
+
+h3 {
+    margin-top: 0;
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: .625rem;
+}
+
+.statistic-number {
+    font-size: 3.5rem;
+    text-align: center;
+    display: block;
+    font-weight: 300;
+}

@@ -1,0 +1,8 @@
+﻿@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object> AdditionalAttributes { get; set; }
+}
+
+<UsaAlertBox Slim="true" AlertSeverity="AlertSeverity.Info" @attributes="AdditionalAttributes" >
+    <p>This Match ID does not exist or you do not have adequate permissions. For additional information, please contact the <a href="mailto:@(ClientAppData.HelpDeskEmail)">help desk</a>.</p>
+</UsaAlertBox>

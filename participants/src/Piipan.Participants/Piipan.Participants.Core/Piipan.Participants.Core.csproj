@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\shared\src\Piipan.Shared.Cryptography\Piipan.Shared.Cryptography.csproj" />
+    <ProjectReference Include="..\Piipan.Participants.Api\Piipan.Participants.Api.csproj" />
+    <ProjectReference Include="..\..\..\..\shared\src\Piipan.Shared\Piipan.Shared.csproj" />
+    <ProjectReference Include="..\..\..\..\metrics\src\Piipan.Metrics\Piipan.Metrics.Api\Piipan.Metrics.Api.csproj" />
+    <ProjectReference Include="..\..\..\..\metrics\src\Piipan.Metrics\Piipan.Metrics.Core\Piipan.Metrics.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Core" Version="1.27.0" />
+    <PackageReference Include="Azure.Messaging.EventGrid" Version="4.13.0" />
+    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="Dapper-NodaTime" Version="0.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Npgsql.NodaTime" Version="7.0.1" />
+    <PackageReference Include="PostgreSQLCopyHelper" Version="2.8.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+</Project>

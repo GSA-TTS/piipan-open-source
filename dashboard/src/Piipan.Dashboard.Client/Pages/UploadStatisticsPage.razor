@@ -1,0 +1,48 @@
+﻿@page "/ParticipantUploads"
+@using Piipan.Dashboard.Client.Components.ParticipantUploads
+@using Piipan.Metrics.Api
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "perPage")]
+    public int? PerPage { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "page")]
+    public int? Page { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "endDate")]
+    public DateTime? EndDate { get; set; } = null;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "startDate")]
+    public DateTime? StartDate { get; set; } = null;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "status")]
+    public string? Status { get; set; } = null;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "state")]
+    public string? State { get; set; } = null;
+
+    ParticipantUploadRequestFilter _participantUploadRequestFilter = new();
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        _participantUploadRequestFilter = new()
+            {
+                EndDate = EndDate,
+                Page = Page ?? 1,
+                PerPage = PerPage ?? 53,
+                StartDate = StartDate,
+                State = State,
+                Status = Status
+            };
+    }
+}
+
+<PageTitle>Piipan Metrics Dashboard</PageTitle>
+<ParticipantUploads Filter="_participantUploadRequestFilter" />

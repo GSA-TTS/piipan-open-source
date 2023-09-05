@@ -1,0 +1,33 @@
+﻿@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Components.UnauthorizedBanners
+@using Piipan.Shared.Client.Api
+@using Piipan.States.Api.Models
+@using Piipan.QueryTool.Client.Api
+
+@code {
+    [Parameter] public string MatchId { get; set; }
+    public MatchResApiResponse Match { get; set; }
+
+    private bool isUnauthorized = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await PiipanApi.GetMatchDetailById(MatchId);
+        var serverErrorList = response.Errors.Select(n => (n.Property, n.Error)).ToList();
+        if ((serverErrorList.Count == 0 && response.Value == null) || response.IsUnauthorized)
+        {
+            isUnauthorized = true;
+        }
+        Match = response.Value;
+    }
+}
+
+@if (isUnauthorized)
+{
+    <div style="padding-top: 24px;">
+        <MatchUnauthorizedBanner />
+    </div>
+}
+else if (Match != null) {
+    <MatchDetail InitialMatch="Match" />
+}

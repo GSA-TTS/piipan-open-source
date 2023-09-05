@@ -1,0 +1,141 @@
+﻿@using Piipan.Components.Tag
+@using Piipan.Components.Enums
+@using System.Linq.Expressions
+@using static Piipan.Components.Tag.TagConstants
+@inherits BaseTest<UsaTag>
+
+@code {
+    private IElement? element;
+
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public UsaTagTests() : base()
+    {
+        InitialValues = new UsaTag()
+        {
+            Theme = TagTheme.Green,
+            BorderType = BorderType.Round,
+            ChildContent = @<text>Some Tag</text>,
+        };
+    }
+
+    Dictionary<TagTheme, string> TagThemeClasses = new()
+        {
+            { TagTheme.Green, TagThemeGreenClass },
+            { TagTheme.Gray, TagThemeGrayClass },
+            { TagTheme.Purple, TagThemePurpleClass },
+            { TagTheme.Orange, TagThemeOrangeClass }
+        };
+
+    /// <summary>
+    /// Create an alert box component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        Component = Render<UsaTag>(
+            @<UsaTag Theme="@InitialValues.Theme" BorderType="@InitialValues.BorderType">
+                @InitialValues.ChildContent
+            </UsaTag>
+        );
+        element = Component.Find($".{TagClass}");
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of an alert box
+    /// </summary>
+    [Fact]
+    public void Tag_Should_Exist_And_Have_Correct_Markup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<span class="@TagClass @TagBorderRoundClass @TagThemeGreenClass">
+                @InitialValues.ChildContent
+            </span>
+        );
+    }
+
+
+    /// <summary>
+    /// Verify the tag can change theme on the fly
+    /// </summary>
+    [Theory]
+    [InlineData(TagTheme.Green, TagTheme.Orange)]
+    [InlineData(TagTheme.Gray, TagTheme.Purple)]
+    [InlineData(TagTheme.Purple, TagTheme.Green)]
+    [InlineData(TagTheme.Orange, TagTheme.Gray)]
+    public void Tag_Should_Be_Able_To_Change_Theme_Before_And_After_Created(TagTheme startingTheme, TagTheme endingTheme)
+    {
+        // Arrange
+        InitialValues.Theme = startingTheme;
+        CreateTestComponent();
+
+        // Assert Initial Values
+        Assert.True(element!.ClassList.Contains(TagThemeClasses[startingTheme]));
+        Assert.False(element.ClassList.Contains(TagThemeClasses[endingTheme]));
+
+        // Act
+        UpdateParameter(p => p.Theme, endingTheme);
+
+        // Assert Updated Values
+        Assert.False(element.ClassList.Contains(TagThemeClasses[startingTheme]));
+        Assert.True(element.ClassList.Contains(TagThemeClasses[endingTheme]));
+    }
+
+    /// <summary>
+    /// Verify the tag can change its border on the fly
+    /// </summary>
+    [Fact]
+    public void Tag_Should_Be_Able_To_Change_Border_Type_Before_And_After_Created()
+    {
+        // Arrange
+        InitialValues.BorderType = BorderType.Square;
+        CreateTestComponent();
+
+        // Assert Initial Values
+        Assert.True(element!.ClassList.Contains(TagBorderSquareClass));
+        Assert.False(element.ClassList.Contains(TagBorderRoundClass));
+
+        // Act
+        UpdateParameter(p => p.BorderType, BorderType.Round);
+
+        // Assert Updated Values
+        Assert.True(element!.ClassList.Contains(TagBorderRoundClass));
+        Assert.False(element.ClassList.Contains(TagBorderSquareClass));
+
+        // Act
+        UpdateParameter(p => p.BorderType, BorderType.RoundedSquare);
+
+        // Assert Updated Values
+        Assert.True(element!.ClassList.Contains(TagBorderRoundedSquareClass));
+        Assert.False(element.ClassList.Contains(TagBorderRoundClass));
+    }
+
+    /// <summary>
+    /// Verify the tag can change its content on the fly
+    /// </summary>
+    [Fact]
+    public void Tag_Should_Be_Able_To_Change_Content_Before_And_After_Created()
+    {
+        // Arrange
+        InitialValues.ChildContent = @<p>Some Paragraph</p>;
+        CreateTestComponent();
+
+        // Assert Initial Values
+        Component!.MarkupMatches(@<span diff:ignoreAttributes><p>Some Paragraph</p></span>);
+
+        // Act
+        UpdateParameter(p => p.ChildContent, @<a href="#">Some Link</a>);
+
+        // Assert Updated Values
+        Component!.MarkupMatches(@<span diff:ignoreAttributes><a href="#">Some Link</a></span>);
+    }
+
+    
+    #endregion
+}

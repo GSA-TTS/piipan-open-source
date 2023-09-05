@@ -1,0 +1,86 @@
+﻿@using Piipan.Components
+@using System.Linq.Expressions
+@using Piipan.Components.Layout
+@using static Piipan.Components.Layout.LayoutConstants
+@inherits BaseTest<UsaCardGroup>
+
+@code {
+    private IElement? element;
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public UsaCardGroupTests() : base()
+    {
+        InitialValues = new UsaCardGroup()
+        {
+            ChildContent = 
+                @<UsaCard Header="Card Header">
+                    <BodyContent><p>Card Body</p></BodyContent>
+                    <FooterContent><button>Card Footer</button></FooterContent>
+                </UsaCard>
+        };
+    }
+
+    /// <summary>
+    /// Create a card group component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        Component = Render<UsaCardGroup>(
+            @<UsaCardGroup>
+                @InitialValues.ChildContent
+            </UsaCardGroup>
+        );
+        element = Component.Find($".{CardGroupClass}");
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of a card group
+    /// </summary>
+    [Fact]
+    public void Card_Group_Should_Exist_And_Have_Correct_Markup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<ul class="@CardGroupClass">
+                @InitialValues.ChildContent
+            </ul>
+        );
+    }
+
+    /// <summary>
+    /// Verify the card group can change its body content after being created
+    /// </summary>
+    [Fact]
+    public void Card_Group_Should_Be_Able_To_Change_Content_After_Created()
+    {
+        // Arrange
+        RenderFragment beforeValue = @<li>Some Beginning Value</li>;
+        RenderFragment afterValue = @<li><span>Some After Value</span></li>;
+        InitialValues.ChildContent = beforeValue;
+        CreateTestComponent();
+
+        // Assert Initial Values
+        Component!.MarkupMatches(
+            @<ul class="@CardGroupClass">
+                @beforeValue
+            </ul>
+        );
+
+        // Act
+        UpdateParameter(p => p.ChildContent, afterValue);
+
+        // Assert Updated Values
+        Component!.MarkupMatches(
+            @<ul class="@CardGroupClass">
+                @afterValue
+            </ul>
+        );
+    }
+    #endregion
+}

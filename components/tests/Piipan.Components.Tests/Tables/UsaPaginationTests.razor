@@ -1,0 +1,259 @@
+﻿@using Piipan.Components.Tables
+@using Piipan.Components.Tag
+@using Piipan.Components.Enums
+@using System.Linq.Expressions
+@inherits BaseTest<UsaPagination>
+
+@code {
+    private IElement? element;
+
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public UsaPaginationTests() : base()
+    {
+        InitialValues = new UsaPagination { CurrentPage = 1, NumberOfPages = 1, LinkWithParams = "/test?perPage=25" };
+    }
+
+    /// <summary>
+    /// Create an alert box component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        Component = Render<UsaPagination>(
+            @<UsaPagination CurrentPage="@InitialValues.CurrentPage" NumberOfPages="@InitialValues.NumberOfPages">
+            </UsaPagination>
+            );
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of a pagination
+    /// </summary>
+    [Fact]
+    public void Pagination_Should_Exist_And_Have_Correct_Markup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<nav aria-label="Pagination" class="usa-pagination">
+                <ul class="usa-pagination__list">
+                    <li class="usa-pagination__item usa-pagination__page-no">
+                        <a href="&amp;page=1" class="usa-pagination__button usa-current" aria-label="Page 1">1</a>
+                    </li>
+                </ul>
+            </nav>
+        );
+    }
+
+    /// <summary>
+    /// Verify the pagination only shows one page when the total is less than or equal to 53
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldShowOnlyOnePage_WhenTotalLessThanOrEqualTo53()
+    {
+        // Arrange
+        InitialValues.NumberOfPages = 1;
+        CreateTestComponent();
+
+        // Assert
+        var paginationItems = Component!.FindAll(".usa-pagination__item");
+        Assert.Equal(1, paginationItems.Count);
+        Assert.Equal("1", paginationItems[0].TextContent);
+        Assert.Equal("Page 1", paginationItems[0].Children[0].GetAttribute("aria-label"));
+        Assert.True(paginationItems[0].Children[0].ClassList.Contains("usa-current"));
+    }
+
+    /// <summary>
+    /// Verify the pagination shows 6 pages and the Next button when there should be 6 pages
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldShowCorrectPages_WhenTotalPagesLessThanOrEqualTo6()
+    {
+        // Arrange
+        InitialValues.NumberOfPages = 6;
+        CreateTestComponent();
+
+        // Assert
+        var paginationItems = Component!.FindAll(".usa-pagination__item");
+        Assert.Equal(7, paginationItems.Count);
+
+        for (int i = 1; i <= 6; i++)
+        {
+            Assert.Equal(i.ToString(), paginationItems[i - 1].TextContent);
+            Assert.Equal($"Page {i}", paginationItems[i - 1].Children[0].GetAttribute("aria-label"));
+
+            if (i == 1)
+            {
+                Assert.True(paginationItems[i - 1].Children[0].ClassList.Contains("usa-current"));
+            }
+            else
+            {
+                Assert.False(paginationItems[i - 1].Children[0].ClassList.Contains("usa-current"));
+            }
+        }
+        Assert.Contains("Next", paginationItems[6].TextContent);
+    }
+
+    /// <summary>
+    /// Verify the pagination shows pages 1 2 .. 10 Next when 10 pages and we're on page 1
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldShowCorrectPages_When10Pages()
+    {
+        // Arrange
+        InitialValues.NumberOfPages = 10;
+        CreateTestComponent();
+
+        // Assert
+        var paginationItems = Component!.FindAll(".usa-pagination__item");
+        Assert.Equal(5, paginationItems.Count); // [1] [2] [...] [10] [Next]
+
+        Assert.Equal("1", paginationItems[0].TextContent);
+        Assert.Equal($"Page 1", paginationItems[0].Children[0].GetAttribute("aria-label"));
+        Assert.True(paginationItems[0].Children[0].ClassList.Contains("usa-current"));
+
+        Assert.Equal("2", paginationItems[1].TextContent);
+        Assert.Equal($"Page 2", paginationItems[1].Children[0].GetAttribute("aria-label"));
+        Assert.False(paginationItems[1].Children[0].ClassList.Contains("usa-current"));
+
+        Assert.Equal("...", paginationItems[2].TextContent);
+        Assert.Equal($"SPAN", paginationItems[2].Children[0].TagName);
+
+        Assert.Equal("10", paginationItems[3].TextContent);
+        Assert.Equal($"Page 10", paginationItems[3].Children[0].GetAttribute("aria-label"));
+        Assert.False(paginationItems[3].Children[0].ClassList.Contains("usa-current"));
+
+        Assert.Contains("Next", paginationItems[4].TextContent);
+    }
+
+    /// <summary>
+    /// Verify the pagination shows pages Previous 1 2 3 4 5 .. 10 Next when 10 pages and we're on page 4
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldShowCorrectPages_When10Pages_AndWeAreOnPage4()
+    {
+        // Arrange
+        InitialValues.NumberOfPages = 10;
+        InitialValues.CurrentPage = 4;
+        CreateTestComponent();
+
+        // Assert
+        var paginationItems = Component!.FindAll(".usa-pagination__item");
+        Assert.Equal(9, paginationItems.Count);
+
+        Assert.Contains("Previous", paginationItems[0].TextContent);
+
+        for (int i = 3; i <= 5; i++)
+        {
+            Assert.Equal(i.ToString(), paginationItems[i].TextContent);
+            Assert.Equal($"Page {i}", paginationItems[i].Children[0].GetAttribute("aria-label"));
+
+            if (i == 4)
+            {
+                Assert.True(paginationItems[i].Children[0].ClassList.Contains("usa-current"));
+            }
+            else
+            {
+                Assert.False(paginationItems[i].Children[0].ClassList.Contains("usa-current"));
+            }
+        }
+
+        Assert.Equal("...", paginationItems[6].TextContent);
+        Assert.Equal($"SPAN", paginationItems[6].Children[0].TagName);
+
+        Assert.Equal("10", paginationItems[7].TextContent);
+        Assert.Equal($"Page 10", paginationItems[7].Children[0].GetAttribute("aria-label"));
+        Assert.False(paginationItems[7].Children[0].ClassList.Contains("usa-current"));
+
+        Assert.Contains("Next", paginationItems[8].TextContent);
+    }
+
+    /// <summary>
+    /// Verify the pagination shows pages Previous 1 .. 6 7 8 9 10 Next when 10 pages and we're on page 7
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldShowCorrectPages_When10Pages_AndWeAreOnPage7()
+    {
+        // Arrange
+        InitialValues.NumberOfPages = 10;
+        InitialValues.CurrentPage = 7;
+        CreateTestComponent();
+
+        // Assert
+        var paginationItems = Component!.FindAll(".usa-pagination__item");
+        Assert.Equal(9, paginationItems.Count);
+
+        Assert.Contains("Previous", paginationItems[0].TextContent);
+
+        Assert.Equal("1", paginationItems[1].TextContent);
+        Assert.Equal($"Page 1", paginationItems[1].Children[0].GetAttribute("aria-label"));
+        Assert.False(paginationItems[1].Children[0].ClassList.Contains("usa-current"));
+
+        Assert.Equal("...", paginationItems[2].TextContent);
+        Assert.Equal($"SPAN", paginationItems[2].Children[0].TagName);
+
+        for (int i = 3; i <= 7; i++)
+        {
+            var expectedPage = i + 3;
+            Assert.Equal(expectedPage.ToString(), paginationItems[i].TextContent);
+            Assert.Equal($"Page {expectedPage}", paginationItems[i].Children[0].GetAttribute("aria-label"));
+
+            if (expectedPage == 7)
+            {
+                Assert.True(paginationItems[i].Children[0].ClassList.Contains("usa-current"));
+            }
+            else
+            {
+                Assert.False(paginationItems[i].Children[0].ClassList.Contains("usa-current"));
+            }
+        }
+
+        Assert.Contains("Next", paginationItems[8].TextContent);
+    }
+
+    /// <summary>
+    /// Verify the pagination shows pages Previous 1 .. 9 10 when 10 pages and we're on page 10
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldShowCorrectPages_When10Pages_AndWeAreOnPage10()
+    {
+        // Arrange
+        InitialValues.NumberOfPages = 10;
+        InitialValues.CurrentPage = 10;
+        CreateTestComponent();
+
+        // Assert
+        var paginationItems = Component!.FindAll(".usa-pagination__item");
+        Assert.Equal(5, paginationItems.Count);
+
+        Assert.Contains("Previous", paginationItems[0].TextContent);
+
+        Assert.Equal("1", paginationItems[1].TextContent);
+        Assert.Equal($"Page 1", paginationItems[1].Children[0].GetAttribute("aria-label"));
+        Assert.False(paginationItems[1].Children[0].ClassList.Contains("usa-current"));
+
+        Assert.Equal("...", paginationItems[2].TextContent);
+        Assert.Equal($"SPAN", paginationItems[2].Children[0].TagName);
+
+        for (int i = 3; i <= 4; i++)
+        {
+            var expectedPage = i + 6;
+            Assert.Equal(expectedPage.ToString(), paginationItems[i].TextContent);
+            Assert.Equal($"Page {expectedPage}", paginationItems[i].Children[0].GetAttribute("aria-label"));
+
+            if (expectedPage == 10)
+            {
+                Assert.True(paginationItems[i].Children[0].ClassList.Contains("usa-current"));
+            }
+            else
+            {
+                Assert.False(paginationItems[i].Children[0].ClassList.Contains("usa-current"));
+            }
+        }
+    }
+    #endregion
+}

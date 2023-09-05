@@ -1,0 +1,17 @@
+﻿@page "/input-ssn"
+@inherits BaseComponent
+@code {
+    private InputSSNModel SSNModel { get; set; } = new InputSSNModel();
+    protected override string[] Files { get; set; } = { "components/InputSSNComponent.razor", "models/InputSSNModel.cs" };
+}
+
+<h1>Input Social Security Number</h1>
+<UsaAccordion Multiselectable="true">
+    <UsaAccordionItem StartsExpanded="true">
+        <HeadingContent>Component Demo</HeadingContent>
+        <BodyContent>
+            <InputSSNComponent SSNModel="SSNModel" />
+        </BodyContent>
+    </UsaAccordionItem>
+    <CodeArea FileContents="fileContents" />
+</UsaAccordion>

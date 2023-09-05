@@ -1,0 +1,17 @@
+GetUploadStatisticsResponse:
+  type: object
+  properties:
+    body:
+      $ref: '#/GetUploadStatisticsBody'
+GetUploadStatisticsBody:
+  type: object
+  required:
+    - totalComplete
+    - totalFailure
+  properties:
+    totalComplete:
+      type: int
+      description: "The total count of complete uploads"
+    totalFailure:
+      type: int
+      description: "The total count of failed uploads"

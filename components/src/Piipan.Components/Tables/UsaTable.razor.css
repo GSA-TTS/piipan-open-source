@@ -1,0 +1,5 @@
+﻿.usa-table thead ::deep td,
+.usa-table thead ::deep th {
+    background-color: #045881;
+    color: #fff;
+}

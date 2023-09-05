@@ -1,0 +1,20 @@
+﻿@page "/accordion"
+@using Piipan.Components.Layout
+@inherits BaseComponent
+@code {
+    protected override string[] Files { get; set; } = { "components/AccordionComponent.razor" };
+    private bool Multiselect { get; set; }
+}
+
+<h1>Accordion</h1>
+
+<UsaAccordion Multiselectable="true">
+    <UsaAccordionItem StartsExpanded="true">
+        <HeadingContent>Component Demo</HeadingContent>
+        <BodyContent>
+            <input type="checkbox" @bind-value="Multiselect" /> Multiselect
+            <AccordionComponent Multiselect="Multiselect" />
+        </BodyContent>
+    </UsaAccordionItem>
+    <CodeArea FileContents="fileContents" />
+</UsaAccordion>

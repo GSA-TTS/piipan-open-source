@@ -1,0 +1,370 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "The location where the resources will be deployed."
+            }
+        },
+        "resourceTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Resource Tags for project"
+            }
+        },
+        "servicePlan": {
+            "type": "string"
+        },
+        "orchApiUri": {
+            "type": "string"
+        },
+        "orchApiAppId": {
+            "type": "string"
+        },
+        "matchResApiUri": {
+            "type": "string"
+        },
+        "matchResApiAppId": {
+            "type": "string"
+        },
+        "statesApiUri": {
+            "type": "string"
+        },
+        "statesApiAppId": {
+            "type": "string"
+        },
+        "idpOidcConfigUri": {
+            "type": "string"
+        },
+        "idpOidcScopes": {
+            "type": "array"
+        },
+        "idpClientId": {
+            "type": "string"
+        },
+        "aspNetCoreEnvironment": {
+            "type": "string"
+        },
+        "frontDoorId": {
+            "type": "string"
+        },
+        "frontDoorUri": {
+            "type": "string"
+        },
+        "diagnosticSettingName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Diagnostic Setting Name."
+            }
+        },
+        "eventHubAuthorizationRuleId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Event Hub Authorization Rule Id."
+            }
+        },
+        "eventHubName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Event Hub Name."
+            }
+        },
+        "workspaceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Log Analytics Workspace Id."
+            }
+        },
+        "maintenanceSlotName": {
+          "type": "string",
+          "minLength": 1,
+          "metadata": {
+              "description": "Specify the name for maintenance deployment slot."
+          }
+        }
+    },
+    "variables": {
+        "sku": "S1",
+        "systemTypeTag": {
+            "SysType": "QueryApp"
+        },
+        "applicationInsightsTag": {
+            "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('appName')))]": "Resource"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('servicePlan')]",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('resourceTags')]",
+            "sku": {
+                "name": "[variables('sku')]"
+            },
+            "kind": "windows",
+            "properties": {
+                // Must be false for Windows deployments
+                "reserved": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('appName')]",
+            "location": "[parameters('location')]",
+            "tags": "[union(parameters('resourceTags'), variables('systemTypeTag'))]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlan'))]"
+            ],
+            "properties": {
+                "httpsOnly": true,
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlan'))]",
+                "siteConfig": {
+                    "netFrameworkVersion": "v6.0",
+                    "metadata": [
+                        {
+                            "name": "CURRENT_STACK",
+                            "value": "dotnet"
+                        }
+                    ],
+                    // Use 64-bit runtime on Windows for consistency with local Linux and macOS dev environments
+                    "use32BitWorkerProcess": false,
+                    "ipSecurityRestrictions": [
+                        // Restricts access to Front Door
+                        {
+                            "ipAddress": "AzureFrontDoor.Backend",
+                            "tag": "ServiceTag",
+                            "action": "Allow",
+                            "priority": 100,
+                            "name": "Allow Azure Front Door access",
+                            "headers": {
+                                "x-azure-fdid": [
+                                    "[parameters('frontDoorId')]"
+                                ]
+                            }
+                        }
+                    ],
+                    "ftpsState": "Disabled",
+                    "http20Enabled": true,
+                    "minTlsVersion": "1.2",
+                    "appSettings": [
+                        // Environment Variables
+                        {
+                            "name": "OrchApiUri",
+                            "value": "[parameters('orchApiUri')]"
+                        },
+                        {
+                            "name": "OrchApiAppId",
+                            "value": "[parameters('orchApiAppId')]"
+                        },
+                        {
+                            "name": "StatesApiUri",
+                            "value": "[parameters('statesApiUri')]"
+                        },
+                        {
+                            "name": "StatesApiAppId",
+                            "value": "[parameters('statesApiAppId')]"
+                        },
+                        {
+                            "name": "MatchResApiUri",
+                            "value": "[parameters('matchResApiUri')]"
+                        },
+                        {
+                            "name": "MatchResApiAppId",
+                            "value": "[parameters('matchResApiAppId')]"
+                        },
+                        {
+                            "name": "ASPNETCORE_ENVIRONMENT",
+                            "value": "[parameters('aspNetCoreEnvironment')]"
+                        },
+                        // Connect app to Application Insights instance
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('appName'))).InstrumentationKey]"
+                        },
+                        {
+                            "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('appName'))).ConnectionString]"
+                        }
+                    ],
+                    "vnetRouteAllEnabled": true
+                },
+                "resources": [
+                    {
+                        "apiVersion": "2020-06-01",
+                        "name": "web",
+                        "location": "[parameters('location')]",
+                        "dependsOn": [
+                            "[resourceId('Microsoft.Web/sites', parameters('appName'))]"
+                        ]
+                    }
+                ]
+            },
+            "resources": [
+                {
+                    "apiVersion": "2015-08-01",
+                    "type": "slots",
+                    "name": "[parameters('maintenanceSlotName')]",
+                    "location": "[parameters('location')]",
+                    "tags": {
+                      "displayName": "[parameters('maintenanceSlotName')]"
+                    },
+                    "dependsOn": [
+                      "[resourceId('Microsoft.Web/Sites/', parameters('appName'))]"
+                    ],
+                    "properties": {
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.Insights/components",
+            "apiVersion": "2020-02-02",
+            "name": "[parameters('appName')]",
+            "location": "[parameters('location')]",
+            "tags": "[variables('applicationInsightsTag')]",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web",
+                "Request_Source": "rest",
+                "WorkspaceResourceId": "[parameters('workspaceId')]"
+            }
+        },
+        {
+            /* https://docs.microsoft.com/en-us/azure/azure-monitor/essentials/resource-manager-diagnostic-settings */
+            "type": "Microsoft.Web/sites/providers/diagnosticSettings",
+            "name": "[concat(parameters('appName'), '/Microsoft.Insights/', parameters('diagnosticSettingName'))]",
+            "apiVersion": "2021-05-01-preview",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('appName'))]"
+            ],
+            "properties": {
+                "eventHubAuthorizationRuleId": "[parameters('eventHubAuthorizationRuleId')]",
+                "eventHubName": "[parameters('eventHubName')]",
+                "workspaceId": "[parameters('workspaceId')]",
+                /* TODO: Configure categories supported by Azure Gov, but not Azure Commerical */
+                "logs": [
+                    {
+                        "category": "AppServiceHTTPLogs",
+                        "enabled": true
+                    },
+                    {
+                        "category": "AppServiceConsoleLogs",
+                        "enabled": true
+                    },
+                    {
+                        "category": "AppServiceAppLogs",
+                        "enabled": true
+                    },
+                    {
+                        "category": "AppServiceAuditLogs",
+                        "enabled": true
+                    },
+                    {
+                        "category": "AppServiceIPSecAuditLogs",
+                        "enabled": true
+                    },
+                    {
+                        "category": "AppServicePlatformLogs",
+                        "enabled": true
+                    }
+                ]
+            }
+        },
+        {
+            /* https://docs.microsoft.com/en-us/azure/templates/microsoft.web/sites/config-authsettingsv2?tabs=json */
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2020-12-01",
+            "name": "[concat(parameters('appName'), '/authsettingsV2')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('appName'))]"
+            ],
+            "properties": {
+                "platform": {
+                    "enabled": true
+                },
+                "globalValidation": {
+                    "requireAuthentication": true,
+                    "unauthenticatedClientAction": "RedirectToLoginPage",
+                    "redirectToProvider": "oidcProvider",
+                    "excludedPaths": [
+                        "/images/*",
+                        "/css/*",
+                        "/js/uswds.min.js",
+                        "/js/uswds-init.min.js",
+                        "/fonts/*",
+                        "/SignedOut",
+                        "/ServerError",
+                        "/NotAuthorized",
+                        "/health-probe.html"
+                    ]
+                },
+                "httpSettings": {
+                    "requireHttps": true,
+                    // Required for Easy Auth and Front Door to work together
+                    "forwardProxy": {
+                        "convention": "Standard"
+                    }
+                },
+                "identityProviders": {
+                    "customOpenIdConnectProviders": {
+                        "oidcProvider": {
+                            "enabled": true,
+                            "registration": {
+                                "clientId": "[parameters('idpClientId')]",
+                                "clientCredential": {
+                                    "clientSecretSettingName": "IDP_CLIENT_SECRET"
+                                },
+                                "openIdConnectConfiguration": {
+                                    "wellKnownOpenIdConfiguration": "[parameters('idpOidcConfigUri')]"
+                                }
+                            },
+                            "login": {
+                                "nameClaimType": "name",
+                                "scopes": "[parameters('idpOidcScopes')]"
+                            }
+                        }
+                    }
+                },
+                "login": {
+                    "tokenStore": {
+                        // If enabled, /.auth/me URL is exposed to the authenticated user,
+                        // which is useful for debugging OIDC claims
+                        "enabled": false
+                    },
+                    "preserveUrlFragmentsForLogins": true,
+                    "allowedExternalRedirectUrls": [
+                        // Required for Easy Auth and Front Door to work together
+                        "[parameters('frontDoorUri')]"
+                    ],
+                    "cookieExpiration": {
+                        "convention": "FixedTime",
+                        // the string format for timeToExpiration is not well documented. Official Microsoft
+                        // documentation describes the value for this field as simply "string", with no formatting details [1].
+                        // Unofficial documentation [2] suggests that this field is of type <timespan>, and provides an example
+                        // of the proper string formatting. Our own testing verifies that this format behaves as expected.
+                        // [1] https://docs.microsoft.com/en-us/azure/templates/microsoft.web/sites/config-authsettingsv2?tabs=bicep#cookieexpiration
+                        // [2] https://stackoverflow.com/questions/50156326/json-format-for-a-timespan-that-can-be-bound-using-microsoft-extensions-configur/50157340#50157340
+                        "timeToExpiration": "0.00:30:00"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "appName": {
+            "type": "string",
+            "value": "[parameters('appName')]"
+        }
+    }
+}

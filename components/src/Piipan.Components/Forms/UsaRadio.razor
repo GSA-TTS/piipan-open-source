@@ -1,0 +1,34 @@
+﻿@using static FormConstants
+@typeparam TValue
+@code {
+    [Parameter] public TValue? Value { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+
+    string id = "g" + Guid.NewGuid().ToString();
+
+    [CascadingParameter]
+    public UsaFormGroup FormGroup { get; set; }
+
+    [CascadingParameter]
+    public EditContext EditContext { get; set; }
+
+    protected async Task BlurField()
+    {
+        if (FormGroup != null)
+        {
+            await FormGroup.GetValidationErrorsAsync(EditContext, true);
+            StateHasChanged();
+        }
+    }
+}
+
+<div class="@RadioClass">
+    <InputRadio
+        class="@InputRadioClass"
+        id="@id"
+        Value=Value
+        @onblur="BlurField"
+        required="@FormGroup.Required">
+    </InputRadio>
+    <label for="@id" class="usa-radio__label">@ChildContent</label>
+</div>

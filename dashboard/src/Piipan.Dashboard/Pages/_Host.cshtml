@@ -1,0 +1,47 @@
+﻿@page "/"
+@namespace Piipan.QueryTool.Client
+@using Microsoft.AspNetCore.Components.Web
+@using Piipan.Dashboard.Client
+@using Piipan.Shared.Client.Components
+@using Piipan.Shared.Client.DTO
+@using Piipan.Shared.Web
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IWebAppDataServiceProvider ServiceProvider
+
+@{
+    await ServiceProvider.Initialize();
+    ClientAppDataDto clientAppData = new ClientAppDataDto
+    {
+        Email = ServiceProvider.Email,
+        StateInfo = ServiceProvider.StateInfo,
+        BaseUrl = ServiceProvider.BaseUrl,
+        Location = ServiceProvider.Location,
+        Role = ServiceProvider.Role,
+        States = ServiceProvider.States,
+        AppRolesByArea = ServiceProvider.AppRolesByArea,
+        LoggedInUsersState = ServiceProvider.LoggedInUsersState
+    };
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Piipan Metrics Dashboard</title>
+    <base href="~/" />
+    <link rel="stylesheet" href="/css/styles.css" asp-append-version="true" />
+    <link href="/Piipan.Dashboard.styles.css" rel="stylesheet" asp-append-version="true" />
+    <link href="/Piipan.Dashboard.Client.styles.css" rel="stylesheet" asp-append-version="true" />
+    <component type="typeof(HeadOutlet)" render-mode="WebAssembly" />
+</head>
+
+<body>
+    <component type="typeof(AppInitiator)" param-AppData="clientAppData" render-mode="WebAssembly" />
+    <component type="typeof(App)" render-mode="WebAssembly" />
+
+    <script src="_framework/blazor.webassembly.js" asp-append-version="true"></script>
+    <script src="/customjs/utilities.js" asp-append-version="true"></script>
+</body>
+
+</html>

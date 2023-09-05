@@ -1,0 +1,294 @@
+version: 2.1
+
+orbs:
+  azure-cli: circleci/azure-cli@1.2.0
+  shellcheck: circleci/shellcheck@2.2.3
+
+commands:
+  run_frontend_tests:
+    description: "Runs cypress frontend testing (which includes pa11y accessibility testing) for a razorpages app on a dotnet docker image. App must have a cypress folder in its root directory."
+    parameters:
+      directory:
+        type: string
+        default: "dashboard/src/Piipan.Dashboard"
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          description: "Installs latest stable Nodejs, supporting libs for the puppeteer dependency in pa11y, and supporting libs for cypress"
+          # https://medium.com/@ssmak/how-to-fix-puppetteer-error-while-loading-shared-libraries-libx11-xcb-so-1-c1918b75acc3
+          # https://docs.cypress.io/guides/continuous-integration/introduction#Dependencies
+          command : |
+            curl -sL https://deb.nodesource.com/setup_14.x |  bash -
+            apt-get install -y nodejs
+            npm install -g n
+            n stable
+            PATH="$PATH"
+            apt-get install -y gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libnss3 lsb-release xdg-utils wget libgbm-dev libnotify-dev xauth xvfb
+            npm install cypress-audit
+            npm install cypress
+      - run:
+          name: trust dev certs
+          working_directory: << parameters.directory >>
+          command: dotnet dev-certs https
+      - run:
+          name: Build app
+          working_directory: << parameters.directory >>
+          command: dotnet build -v diag
+      - run:
+          name: Run dev version of app for testing
+          working_directory: << parameters.directory >>
+          command: dotnet run --no-build
+          background: true
+      - run:
+          name: wait for app to spin up
+          command: sleep 10s
+      - run:
+          name: run cypress
+          working_directory: << parameters.directory >>
+          command: npx cypress run --spec cypress/e2e/CICD/*.js
+
+jobs:
+  shellcheck:
+    docker:
+      - image: 'cimg/base:stable'
+    steps:
+      - checkout
+      - shellcheck/install
+      - run:
+          name: Run Shellcheck
+          command: find ./ -type f \( -name '*.bash' \) | xargs shellcheck -x -e SC2207
+  test:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+      - image: postgres:11-alpine
+        environment:
+          POSTGRES_PASSWORD: securepass
+          POSTGRES_DB: ea
+    steps:
+      - checkout
+      - run:
+          name: Install npm and get latest stable version of Node
+          command: |
+            apt-get update -y
+            apt-get install -y nodejs
+            apt-get install -y npm
+            npm install -g n
+            n stable
+            PATH="$PATH"
+      - run:
+          name: Setup Code Climate reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+            ./cc-test-reporter before-build
+      - run:
+          name: Run All Unit Tests
+          command: ./build.bash test -c
+      - run:
+          working_directory: match/tests/Piipan.Match.Func.Api.IntegrationTests
+          name: Test Orchestrator Match integration
+          environment:
+            ParticipantsDatabaseConnectionString: "Server=localhost;Database=ea;Port=5432;User Id=postgres;Password=securepass;"
+            CollaborationDatabaseConnectionString: "Server=localhost;Database=ea;Port=5432;User Id=postgres;Password=securepass;"
+            States: ea
+          command: dotnet test $MSBUILD_PROPS --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
+      - run:
+          working_directory: etl/tests/Piipan.Etl.Func.BulkUpload.IntegrationTests
+          name: Test Etl integration
+          environment:
+            ParticipantsDatabaseConnectionString: "Server=localhost;Database=ea;Port=5432;User Id=postgres;Password=securepass;"
+            States: ea
+          command: dotnet test $MSBUILD_PROPS --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
+      - run:
+          working_directory: participants/tests/Piipan.Participants.Core.IntegrationTests
+          name: Test Participants integration
+          environment:
+            ParticipantsDatabaseConnectionString: "Server=localhost;Database=ea;Port=5432;User Id=postgres;Password=securepass;"
+            States: ea
+          command: dotnet test $MSBUILD_PROPS --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
+      - run:
+          working_directory: states/tests/Piipan.States.Core.Integration.Tests
+          name: Test States Core integration
+          environment:
+            CollaborationDatabaseConnectionString: "Server=localhost;Database=ea;Port=5432;User Id=postgres;Password=securepass;"
+          command: dotnet test $MSBUILD_PROPS --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
+      - run:
+          working_directory: states/tests/Piipan.States.Func.Api.IntegrationTests
+          name: Test States integration
+          environment:
+            CollaborationDatabaseConnectionString: "Server=localhost;Database=ea;Port=5432;User Id=postgres;Password=securepass;"
+          command: dotnet test $MSBUILD_PROPS --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
+      - run:
+          working_directory: match/tests/Piipan.Match.Core.IntegrationTests
+          name: Test Match Core integration
+          environment:
+            CollaborationDatabaseConnectionString: "Server=localhost;Database=ea;Port=5432;User Id=postgres;Password=securepass;"
+          command: dotnet test $MSBUILD_PROPS --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
+      - run:
+          working_directory: metrics/tests/Piipan.Metrics.Core.IntegrationTests
+          name: Test Metrics Core integration
+          environment:
+            MetricsDatabaseConnectionString : "Server=localhost;Database=ea;Port=5432;User Id=postgres;Password=securepass;"
+          command: dotnet test $MSBUILD_PROPS --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
+      - run:
+          working_directory: match/tests/Piipan.Match.Func.ResolutionApi.IntegrationTests
+          name: Test Match Resolution Api integration
+          environment:
+            CollaborationDatabaseConnectionString: "Server=localhost;Database=ea;Port=5432;User Id=postgres;Password=securepass;"
+            States: ea
+          command: dotnet test $MSBUILD_PROPS --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
+      - run:
+          working_directory: notifications/tests/Piipan.Notifications.Core.Integration.Tests
+          name: Test Notifications Core integration
+          environment:
+            CollaborationDatabaseConnectionString: "Server=localhost;Database=ea;Port=5432;User Id=postgres;Password=securepass;"
+          command: dotnet test $MSBUILD_PROPS --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
+      - run:
+          working_directory: notifications/tests/Piipan.Notifications.Func.Api.Integration.Tests
+          name: Test Notifications API integration
+          environment:
+            CollaborationDatabaseConnectionString: "Server=localhost;Database=ea;Port=5432;User Id=postgres;Password=securepass;"
+          command: dotnet test $MSBUILD_PROPS --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
+      - run:
+          name: Upload Code Climate coverage report
+          command: |
+            ./cc-test-reporter -d format-coverage ./components/tests/Piipan.Components.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.components.json
+            ./cc-test-reporter -d format-coverage ./dashboard/tests/Piipan.Dashboard.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.dashboard.json
+            ./cc-test-reporter -d format-coverage ./etl/tests/Piipan.Etl.Func.BulkUpload.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.etl.func.bulkupload.json
+            ./cc-test-reporter -d format-coverage ./etl/tests/Piipan.Etl.Func.BulkUpload.IntegrationTests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.etl.func.bulkupload.integration.json
+            ./cc-test-reporter -d format-coverage ./query-tool/tests/Piipan.QueryTool.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.query-tool.json
+            ./cc-test-reporter -d format-coverage ./match/tests/Piipan.Match.Func.Api.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.match.func.api.json
+            ./cc-test-reporter -d format-coverage ./match/tests/Piipan.Match.Func.Api.IntegrationTests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.match.func.api.integration.json
+            ./cc-test-reporter -d format-coverage ./match/tests/Piipan.Match.Func.ResolutionApi.IntegrationTests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.match.func.resolutionapi.integration.json
+            ./cc-test-reporter -d format-coverage ./match/tests/Piipan.Match.Func.ResolutionApi.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.match.func.resolutionapi.json
+            ./cc-test-reporter -d format-coverage ./match/tests/Piipan.Match.Api.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.match.api.json
+            ./cc-test-reporter -d format-coverage ./match/tests/Piipan.Match.Core.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.match.core.json
+            ./cc-test-reporter -d format-coverage ./match/tests/Piipan.Match.Core.IntegrationTests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.match.core.integration.json
+            ./cc-test-reporter -d format-coverage ./match/tests/Piipan.Match.Client.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.match.client.json
+            ./cc-test-reporter -d format-coverage ./metrics/tests/Piipan.Metrics.Client.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.metrics.client.json
+            ./cc-test-reporter -d format-coverage ./metrics/tests/Piipan.Metrics.Core.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.metrics.core.json
+            ./cc-test-reporter -d format-coverage ./metrics/tests/Piipan.Metrics.Core.IntegrationTests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.metrics.core.integration.collect.json
+            ./cc-test-reporter -d format-coverage ./metrics/tests/Piipan.Metrics.Func.Api.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.metrics.func.api.json
+            ./cc-test-reporter -d format-coverage ./metrics/tests/Piipan.Metrics.Func.Collect.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.metrics.func.collect.json
+            ./cc-test-reporter -d format-coverage ./notifications/tests/Piipan.Notifications.Common.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.notifications.common.json
+            ./cc-test-reporter -d format-coverage ./notifications/tests/Piipan.Notifications.Core.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.notifications.core.json
+            ./cc-test-reporter -d format-coverage ./notifications/tests/Piipan.Notifications.Core.Integration.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.notifications.core.integration.json
+            ./cc-test-reporter -d format-coverage ./notifications/tests/Piipan.Notifications.Func.Api.Integration.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.notifications.func.api.integration.json
+            ./cc-test-reporter -d format-coverage ./participants/tests/Piipan.Participants.Core.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.participants.core.collect.json
+            ./cc-test-reporter -d format-coverage ./participants/tests/Piipan.Participants.Core.IntegrationTests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.participants.core.integration.collect.json
+            ./cc-test-reporter -d format-coverage ./maintenance/tests/Piipan.Maintenance.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.maintenance.collect.json
+            ./cc-test-reporter -d format-coverage ./shared/tests/Piipan.Shared.Cryptography.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.shared.cryptography.collect.json
+            ./cc-test-reporter -d format-coverage ./states/tests/Piipan.States.Client.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.states.client.json
+            ./cc-test-reporter -d format-coverage ./states/tests/Piipan.States.Func.Api.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.states.func.api.json
+            ./cc-test-reporter -d format-coverage ./states/tests/Piipan.States.Func.Api.IntegrationTests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.states.func.api.integration.json
+            ./cc-test-reporter -d format-coverage ./states/tests/Piipan.States.Core.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.states.core.json
+            ./cc-test-reporter -d format-coverage ./states/tests/Piipan.States.Core.Integration.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.states.core.integration.json
+            ./cc-test-reporter -d format-coverage ./shared/tests/Piipan.Shared.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.shared.json
+            ./cc-test-reporter -d format-coverage ./shared/tests/Piipan.Shared.Client.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.shared.client.json
+            ./cc-test-reporter -d format-coverage ./support-tools/tests/Piipan.SupportTools.Core.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.supporttools.core.json
+            ./cc-test-reporter -d format-coverage ./support-tools/tests/Piipan.SupportTools.Func.Api.Tests/TestResults/**/coverage.info --input-type lcov -p /root/project -o /tmp/codeclimate.supporttools.func.api.json
+            ./cc-test-reporter sum-coverage /tmp/codeclimate.*.json -o /tmp/sum.json
+            ./cc-test-reporter upload-coverage -i /tmp/sum.json
+
+  build:
+    environment:
+      MSBUILD_PROPS: "-p:ContinuousIntegrationBuild=true"
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    working_directory: /build
+    steps:
+      - checkout
+      - run:
+          name: Install environment deps and get latest stable node version
+          command: |
+            apt-get update -y
+            apt-get install -y zip
+            apt-get install -y nodejs
+            apt-get install -y npm
+            npm install -g n
+            n stable
+            PATH="$PATH"
+      - run:
+          working_directory: dashboard/src/Piipan.Dashboard
+          name: Build Dashboard
+          command: dotnet publish $MSBUILD_PROPS -o ./artifacts
+      - run:
+          working_directory: dashboard/src/Piipan.Dashboard/artifacts
+          name: Zip Dashboard build
+          command: zip -r dashboard.zip .
+      - run:
+          name: Move Dashboard zip to persistent directory
+          command: |
+            mkdir -p workspace
+            mv dashboard/src/Piipan.Dashboard/artifacts/dashboard.zip workspace/dashboard.zip
+      - run:
+          working_directory: query-tool/src/Piipan.QueryTool
+          name: Build Query Tool
+          command: dotnet publish $MSBUILD_PROPS -o ./artifacts
+      - run:
+          working_directory: query-tool/src/Piipan.QueryTool/artifacts
+          name: Zip Query Tool build
+          command: zip -r query-tool.zip .
+      - run:
+          name: Move Query Tool zip to persistent directory
+          command: mv query-tool/src/Piipan.QueryTool/artifacts/query-tool.zip workspace/query-tool.zip
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - dashboard.zip
+            - query-tool.zip
+
+  deploy:
+    executor: azure-cli/azure-docker
+    steps:
+      - attach_workspace:
+          at: /build/workspace
+      - azure-cli/login-with-service-principal
+      - run:
+          name: Upload Dashboard
+          command: az webapp deployment source config-zip -g rg-core-dev -n tts-app-dashboard-dev --src /build/workspace/dashboard.zip
+      - run:
+          name: Upload Query Tool
+          command: az webapp deployment source config-zip -g rg-core-dev -n tts-app-querytool-dev --src /build/workspace/query-tool.zip
+
+  frontend_tests_dashboard:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - run_frontend_tests:
+          directory: dashboard/src/Piipan.Dashboard
+
+  frontend_tests_query_tool:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:6.0
+    steps:
+      - run_frontend_tests:
+          directory: query-tool/tests/Piipan.QueryTool.Cypress.Tests
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - shellcheck
+      - test
+      - build
+      - deploy:
+          requires:
+            - shellcheck
+            - test
+            - build
+          filters:
+            branches:
+              only: dev
+  nightly:
+    jobs:
+      - frontend_tests_dashboard
+      - frontend_tests_query_tool
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - dev

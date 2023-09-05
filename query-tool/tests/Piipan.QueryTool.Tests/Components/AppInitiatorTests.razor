@@ -1,0 +1,84 @@
+﻿@using Newtonsoft.Json
+@using Piipan.Components.Alerts
+@using Piipan.Components.Enums
+@using System.Linq.Expressions
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Models
+@using Piipan.QueryTool.Client.Components
+@using Piipan.Shared.API.Constants
+@using Piipan.Shared.Client.Components
+@using Piipan.Shared.Client.DTO
+@using Piipan.States.Api.Models
+@inherits BaseComponentTest<AppInitiator>
+
+@code {
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public AppInitiatorTests() : base()
+    {
+        InitialValues = new AppInitiator()
+            {
+                AppData = new ClientAppDataDto
+                {
+                    Email = "test@agency.example",
+                    HelpDeskEmail = "help@agency.example",
+                    Location = "REG",
+                    States = new string[] { "EA", "EB" },
+                    Role = "Worker",
+                    BaseUrl = "https://test.agency.example",
+                    AppRolesByArea = new Dictionary<string, string[]>() { 
+                        { RoleConstants.ViewMatchArea, new string[] { "Worker", "Oversight" }},
+                        { RoleConstants.EditMatchArea, new string[] { "Worker" }}
+                    },
+                    StateInfo = new States.Api.Models.StatesInfoResponse {
+                        Results = new List<StateInfoDto> {
+                            new StateInfoDto{
+                                Email = "ea@agency.example",
+                                State = "EA"
+                            },
+                            new StateInfoDto{
+                                Email = "eb@agency.example",
+                                State = "EB"
+                            }
+                        }
+                    },
+                    LoggedInUsersState = new StateInfoDto
+                    {
+                        Email = "ea@agency.example",
+                        State = "EA"
+                    }
+                }
+            };
+    }
+
+    /// <summary>
+    /// Create a generic unauthorized banner component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        Component = Render<AppInitiator>(
+            @<AppInitiator AppData="InitialValues.AppData">
+            </AppInitiator>
+        );
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the app initiator copies data over to the injected AppData record
+    /// </summary>
+    [Fact]
+    public void AppInitiator_ShouldCopy_AppData()
+    {
+        // Arrange
+        CreateTestComponent();
+        var injectedAppData = Services.GetService<ClientAppDataDto>();
+
+        // Assert
+        Assert.Equal(JsonConvert.SerializeObject(InitialValues.AppData), JsonConvert.SerializeObject(injectedAppData)); // convert to JSON string and compare
+    }
+
+    #endregion
+}

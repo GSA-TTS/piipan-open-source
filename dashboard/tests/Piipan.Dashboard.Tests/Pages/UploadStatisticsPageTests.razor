@@ -1,0 +1,31 @@
+﻿@using Bunit;
+@using Microsoft.AspNetCore.Components.Web
+@using Moq
+@using Piipan.Dashboard.Client.Components.ParticipantUploads
+@using Piipan.Dashboard.Client.Pages
+@using Piipan.Shared.Client.DTO
+@using Xunit;
+@inherits BaseComponentTest<UploadStatisticsPage>
+@code {
+    /// <summary>
+    /// Setup the component and register Javascript mocks
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        Component = Render<UploadStatisticsPage>(@<UploadStatisticsPage />);
+    }
+
+    [Fact]
+    public void UploadStatisticsPage_RendersCorrectly()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        var pageTitleComponent = Component.FindComponent<PageTitle>();
+        var renderedFragment = Render(pageTitleComponent.Instance.ChildContent);
+        renderedFragment.MarkupMatches(@<text>Piipan Metrics Dashboard</text>);
+        Assert.True(Component.HasComponent<ParticipantUploads>());
+    }
+}

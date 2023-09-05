@@ -1,0 +1,219 @@
+﻿@using Moq
+@using Piipan.Components.Alerts
+@using Piipan.Components.Enums
+@using System.Linq.Expressions
+@using Piipan.Components.Modals
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Components.UnauthorizedBanners
+@using Piipan.QueryTool.Client.Models
+@using Piipan.Shared.Client.Api
+@using static Piipan.Components.Alerts.AlertConstants
+@inherits BaseComponentTest<MatchesList>
+
+@code {
+    ApiResponse<MatchResListApiResponse> _getAllMatchDetailsReturnValue =
+        new ApiResponse<MatchResListApiResponse>
+        {
+            Value = new MatchResListApiResponse
+            {
+                Data = new List<MatchDetailsDto>
+                {
+                    new MatchDetailsDto
+                    {
+                        MatchId = "m123456",
+                        States = new string[] { "ea", "eb" },
+                        Initiator = "ea",
+                        Dispositions = new Disposition[]
+                        {
+                            new Disposition
+                            {
+                                VulnerableIndividual = null,
+                                State = "EA"
+                            },
+                            new Disposition
+                            {
+                                VulnerableIndividual = false,
+                                State = "EB"
+                            }
+                        }
+                    },
+                    new MatchDetailsDto
+                    {
+                        MatchId = "m654321",
+                        States = new string[] { "ea", "eb" },
+                        Initiator = "ea",
+                        Dispositions = new Disposition[]
+                        {
+                            new Disposition
+                            {
+                                VulnerableIndividual = true,
+                                State = "EA"
+                            },
+                            new Disposition
+                            {
+                                VulnerableIndividual = null,
+                                State = "EB"
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public MatchesListTests() : base()
+    {
+        MockApiService.Setup(n => n.GetAllMatchDetails())
+            .ReturnsAsync(_getAllMatchDetailsReturnValue);
+    }
+
+    /// <summary>
+    /// Create a matches list component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        Component = Render<MatchesList>(
+            @<MatchesList>
+            </MatchesList>
+        );
+    }
+
+    #region Tests
+
+    [Fact]
+    public void MatchesList_ShouldExist_AndShowUnauuthorizedBanner_WhenNotAuthorized()
+    {
+        // Arrange
+        _getAllMatchDetailsReturnValue.IsUnauthorized = true;
+        CreateTestComponent();
+
+        // Assert
+        Assert.True(Component.HasComponent<GenericUnauthorizedBanner>());
+    }
+
+    /// <summary>
+    /// Verify the default markup of the matches list table when there are two items
+    /// </summary>
+    [Fact]
+    public void Matches_List_Should_Exist_And_Have_Correct_Markup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<section>
+                <h1>All Piipan Matches List</h1>
+                <table class="usa-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Match ID</th>
+                            <th scope="col">Matching States</th>
+                            <th scope="col">Created At</th>
+                            <th scope="col">Vulnerable Individual</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="/match/m123456">m123456</a></td>
+                            <td>Echo Alpha, Echo Bravo</td>
+                            <td></td>
+                            <td>-,No</td>
+                        </tr>
+                        <tr>
+                            <td><a href="/match/m654321">m654321</a></td>
+                            <td>Echo Alpha, Echo Bravo</td>
+                            <td></td>
+                            <td>Yes,-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        );
+        Assert.False(Component.HasComponent<GenericUnauthorizedBanner>());
+    }
+
+    /// <summary>
+    /// Verify the default markup of the matches list table when there are no items
+    /// </summary>
+    [Fact]
+    public void Matches_List_Should_Exist_And_Have_Correct_Markup_When_No_Items()
+    {
+        // Arrange
+        _getAllMatchDetailsReturnValue.Value.Data = null;
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<section>
+                <h1>All Piipan Matches List</h1>
+                <p>No matches found.</p>
+            </section>
+        );
+    }
+
+    /// <summary>
+    /// Verify the default markup of the matches list table when loading
+    /// </summary>
+    [Fact]
+    public void MatchesList_Loading_WhileMatchIsNull()
+    {
+        // Arrange
+        MockApiService.Setup(n => n.GetAllMatchDetails())
+            .Returns(async () =>
+            {
+                await Task.Delay(1000); // put a delay in there so we can check the status of the loading indicator
+                return _getAllMatchDetailsReturnValue;
+            });
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<section>
+              <h1>All Piipan Matches List</h1>
+              <p>Loading...</p>
+            </section>
+        );
+    }
+
+    /// <summary>
+    /// Verify that if we have results that has a vulnerable individual, clicking it shows the vulnerable match modal
+    /// </summary>
+    [Fact]
+    public void Verify_VulnerableModal_ShownWhenClicked_VulnerableMatch()
+    {
+        // Arrange
+
+        // Add a result with a vulnerable individual
+        _getAllMatchDetailsReturnValue.Value.Data.First().Dispositions[0].VulnerableIndividual = true;
+        CreateTestComponent();
+
+        Component.Find("tbody td a").Click();
+
+        // Assert
+        var modalManager = Services.GetService<IModalManager>();
+        Assert.True(modalManager.OpenModals.First().ForceAction);
+        Assert.Equal(1, modalManager.OpenModals.Count);
+    }
+
+    /// <summary>
+    /// Verify that if we have results that has do not have a vulnerable individual, clicking it does NOT show the vulnerable match modal
+    /// </summary>
+    [Fact]
+    public void Verify_VulnerableModal_NotShownWhenClicked_NotVulnerableMatch()
+    {
+        // Arrange - by default VI is null and false for the first result.
+        CreateTestComponent();
+
+        Component.Find("tbody td a").Click();
+
+        // Assert
+        var modalManager = Services.GetService<IModalManager>();
+        Assert.Empty(modalManager.OpenModals);
+    }
+
+    #endregion
+}

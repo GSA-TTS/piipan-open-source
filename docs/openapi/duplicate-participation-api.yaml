@@ -1,0 +1,35 @@
+openapi: 3.0.0
+info:
+  title: "Duplicate Participation API"
+  version: 2.0.0
+  description: "The API where matching will occur"
+servers:
+  - url: "/match/v2"
+paths:
+  /find_matches:
+    post:
+      operationId: "Find matches"
+      tags:
+        - "Match"
+      summary: "Search for all matching participant records using de-identified data"
+      description: "Searches all state databases for any participant records that are an exact match to the `lds_hash` of persons provided in the request. Does not search the database for the state initiating the request. Each state is allowed a maximum of 1,050 requests per minute."  
+      parameters:
+        - $ref: '../../match/docs/openapi/schemas/match-query.yaml#/components/parameters/From'
+      requestBody:
+        $ref: '../../match/docs/openapi/schemas/match-query.yaml#/MatchRequest'
+      responses:
+        '200':
+          $ref: '../../match/docs/openapi/schemas/match-query.yaml#/components/responses/200'
+        '400':
+          $ref: '../../match/docs/openapi/schemas/match-query.yaml#/components/responses/400'
+        '429':
+          $ref: '../../match/docs/openapi/schemas/match-query.yaml#/components/responses/429'
+
+security:
+  - ApiKeyAuth: []
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Ocp-Apim-Subscription-Key

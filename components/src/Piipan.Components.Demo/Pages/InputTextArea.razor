@@ -1,0 +1,17 @@
+﻿@page "/input-text-area"
+@inherits BaseComponent
+@code {
+    private InputTextModel TextModel { get; set; } = new InputTextModel();
+    protected override string[] Files { get; set; } = { "components/InputTextAreaComponent.razor", "models/InputTextModel.cs" };
+}
+
+<h1>Input Text Area</h1>
+<UsaAccordion Multiselectable="true">
+    <UsaAccordionItem StartsExpanded="true">
+        <HeadingContent>Component Demo</HeadingContent>
+        <BodyContent>
+            <InputTextAreaComponent TextModel="TextModel" />
+        </BodyContent>
+    </UsaAccordionItem>
+    <CodeArea FileContents="fileContents" />
+</UsaAccordion>

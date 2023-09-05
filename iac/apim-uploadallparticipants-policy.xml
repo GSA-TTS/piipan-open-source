@@ -1,0 +1,94 @@
+<!-- Generated via IaC -->
+<policies>
+    <inbound>
+        <base />
+	<authentication-managed-identity resource="{storageResourceId}" />
+        <choose>
+            <when condition="@(context.Request.Method == "PUT")">
+            <set-variable name="bodySize" value="@(context.Request.Headers["Content-Length"][0])" />
+            <set-variable name="fileType" value="@((context.Request.Url.Path.Split('/').Last()).Split('.').Last())" />
+                <choose>
+                    <!-- Max file size allowed is 2 GB-->
+                    <when condition="@(long.Parse(context.Variables.GetValueOrDefault<string>("bodySize"))<2147483648)">
+                    </when>
+                    <otherwise>
+                        <return-response>
+                            <set-status code="413" reason="Payload Too Large" />
+                            <set-body>@{
+                                return "Maximum allowed size for the POST requests is 2147483648 bytes (2 GB). This request has size of "+ context.Variables.GetValueOrDefault<string>("bodySize") +" bytes";
+                            } 
+                        </set-body>
+                        </return-response>
+                    </otherwise>
+                </choose>
+                <choose>
+                    <when condition="@(long.Parse(context.Variables.GetValueOrDefault<string>("bodySize"))>0)">
+                    </when>
+                    <otherwise>
+                        <return-response>
+                            <set-status code="411" reason="Content-Length not provided" />
+                            <set-body>@{
+                                return "The server refuses to accept the request without a defined Content-Length";
+                            } 
+                        </set-body>
+                        </return-response>
+                    </otherwise>
+                </choose>
+                <choose>
+                    <!-- file name in url should contain csv-->
+                    <when condition="@(context.Variables.GetValueOrDefault<string>("fileType") =="csv")">
+                    </when>
+                    <otherwise>
+                        <return-response>
+                            <set-status code="415" reason="Unknown file type" />
+                            <set-body>@{
+                                return "Allowed file type is csv. This request has file type of "+ context.Variables.GetValueOrDefault<string>("fileType");
+                            } 
+                            </set-body>
+                        </return-response>
+                    </otherwise>
+                </choose>
+            </when>
+	</choose>
+        <rewrite-uri template="/upload/{filename}" />
+        <set-header name="x-ms-blob-type" exists-action="override">
+            <value>BlockBlob</value>
+        </set-header>
+        <!-- APIM populates this header with the Named Value reference to the upload-payload-key-sha secret in Azure Key Vault. 
+            It uses this header to tell Azure Storage the Encryption Key SHA to use to encrypt Bulk Upload payload files -->        
+        <set-header name="x-ms-encryption-key-sha256" exists-action="override">
+            <value>{{upload-payload-key-sha}}</value>
+         </set-header>
+
+         <!-- APIM uses this header to tell Azure Storage the Encryption Key Algorithm to use to encrypt Bulk Upload payload files -->
+         <set-header name="x-ms-encryption-algorithm" exists-action="override">
+            <value>AES256</value>
+         </set-header>
+
+         <!-- APIM populates this header with the Named Value reference to the upload-payload-key secret in Azure Key Vault. 
+            It uses this header to tell Azure Storage the Encryption Key to use to encrypt Bulk Upload payload files -->
+         <set-header name="x-ms-encryption-key" exists-action="override">
+            <value>{{upload-payload-key}}</value>
+         </set-header>
+         <rate-limit calls="60" renewal-period="60" remaining-calls-variable-name="remainingCallsPerSubscription"/>
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+        <!-- APIM provides a response containing the eTag of the uploaded file in Azure Storage. -->
+        <set-body>
+            @{
+            return new JObject(new JProperty("data", new JObject(new JProperty("upload_id", context.Response.Headers.GetValueOrDefault("ETag","").Replace("\"", "").ToString())))).ToString();
+            }
+        </set-body>
+        <!-- APIM appends a Content-Type header as a security best practice -->
+        <set-header name="Content-Type" exists-action="append">
+            <value>application/json</value>
+        </set-header>
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

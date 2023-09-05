@@ -1,0 +1,150 @@
+﻿@page "/"
+@using System.ComponentModel.DataAnnotations
+@using Piipan.Components.Alerts
+@using Piipan.Components.Tooltips
+@using Piipan.Shared.API.Validation
+@using Piipan.Components.Tag
+@using static Piipan.Components.Layout.LayoutConstants
+@using static Piipan.Components.Shared.CommonConstants
+@inject NavigationManager navManager
+@code {
+    public class IndexModel
+    {
+        [Display(Name = "Input Text")]
+        public string InputTextField { get; set; }
+
+        [Display(Name = "Input Number")]
+        public int InputNumberField { get; set; }
+
+        [Display(Name = "Input Text Area")]
+        public string InputTextAreaField { get; set; }
+
+        [Display(Name = "Input Date")]
+        public DateTime? InputDateField { get; set; }
+
+        [Display(Name = "Input Radio")]
+        public string InputRadioField { get; set; }
+
+        [UsaSSN]
+        [Display(Name = "Input SSN")]
+        public string InputSSNField { get; set; }
+    }
+    private string firstExample = "Saved First Value";
+    private string secondExample = "Saved Second Value";
+    private IndexModel indexModel = new IndexModel();
+}
+
+<UsaForm Model=indexModel WrapperClass="full-width">
+    <UsaCardGroup>
+        <UsaCard Header="Accordion">
+            <BodyContent>
+                <p>An accordion is a list of headers that hide or reveal additional content when selected.</p>
+            </BodyContent>
+            <FooterContent><button type="button" @onclick="@(() => navManager.NavigateTo("/accordion"))" class="@ButtonClass">View Accordion</button></FooterContent>
+        </UsaCard>
+        <UsaCard Header="Alert">
+            <BodyContent>
+                <p>An alert keeps users informed of important and sometimes time-sensitive changes.</p>
+            </BodyContent>
+            <FooterContent><button type="button" @onclick="@(() => navManager.NavigateTo("/alert-box"))" class="@ButtonClass">View Alert</button></FooterContent>
+        </UsaCard>
+        <UsaCard Header="Card">
+            <BodyContent>
+                <p>Cards contain content and actions about a single subject.</p>
+            </BodyContent>
+            <FooterContent><button type="button" @onclick="@(() => navManager.NavigateTo("/card"))" class="@ButtonClass">View Card</button></FooterContent>
+        </UsaCard>
+        <UsaCard Header="Input Date">
+            <BodyContent>
+                <p>A date picker helps users select a single date.</p>
+                <UsaFormGroup>
+                    <UsaInputDate @bind-Value="indexModel.InputDateField" />
+                </UsaFormGroup>
+            </BodyContent>
+            <FooterContent><button type="button" @onclick="@(() => navManager.NavigateTo("/input-date"))" class="@ButtonClass">View Input Date</button></FooterContent>
+        </UsaCard>
+        <UsaCard Header="Input Number">
+            <BodyContent>
+                <p>A number input allows a user to pick only an integer</p>
+                <UsaFormGroup>
+                    <UsaInputNumber @bind-Value="indexModel.InputNumberField" />
+                </UsaFormGroup>
+            </BodyContent>
+            <FooterContent><button type="button" @onclick="@(() => navManager.NavigateTo("/input-number"))" class="@ButtonClass">View Input Number</button></FooterContent>
+        </UsaCard>
+        <UsaCard Header="Input Radio">
+            <BodyContent>
+                <p>A radio button group allows a user to select one option from the available choices</p>
+                <UsaRadioGroup @bind-Value="indexModel.InputRadioField">
+                    <UsaRadio Value="@firstExample">First Display Text</UsaRadio>
+                    <UsaRadio Value="@secondExample">Second Display Text</UsaRadio>
+                </UsaRadioGroup>
+                <p>Current value is @indexModel.InputRadioField</p>
+            </BodyContent>
+            <FooterContent><button type="button" @onclick="@(() => navManager.NavigateTo("/input-radio"))" class="@ButtonClass">View Input Radio</button></FooterContent>
+        </UsaCard>
+        <UsaCard Header="Input SSN">
+            <BodyContent>
+                <p>Use an Input SSN (Social Security Number) whenever you need to request someone's social security number on a form.</p>
+                <UsaFormGroup>
+                    <HintContent>###-##-####</HintContent>
+                    <ChildContent>
+                        <UsaInputSSN @bind-Value="indexModel.InputSSNField" />
+                    </ChildContent>
+                </UsaFormGroup>
+            </BodyContent>
+            <FooterContent><button type="button" @onclick="@(() => navManager.NavigateTo("/input-ssn"))" class="@ButtonClass">View Input SSN</button></FooterContent>
+        </UsaCard>
+        <UsaCard Header="Input Text">
+            <BodyContent>
+                <p>A text input allows users to enter any combination of letters, numbers, or symbols. Text input boxes can span a single line.</p>
+                <UsaFormGroup>
+                    <UsaInputText @bind-Value="indexModel.InputTextField" />
+                </UsaFormGroup>
+            </BodyContent>
+            <FooterContent><button type="button" @onclick="@(() => navManager.NavigateTo("/input-text"))" class="@ButtonClass">View Input Text</button></FooterContent>
+        </UsaCard>
+        <UsaCard Header="Input Text Area">
+            <BodyContent>
+                <p>A text area input allows users to enter any combination of letters, numbers, or symbols. Text area input boxes span multiple lines for longer input.</p>
+                <UsaFormGroup>
+                    <UsaInputTextArea @bind-Value="indexModel.InputTextAreaField" />
+                </UsaFormGroup>
+            </BodyContent>
+            <FooterContent><button type="button" @onclick="@(() => navManager.NavigateTo("/input-text-area"))" class="@ButtonClass">View Input Text Area</button></FooterContent>
+        </UsaCard>
+        <UsaCard Header="Modal">
+            <BodyContent>
+                <p>A modal disables page content and focuses the user’s attention on a single task or message.</p>
+                <ModalComponent />
+            </BodyContent>
+            <FooterContent><button type="button" @onclick="@(() => navManager.NavigateTo("/modal"))" class="@ButtonClass">View Modal</button></FooterContent>
+        </UsaCard>
+        <UsaCard Header="Pagination">
+            <BodyContent>
+                <p>Pagination display for when you want to be able to go to different pages in a table</p>
+            </BodyContent>
+            <FooterContent><button type="button" @onclick="@(() => navManager.NavigateTo("/pagination"))" class="@ButtonClass">View Pagination</button></FooterContent>
+        </UsaCard>
+        <UsaCard Header="Table">
+            <BodyContent>
+                <p>Tables help logically organize information and group like things together, and they make it easier to understand complex content</p>
+            </BodyContent>
+            <FooterContent><button type="button" @onclick="@(() => navManager.NavigateTo("/table"))" class="@ButtonClass">View Table</button></FooterContent>
+        </UsaCard>
+        <UsaCard Header="Tag">
+            <BodyContent>
+                <p>A tag draws attention to new or categorized content elements.</p>
+                <UsaTag>Some Tag</UsaTag>
+            </BodyContent>
+            <FooterContent><button type="button" @onclick="@(() => navManager.NavigateTo("/tag"))" class="@ButtonClass">View Tag</button></FooterContent>
+        </UsaCard>
+        <UsaCard Header="Tooltip">
+            <BodyContent>
+                <p>A tooltip is a short descriptive message that appears when a user hovers or focuses on an element.</p>
+                <UsaTooltip TooltipText="Some Tooltip Text">Some Tooltip</UsaTooltip>
+            </BodyContent>
+            <FooterContent><button type="button" @onclick="@(() => navManager.NavigateTo("/tooltip"))" class="@ButtonClass">View Tooltip</button></FooterContent>
+        </UsaCard>
+    </UsaCardGroup>
+</UsaForm>

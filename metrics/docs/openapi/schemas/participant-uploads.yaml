@@ -1,0 +1,62 @@
+ParticipantUploadsResponse:
+  type: object
+  properties:
+    body:
+      $ref: '#/ParticipantUploadsBody'
+ParticipantUploadsBody:
+  type: object
+  required:
+    - meta
+    - data
+  properties:
+    meta:
+      $ref: '#/Meta'
+    data:
+      type: array
+      items:
+        $ref: '#/ParticipantUpload'
+ParticipantUpload:
+  type: object
+  required:
+    - state
+    - uploaded_at
+    - completed_at
+    - status
+    - upload_identifier
+  properties:
+    state:
+      type: string
+      description: "state that performed the upload of participants"
+    uploaded_at:
+      type: string
+      description: "when state uploaded participants"
+    completed_at:
+      type: string
+      description: "when uploaded was done uploading and processing"
+    status:
+      type: string
+      description: "The status of the upload. Uploading, Failed, or Complete"
+    upload_identifier:
+      type: string
+      description: "the unique identifier of an upload"
+Meta:
+  type: object
+  properties:
+    page:
+      type: integer
+      description: "current page returned"
+    limit:
+      type: integer
+      description: "limit of how many records returned"
+    offset:
+      type: integer
+      description: "offset from first page"
+components:
+  parameters:
+    State:
+      name: state
+      in: query
+      description: abbreviation of state to filter responses for
+      required: false
+      schema:
+        type: string

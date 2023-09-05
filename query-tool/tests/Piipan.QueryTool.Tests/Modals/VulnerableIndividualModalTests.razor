@@ -1,0 +1,125 @@
+﻿@using Piipan.Components
+@using System.Linq.Expressions
+@using Piipan.Components.Forms
+@using Piipan.Components.Layout
+@using Piipan.Components.Modals
+@using Piipan.Components.Routing
+@using Piipan.QueryTool.Client.Modals
+@using System.IO
+@using static Piipan.Components.Layout.LayoutConstants
+@using static Piipan.Components.Forms.FormConstants
+@inherits BaseComponentTest<ModalContainer>
+
+@code {
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public VulnerableIndividualModalTests() : base()
+    {
+    }
+
+    /// <summary>
+    /// Verify the default markup of the vulnerable individual modal
+    /// </summary>
+    [Fact]
+    public void VulnerableIndividualModal_ShouldExist_And_HaveCorrectMarkup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert - by default no modals means no rendered HTML
+        Component.MarkupMatches(@<text></text>);
+
+        var modalManager = Services.GetService<IModalManager>();
+        modalManager.Show<VulnerableIndividualModal>(
+                    new VulnerableIndividualModal()
+                    {
+                    },
+                    new ModalInfo
+                    {
+                        ForceAction = true
+                    }
+                );
+
+
+        // Assert
+        Component.MarkupMatches(
+            @<div class="usa-modal-wrapper is-visible" role="dialog">
+              <div class="usa-modal-overlay" data-force-action="true" aria-controls="VulnerableIndividualModal" >
+                <div class="usa-modal" id="VulnerableIndividualModal" aria-labelledby="VulnerableIndividualModal-heading" aria-describedby="VulnerableIndividualModal-description"  >
+                  <div class="usa-modal__content" >
+                    <div class="usa-modal__main" >
+                      <h2 class="usa-modal__heading" id="VulnerableIndividualModal-heading">
+                        Vulnerable Individual Alert
+                      </h2>
+                      <div class="usa-prose">
+                        <p id="VulnerableIndividualModal-description">
+                          A vulnerable individual is a participant that should have their location protected and this participant's location is not to be revealed in any communications.
+                        </p>
+                      </div>
+                      <div class="usa-modal__footer">
+                        <ul class="usa-button-group">
+                          <li class="usa-button-group__item">
+                            <button type="button" class="usa-button" >
+                              Continue
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        </div>
+    );
+    }
+
+    /// <summary>
+    /// Verify the vulnerable individual modal is closed when continue is clicked
+    /// </summary>
+    [Fact]
+    public void VulnerableIndividualModal_ShouldClose_WhenContinueIsClicked()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        bool continueClicked = false;
+
+        // Act
+        var modalManager = Services.GetService<IModalManager>();
+        modalManager.Show<VulnerableIndividualModal>(
+            new VulnerableIndividualModal()
+            {
+                ContinueCallback = () =>
+                {
+                    continueClicked = true; // Something happens when continue button is clicked. For this test, just set a variable to verify it was called.
+                }
+            },
+            new ModalInfo
+            {
+                ForceAction = true
+            }
+        );
+
+        var continueButton = Component.Find(".usa-button");
+       
+        // Act
+        continueButton.Click();
+        
+        // Assert modal is closed and continueClicked is true
+        Component.MarkupMatches(@<text></text>);
+        Assert.True(continueClicked);
+    }
+
+    /// <summary>
+    /// Create a confirm modal component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        var htmlFragment = Render(
+            @<div><div id="inert-area">
+            </div><Piipan.Components.Modals.ModalContainer /></div>
+        );
+        Component = htmlFragment.FindComponent<ModalContainer>();
+    }
+}

@@ -1,0 +1,18 @@
+﻿@page "/modal"
+@using Piipan.Components.Layout
+@inherits BaseComponent
+@code {
+    protected override string[] Files { get; set; } = { "components/ModalComponent.razor", "components/DemoModalComponent.razor" };
+}
+
+<h1>Modal</h1>
+
+<UsaAccordion Multiselectable="true">
+    <UsaAccordionItem StartsExpanded="true">
+        <HeadingContent>Component Demo</HeadingContent>
+        <BodyContent>
+            <ModalComponent />
+        </BodyContent>
+    </UsaAccordionItem>
+    <CodeArea FileContents="fileContents" />
+</UsaAccordion>

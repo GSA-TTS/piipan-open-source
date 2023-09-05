@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32319.34
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Piipan.Notifications.Core", "src\Piipan.Notifications.Core\Piipan.Notifications.Core.csproj", "{417F2BFC-29DF-49D8-909F-73F7D647246F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Piipan.Notifications.Func.Api", "src\Piipan.Notifications.Func.Api\Piipan.Notifications.Func.Api.csproj", "{125BB3FD-FD77-4BE0-B22A-FE8F895D612C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{40E45163-4656-4C31-B36F-A60BF08BACAB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Piipan.Notifications.Core.Tests", "tests\Piipan.Notifications.Core.Tests\Piipan.Notifications.Core.Tests.csproj", "{11BC6CFC-1C22-4AAC-B50A-51BFD053635F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Piipan.Notifications.Common.Tests", "tests\Piipan.Notifications.Common.Tests\Piipan.Notifications.Common.Tests.csproj", "{12113631-F6CF-4A33-8D2E-6926109C98DA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{417F2BFC-29DF-49D8-909F-73F7D647246F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{417F2BFC-29DF-49D8-909F-73F7D647246F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{417F2BFC-29DF-49D8-909F-73F7D647246F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{417F2BFC-29DF-49D8-909F-73F7D647246F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{125BB3FD-FD77-4BE0-B22A-FE8F895D612C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{125BB3FD-FD77-4BE0-B22A-FE8F895D612C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{125BB3FD-FD77-4BE0-B22A-FE8F895D612C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{125BB3FD-FD77-4BE0-B22A-FE8F895D612C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11BC6CFC-1C22-4AAC-B50A-51BFD053635F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11BC6CFC-1C22-4AAC-B50A-51BFD053635F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11BC6CFC-1C22-4AAC-B50A-51BFD053635F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11BC6CFC-1C22-4AAC-B50A-51BFD053635F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12113631-F6CF-4A33-8D2E-6926109C98DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12113631-F6CF-4A33-8D2E-6926109C98DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12113631-F6CF-4A33-8D2E-6926109C98DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12113631-F6CF-4A33-8D2E-6926109C98DA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{11BC6CFC-1C22-4AAC-B50A-51BFD053635F} = {40E45163-4656-4C31-B36F-A60BF08BACAB}
+		{12113631-F6CF-4A33-8D2E-6926109C98DA} = {40E45163-4656-4C31-B36F-A60BF08BACAB}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {45B67E5E-34F6-4CF5-8FAA-6565E7B279CD}
+	EndGlobalSection
+EndGlobal

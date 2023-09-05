@@ -1,0 +1,18 @@
+﻿@using Piipan.Components.Demo.Models
+@using static Piipan.Components.Shared.CommonConstants
+@code {
+    [Parameter] public InputTextModel TextModel { get; set; } = new InputTextModel();
+}
+
+<UsaForm Model="TextModel">
+    <UsaFormGroup>
+        <UsaInputText @bind-Value="TextModel.NotRequiredField" />
+    </UsaFormGroup>
+    <UsaFormGroup>
+        <UsaInputText @bind-Value="TextModel.RequiredField" />
+    </UsaFormGroup>
+    <UsaFormGroup>
+        <UsaInputText @bind-Value="TextModel.RequiredIfField" />
+    </UsaFormGroup>
+    <button class="@ButtonClass">Submit</button>
+</UsaForm>

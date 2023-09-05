@@ -1,0 +1,15 @@
+﻿@using Piipan.Components.Demo.Models
+@using static Piipan.Components.Shared.CommonConstants
+@code {
+    [Parameter] public InputNumberModel NumberModel { get; set; } = new InputNumberModel();
+}
+
+<UsaForm Model="NumberModel">
+    <UsaFormGroup>
+        <UsaInputNumber @bind-Value="NumberModel.OptionalNumber" />
+    </UsaFormGroup>
+    <UsaFormGroup>
+        <UsaInputNumber @bind-Value="NumberModel.RequiredNumber" />
+    </UsaFormGroup>
+    <button class="@ButtonClass">Submit</button>
+</UsaForm>

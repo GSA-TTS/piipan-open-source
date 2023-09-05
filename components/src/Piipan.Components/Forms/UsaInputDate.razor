@@ -1,0 +1,97 @@
+﻿@using static FormConstants
+@inherits UsaInputBase<DateTime?>
+@inject IJSRuntime JSRuntime
+@code {
+    InputDate<DateTime?> InputDateReference { get; set; }
+    ValueTask<IJSObjectReference>? inputDateJavascriptReference;
+    public override int? Width { get; set; } = 180;
+
+    /// <summary>
+    /// This field keeps track of whether or not we should set ourselves to null after blurring or submitting the form.
+    /// This is caused by an invalid value in the form then getting cleared out by the user.
+    /// </summary>
+    private bool awaitingNull = false;
+
+
+    private async Task<bool> IsValidAsync()
+    {
+        if (inputDateJavascriptReference == null)
+        {
+            inputDateJavascriptReference = JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Piipan.Components/Forms/UsaInputDate.razor.js");
+        }
+        return !(await (await inputDateJavascriptReference.Value).InvokeAsync<bool>("DoesElementHaveInvalidInput", Id));
+    }
+
+    /// <summary>
+    /// PreverificationChecks gets called by the UsaFormGroup whenever the field blurs or the form is submitted.
+    /// </summary>
+    /// <returns></returns>
+    protected override async Task<List<string>> PreverificationChecks()
+    {
+        if (!(await IsValidAsync()))
+        {
+            return new List<string>() { ValidationConstants.InvalidMessage };
+        }
+        else
+        {
+            // Since the field is now valid, if we are still awaitingNull that means the date really should be null.
+            if (awaitingNull)
+            {
+                await ValueChanged.InvokeAsync(null);
+                awaitingNull = false;
+            }
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// InputDate needs a special binding due to related Github Issue https://github.com/dotnet/aspnetcore/issues/43824
+    /// Blazor is binding null to the field in cases where the field is invalid and shouldn't be bound to null.
+    /// To override, we'll only bind if the field is valid. When the field is null, we'll keep track that we attempted to set to null,
+    /// but we won't actually set it here (see PreverificationChecks).
+    /// Sidenote: UpdateDate only gets called when the value of the parameter changes, so in the case where we're trying to bind a null value
+    /// after the field was invalid but is now empty, we won't know about that change. That is why we need to keep track of if we're awaitingNull.
+    /// </summary>
+    /// <param name="updatedDate">The date we are trying to update to, or null if the field is invalid or empty</param>
+    private async Task UpdateDate(DateTime? updatedDate)
+    {
+        
+        if (await IsValidAsync())
+        {
+            // The field is valid, so just bind as normal.
+            CurrentValue = updatedDate;
+            awaitingNull = false;
+        }
+        else
+        {
+            // The field is invalid, so keep track of the fact that we're trying to set to null.
+            awaitingNull = true;
+        }
+    }
+
+    /// <summary>
+    /// Grab the input date javascript reference to be used later
+    /// </summary>
+    /// <param name="firstRender"></param>
+    /// <returns></returns>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (inputDateJavascriptReference == null)
+        {
+            inputDateJavascriptReference = JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Piipan.Components/Forms/UsaInputDate.razor.js");
+        }
+    }
+}
+
+<InputDate @ref="InputDateReference"
+           class="@($"{InputClass} {(FormGroup.Status != InputStatus.None ? $"{InputClass}--{FormGroup.Status.ToString().ToLower()}" : "")}")"
+           Value="CurrentValue" ValueExpression="() => CurrentValue" ValueChanged="@((DateTime? updatedDate) => UpdateDate(updatedDate))" @onblur="BlurField"
+           required="@FormGroup.Required"
+           id="@Id"
+           name="@Id.Replace("_", ".")"
+           aria-errormessage="@(FormGroup.Status == InputStatus.Error ? $"{Id}-message" : null)"
+           aria-invalid="@(FormGroup.Status == InputStatus.Error ? "true" : null)"
+           @attributes="AdditionalAttributes"
+           style="@(Width != null ? $"width: {Width}px;" : "")">
+</InputDate>

@@ -1,0 +1,13 @@
+get:
+  operationId: "Get Matches"
+  tags:
+    - "Resolution"
+  summary: "Search for all existing matches in match database"
+  description: "Searches for all open existing matches in match database"
+  responses:
+    '200':
+      $ref: '../schemas/match-query.yaml#/components/responses/200_Get_Matches'
+    '401':
+      $ref: '../schemas/match-query.yaml#/components/responses/401'
+    '429':
+      $ref: '../schemas/match-query.yaml#/components/responses/429'

@@ -1,0 +1,15 @@
+﻿@using Piipan.Components.Demo.Models
+@using static Piipan.Components.Shared.CommonConstants
+@code {
+    [Parameter] public InputDateModel DateModel { get; set; } = new InputDateModel();
+}
+
+<UsaForm Model="DateModel">
+    <UsaFormGroup>
+        <UsaInputDate @bind-Value="DateModel.NotRequiredDate" />
+    </UsaFormGroup>
+    <UsaFormGroup>
+        <UsaInputDate @bind-Value="DateModel.RequiredDate" />
+    </UsaFormGroup>
+    <button class="@ButtonClass">Submit</button>
+</UsaForm>

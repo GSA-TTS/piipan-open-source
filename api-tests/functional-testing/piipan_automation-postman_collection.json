@@ -1,0 +1,2638 @@
+{
+	"info": {
+		"_postman_id": "9d53518d-0232-4ec7-8977-acb520b88c2c",
+		"name": "Piipan_Automation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19296339"
+	},
+	"item": [
+		{
+			"name": "Find Matches APIM Start-TEST",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const res = pm.response.json().data;\r",
+							"const responseMatches = pm.response.json().data.results[0];\r",
+							"const matchLength = pm.response.json().data.results[0].matches.length;\r",
+							"const initiating_state = pm.request.headers.get(\"X-Initiating-State\");\r",
+							"\r",
+							"pm.test(\"Status code validation\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Finding Match betwen state \", function () {\r",
+							"    for (let i = 0; i < matchLength; i++) {\r",
+							"    const stateT = responseMatches.matches[i].state;\r",
+							"    if(initiating_state === \"EC\"){\r",
+							"       pm.expect(stateT).to.not.eql(\"ec\");\r",
+							"       pm.expect(stateT.toUpperCase()).to.be.oneOf([\"EB\", \"MT\",\"EA\"]);\r",
+							"   \r",
+							"    }else if(initiating_state === \"EB\"){\r",
+							"    pm.expect(stateT).to.not.eql(\"eb\");\r",
+							"    pm.expect(stateT.toUpperCase()).to.be.oneOf([\"MT\", \"EC\",\"EA\"]);\r",
+							"\r",
+							"    }else if(initiating_state === \"EA\"){\r",
+							"    pm.expect(stateT).to.not.eql(\"ea\");\r",
+							"    pm.expect(stateT.toUpperCase()).to.be.oneOf([\"EB\", \"EC\",\"MT\"]);\r",
+							"\r",
+							"    }else if(initiating_state === \"MT\"){\r",
+							"    pm.expect(stateT).to.not.eql(\"mt\");\r",
+							"    pm.expect(stateT.toUpperCase()).to.be.oneOf([\"EB\", \"EC\",\"EA\"]);\r",
+							"\r",
+							"    }else{\r",
+							"    pm.expect(0).to.be(1);\r",
+							"    console.log(\"Test failed due to state in response is invalid - \" + stateT)\r",
+							"    }\r",
+							"\r",
+							"}\r",
+							"\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Matcher check\", ()=>{\r",
+							"    var matchereResponse =  responseMatches.matches.map((match) => {\r",
+							"        return match.match_id\r",
+							"        }\r",
+							"        );\r",
+							"    const count= {};\r",
+							"    if(matchereResponse >= 0){\r",
+							"\r",
+							"    for(const matches of matchereResponse){\r",
+							"        count[matches]=count[matches] ? count[matches] + 1 : 1;\r",
+							"    }\r",
+							"   for(var k=0; k< matchereResponse.length; k ++){\r",
+							"    pm.expect(count[matchereResponse[1]]).to.be(1);\r",
+							"   }\r",
+							"    }else {\r",
+							"        console.log(\"There are only one matcher exist in the response\");\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"getAttrValue = {\r",
+							"    attributeIs(prop){\r",
+							"       return responseMatches.matches.map((match) => {\r",
+							"           console.log('match value', match);\r",
+							"           console.log('prop value', prop);\r",
+							"           if(prop === 'case_id')\r",
+							"               return match.case_id;\r",
+							"            if(prop === 'participant_id')\r",
+							"               return match.participant_id;\r",
+							"        },prop\r",
+							"        );\r",
+							"    }\r",
+							"}\r",
+							"pm.test(\"Case_id validation check\", ()=>{\r",
+							"    var case_ids =  getAttrValue.attributeIs('case_id');\r",
+							"    if(matchLength >0){\r",
+							"   for(var k=0; k< case_ids.length; k ++){\r",
+							"    pm.expect(case_ids[k]).to.eq(pm.iterationData.get(\"case_id\"))\r",
+							"   }\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"participant_id validation check\", ()=>{\r",
+							"    var participant_ids =  getAttrValue.attributeIs('participant_id');\r",
+							"    if(matchLength >0){\r",
+							"   for(var k=0; k< participant_ids.length; k ++){\r",
+							"    pm.expect(participant_ids[k]).to.eq(pm.iterationData.get(\"participant_id\"))\r",
+							"   }\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Response time is less than 3000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+							"});\r",
+							"\r",
+							"const attributesList = [\"match_id\", \"state\", \"case_id\", \"participant_id\", \"participant_closing_date\"];\r",
+							"pm.test(\"Check the mandatory attributes \", ()=>{\r",
+							"\r",
+							"    if(matchLength >0){\r",
+							"    for(const match of attributesList){\r",
+							"        \r",
+							"    pm.expect(responseMatches.matches[0]).to.have.property(match);\r",
+							"    }\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Case ID length validation\", function(){\r",
+							"    if(matchLength >0){\r",
+							"    const case_id = responseMatches.matches[0].case_id;\r",
+							"    pm.expect(case_id.length).lessThan(21);\r",
+							"console.log(\"Case ID Length: \"+ JSON.stringify(case_id.length));\r",
+							"    }else if (matchLength == 0) {\r",
+							"        console.log(\"No match found. Case_id not returned\")\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"case ID Special character validation\", function(){\r",
+							"     if(matchLength >0){\r",
+							"    const case_id = responseMatches.matches[0].case_id;\r",
+							"    pm.expect(/^[0-9a-zA-Z\\-_]*$/.test(case_id)).to.be.true;\r",
+							"console.log(\"Case ID: \"+ JSON.stringify(case_id));\r",
+							"\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Participant ID length validation\", function(){\r",
+							"    if(matchLength >0){\r",
+							"    const participant_id = responseMatches.matches[0].participant_id;\r",
+							"    pm.expect(participant_id.length).lessThan(21);\r",
+							"console.log(\"Participant ID Length: \"+ JSON.stringify(participant_id.length));\r",
+							"    }else if (matchLength == 0) {\r",
+							"        console.log(\"No match found. Participant_id not returned\")\r",
+							"    }\r",
+							"})\r",
+							"pm.test(\"Participant ID Special character validation\", function(){\r",
+							"     if(matchLength >0){\r",
+							"    const participant_id = responseMatches.matches[0].participant_id;\r",
+							"    pm.expect(/^[0-9a-zA-Z\\-_]*$/.test(participant_id)).to.be.true;\r",
+							"console.log(\"Participant ID: \"+ JSON.stringify(participant_id));\r",
+							"\r",
+							"    }\r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.request.removeHeader(\"Ocp-Apim-Subscription-Key\");\r",
+							"pm.request.removeHeader(\"X-Initiating-State\");\r",
+							"pm.request.headers.add({ key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"ea_findmatch_dupKey\") });\r",
+							"pm.request.headers.add({ key: \"X-Initiating-State\", value: \"EA\" });\r",
+							"const initiating_state = pm.request.headers.get(\"X-Initiating-State\");\r",
+							"console.log(\"Current initiating State: \" + initiating_state);\r",
+							"console.log('CSV data', pm.iterationData.get('lds_hash'), pm.iterationData.get('participant_id'), pm.iterationData.get('case_id'));\r",
+							"pm.environment.unset(\"Total_Row\");\r",
+							"pm.environment.set(\"Total_Row\", pm.iterationData.get('Total_Row_Count'));\r",
+							"console.log(\"total Data: \" + pm.iterationData.get('Total_Row_Count'))\r",
+							"console.log(pm.iterationData.toObject());\r",
+							"\r",
+							"var list = pm.info.iterationCount;\r",
+							"console.log(list);\r",
+							"pm.environment.set(\"Total_Records\", list);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": [\r\n        {\r\n      \"lds_hash\": \"{{lds_hash}}\",\r\n      \"participant_id\": \"{{participant_id}}\",\r\n      \"case_id\": \"{{case_id}}\",\r\n      \"search_reason\": \"{{search_reason}}\"\r\n        }\r\n    ]\r\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/match/v2/find_matches",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"match",
+						"v2",
+						"find_matches"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Matches APIM Start-Negative TEST",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const initiating_state = pm.request.headers.get(\"X-Initiating-State\");\r",
+							"\r",
+							"pm.test(\"Status code validation\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"pm.test(\"Error message validation\", () => {\r",
+							"\r",
+							"    var resp = pm.response.json();\r",
+							"    var errorValidation = resp.errors[0].detail;\r",
+							"    pm.expect(errorValidation).to.contains(\"Required property 'participant_id'\");\r",
+							"   })\r",
+							"\r",
+							"    \r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.request.removeHeader(\"Ocp-Apim-Subscription-Key\");\r",
+							"pm.request.removeHeader(\"X-Initiating-State\");\r",
+							"pm.request.headers.add({ key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"ea_findmatch_dupKey\") });\r",
+							"pm.request.headers.add({ key: \"X-Initiating-State\", value: \"EA\" });\r",
+							"const initiating_state = pm.request.headers.get(\"X-Initiating-State\");\r",
+							"console.log(\"Current initiating State: \" + initiating_state);\r",
+							"console.log('CSV data', pm.iterationData.get('lds_hash'), pm.iterationData.get('participant_id'), pm.iterationData.get('case_id'));\r",
+							"console.log(pm.iterationData.toObject());\r",
+							"\r",
+							"var list = pm.info.iterationCount;\r",
+							"console.log(list);\r",
+							"pm.environment.set(\"Total_Records\", list);\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": [\r\n        {\r\n      \"lds_hash\": \"{{lds_hash}}\",\r\n      \"case_id\": \"{{case_id}}\",\r\n      \"search_reason\": \"{{search_reason}}\"\r\n        }\r\n    ]\r\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/match/v2/find_matches",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"match",
+						"v2",
+						"find_matches"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bulk Upload APIM EA-TEST",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const uploadResponse = pm.response.json().data;\r",
+							"console.log(\"Upload Response \" + JSON.stringify(uploadResponse));\r",
+							"pm.variables.unset(\"upload_id\");\r",
+							"pm.collectionVariables.set(\"upload_id\", uploadResponse.upload_id);\r",
+							"\r",
+							"pm.test(\"Status code validation\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"const attributesList = [\"upload_id\"];\r",
+							"pm.test(\"Check the mandatory attributes \", () => {\r",
+							"    let keys = Object.keys(uploadResponse);\r",
+							"    //validating if has one parameter\r",
+							"    pm.expect(keys.length).to.equal(1);\r",
+							"\r",
+							"    //validating if contains upload_id attribute\r",
+							"    pm.expect(keys).to.include(\"upload_id\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.request.headers.add({key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"ea_uploadKey\")});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "file",
+					"file": {
+						"src": "/C:/Piipan/TestAutomationFramework-API/example.csv"
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/bulk/{{stateEA}}/v2/upload_all_participants/example.csv",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bulk",
+						"{{stateEA}}",
+						"v2",
+						"upload_all_participants",
+						"example.csv"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FindUploadById APIM EA- TEST",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const upload_id = pm.variables.get(\"upload_id\");\r",
+							"pm.request.headers.add({key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"ea_uploadKey\")});\r",
+							"console.log(\"upload_id: \"+upload_id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code validation\", function () {\r",
+							"   pm.expect(pm.response.code).to.be.oneOf([200,404]);\r",
+							"    console.log('Status ' + pm.response.code);\r",
+							"});\r",
+							"\r",
+							"const attributesList = [\"upload_identifier\", \"created_at\", \"participants_uploaded\", \"completed_at\", \"status\"];\r",
+							"\r",
+							"pm.test(\"Check the mandatory attributes \", () => {\r",
+							"let count = pm.environment.get(\"count\");\r",
+							"    if (!count) {\r",
+							"        count = 1;\r",
+							"    }\r",
+							"    if (count < 3) {\r",
+							"        postman.setNextRequest(\"FindUploadById APIM EA- TEST\");\r",
+							"        if (pm.response.code == 200) {\r",
+							"            console.log(\"Current res: \" + JSON.stringify(pm.response.json()));\r",
+							"           postman.setNextRequest(\"Find Matches APIM EA-TEST\");\r",
+							"        }\r",
+							"        else if (pm.response.code == 404) {\r",
+							"            count = count + 1;\r",
+							"            pm.environment.set(\"count\", count);\r",
+							"        }\r",
+							"        setTimeout(() => { }, pm.environment.get(\"upload_delay\"));\r",
+							"    } else {\r",
+							"        pm.environment.unset(\"count\");\r",
+							"    }\r",
+							"\r",
+							"    for (const match of attributesList) {\r",
+							"        if(pm.response.code == 200){\r",
+							"        pm.expect(pm.response.json().data).to.have.property(match);\r",
+							"    }\r",
+							"    }\r",
+							"    if(pm.response.code == 200){\r",
+							"    const upload_identifierResponse = pm.response.json().data.upload_identifier;\r",
+							"    const upload_id = pm.variables.get(\"upload_id\");\r",
+							"    console.log(\"Expected Upload ID: \" + upload_id + \" Actual: \" + upload_identifierResponse);\r",
+							"    pm.expect(upload_identifierResponse).to.eql(upload_id);\r",
+							"\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Upload Identifier length validation\", function () {\r",
+							"   const UploadIndentifier_length=  pm.collectionVariables.get(\"upload_id\").length;\r",
+							"   pm.expect(UploadIndentifier_length).lessThan(1000);\r",
+							"\r",
+							"   if(UploadIndentifier_length > 1000){\r",
+							"       pm.expect(pm.response.to.have.status(400))\r",
+							"   }else{\r",
+							"       console.log(\"Current length of Upload Identifier ID: \"+UploadIndentifier_length);\r",
+							"   }\r",
+							"\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Upload Identifier Special Character validation\", function () {\r",
+							"   const UploadIndentifier=  pm.collectionVariables.get(\"upload_id\");\r",
+							"   pm.expect(/^[0-9a-zA-Z\\-_]*$/.test(UploadIndentifier)).to.be.true;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Total Uploaded Data validation: Data Should be Equal\", function(){\r",
+							"    const total_row_From_file =  pm.environment.get(\"Total_Row\");\r",
+							"     if (pm.response.code !== 404){\r",
+							"    const status_response =pm.response.json().data.status;\r",
+							"    const total_row_uploaded_response =pm.response.json().data.participants_uploaded;\r",
+							"\r",
+							"    console.log(\"STATUS: \"+ status_response);\r",
+							"\r",
+							"   if(pm.response.code == 200 && status_response === \"COMPLETE\"){\r",
+							"   console.log(\"Record Upload: Expected- \"+total_row_From_file+\" Actual- \"+total_row_uploaded_response);\r",
+							"   pm.expect(total_row_From_file).to.eql(total_row_uploaded_response);\r",
+							"   }}\r",
+							"})\r",
+							"console.log(\"Current Successful Resp : \" + JSON.stringify(pm.response.json()));\r",
+							"pm.variables.unset(\"upload_id\");\r",
+							"pm.variables.unset(\"Total_Row\");\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/bulk/{{stateEA}}/v2/uploads/{{upload_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bulk",
+						"{{stateEA}}",
+						"v2",
+						"uploads",
+						"{{upload_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Matches APIM EA-TEST",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const res = pm.response.json().data;\r",
+							"const responseMatches = pm.response.json().data.results[0];\r",
+							"let matchLength = pm.response.json().data.results[0].matches.length;\r",
+							"const initiating_state = pm.request.headers.get(\"X-Initiating-State\");\r",
+							"const attributesListIfMatch = [\"match_id\", \"state\", \"case_id\", \"participant_id\", \"participant_closing_date\", \"recent_benefit_issuance_dates\", \"vulnerable_individual\", \"match_url\"];\r",
+							"const required_attributesListIfMatch = [\"match_id\", \"state\", \"participant_id\", \"match_url\"];\r",
+							"const attributesListIfNoMatch = [];\r",
+							"const attributesList_recent_benefit_issuance_dates = [\"start\", \"end\"];\r",
+							"\r",
+							"\r",
+							"pm.test(\"Status code validation\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response time is less than 3000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Verify Mandatory attributes Has value\", () => {\r",
+							"    for (const match of required_attributesListIfMatch) {\r",
+							"        if (matchLength > 0) {\r",
+							"            for (let i = 0; i < matchLength; i++) {\r",
+							"                pm.expect(responseMatches.matches[i].match).not.to.be.eq(null);\r",
+							"\r",
+							"            }\r",
+							"        }\r",
+							"\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Check the Presence of attributes \", () => {\r",
+							"    for (const match of attributesListIfMatch) {\r",
+							"        if (matchLength > 0) {\r",
+							"            for (let i = 0; i < matchLength; i++) {\r",
+							"                pm.expect(responseMatches.matches[i]).to.have.property(match);\r",
+							"            }\r",
+							"        }\r",
+							"\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Finding Match betwen state \", function () {\r",
+							"    for (let i = 0; i < matchLength; i++) {\r",
+							"        const stateT = responseMatches.matches[i].state;\r",
+							"        if (initiating_state === \"EC\") {\r",
+							"            pm.expect(stateT).to.not.eql(\"ec\");\r",
+							"            pm.expect(stateT.toUpperCase()).to.be.oneOf([\"EB\", \"MT\", \"EA\"]);\r",
+							"\r",
+							"        } else if (initiating_state === \"EB\") {\r",
+							"            pm.expect(stateT).to.not.eql(\"eb\");\r",
+							"            pm.expect(stateT.toUpperCase()).to.be.oneOf([\"MT\", \"EC\", \"EA\"]);\r",
+							"\r",
+							"        } else if (initiating_state === \"EA\") {\r",
+							"            pm.expect(stateT).to.not.eql(\"ea\");\r",
+							"            pm.expect(stateT.toUpperCase()).to.be.oneOf([\"EB\", \"EC\", \"MT\"]);\r",
+							"\r",
+							"        } else if (initiating_state === \"MT\") {\r",
+							"            pm.expect(stateT).to.not.eql(\"mt\");\r",
+							"            pm.expect(stateT.toUpperCase()).to.be.oneOf([\"EB\", \"EC\", \"EA\"]);\r",
+							"\r",
+							"        } else {\r",
+							"            pm.expect(0).to.be(1);\r",
+							"            console.log(\"Test failed due to state in response is invalid - \" + stateT)\r",
+							"        }\r",
+							"\r",
+							"    }\r",
+							"\r",
+							"});\r",
+							"\r",
+							"var matchereResponse;\r",
+							"pm.test(\"Matcher check\", () => {\r",
+							"\r",
+							"    matchereResponse = responseMatches.matches.map((match) => {\r",
+							"        return match.match_id;\r",
+							"    })\r",
+							"    if (matchereResponse.length > 0) {\r",
+							"        console.log(\"match id: ------ \", matchereResponse);\r",
+							"    } else {\r",
+							"        console.log(\"There are No match exist in the response\");\r",
+							"    }\r",
+							"\r",
+							"});\r",
+							"\r",
+							"\r",
+							"getAttrValue = {\r",
+							"    attributeIs(prop) {\r",
+							"        return responseMatches.matches.map((match) => {\r",
+							"\r",
+							"            if (prop === 'case_id')\r",
+							"                return match.case_id;\r",
+							"            if (prop === 'participant_id')\r",
+							"                return match.participant_id;\r",
+							"            if (prop === 'participant_closing_date')\r",
+							"                return match.participant_closing_date;\r",
+							"            if (prop === 'recent_benefit_issuance_dates')\r",
+							"                return match.recent_benefit_issuance_dates;\r",
+							"            if (prop === 'vulnerable_individual')\r",
+							"                return match.vulnerable_individual;\r",
+							"            if (prop === 'match_url')\r",
+							"                return match.match_url;\r",
+							"\r",
+							"        }, prop\r",
+							"        );\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Case_id validation\", () => {\r",
+							"    var case_ids = getAttrValue.attributeIs('case_id');\r",
+							"    for (var k = 0; k < case_ids.length; k++) {\r",
+							"        pm.expect(case_ids[k]).to.eq(pm.iterationData.get(\"case_id\"))\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"pm.test(\"Case ID length validation\", function () {\r",
+							"    if (matchLength > 0) {\r",
+							"        const case_id = responseMatches.matches[0].case_id;\r",
+							"        pm.expect(case_id.length).lessThan(21);\r",
+							"        console.log(\"Case ID Length: \" + JSON.stringify(case_id.length));\r",
+							"    } else if (matchLength == 0) {\r",
+							"        console.log(\"No match found. case_id not returned\")\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"case ID Special Character validation\", function () {\r",
+							"    if (matchLength > 0) {\r",
+							"        const case_id = responseMatches.matches[0].case_id;\r",
+							"        pm.expect(/^[0-9a-zA-Z\\-_]*$/.test(case_id)).to.be.true;\r",
+							"        console.log(\"Case ID: \" + JSON.stringify(case_id));\r",
+							"\r",
+							"    }\r",
+							"})\r",
+							"pm.test(\"participant_id validation check\", () => {\r",
+							"    var participant_ids = getAttrValue.attributeIs('participant_id');\r",
+							"    for (var k = 0; k < participant_ids.length; k++) {\r",
+							"        pm.expect(participant_ids[k]).to.eq(pm.iterationData.get(\"participant_id\"))\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"pm.test(\"Participant ID length validation\", function () {\r",
+							"\r",
+							"    if (matchLength > 0) {\r",
+							"        const participant_id = responseMatches.matches[0].participant_id;\r",
+							"        pm.expect(participant_id.length).lessThan(21);\r",
+							"        console.log(\"Participant ID Length: \" + JSON.stringify(participant_id.length));\r",
+							"\r",
+							"    } else if (matchLength == 0) {\r",
+							"        console.log(\"No match found. participant_id not returned\")\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"pm.test(\"Participant ID Special Character validation\", function () {\r",
+							"    if (matchLength > 0) {\r",
+							"        const participant_id = responseMatches.matches[0].participant_id;\r",
+							"        pm.expect(/^[0-9a-zA-Z\\-_]*$/.test(participant_id)).to.be.true;\r",
+							"        console.log(\"Participant ID: \" + JSON.stringify(participant_id));\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"\r",
+							"pm.test(\"participant_closing_date Format Value validation\", () => {\r",
+							"    if (matchLength > 0) {\r",
+							"        for (var k = 0; k < matchLength; k++) {\r",
+							"            var participant_closing_dates = responseMatches.matches[k].participant_closing_date;\r",
+							"            if (participant_closing_dates !== null) {\r",
+							"                console.log(\"participant_closing_dates\", participant_closing_dates);\r",
+							"                pm.expect(participant_closing_dates).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);\r",
+							"            }\r",
+							"\r",
+							"        }\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Recent Benefit Issuance Dates attributes validation\", () => {\r",
+							"    var recent_benefit_issuance_dates = getAttrValue.attributeIs('recent_benefit_issuance_dates');\r",
+							"\r",
+							"    if (matchLength > 0) {\r",
+							"\r",
+							"        for (let i = 0; i < matchLength; i++) {\r",
+							"            var recent_benefit_issuance_dates_value = responseMatches.matches[i].recent_benefit_issuance_dates;\r",
+							"            var recent_benefit_issuance_dates_length = recent_benefit_issuance_dates_value.length;\r",
+							"            console.log(\"recent_benefit_issuance_dates_value---\", recent_benefit_issuance_dates_length)\r",
+							"            if (recent_benefit_issuance_dates_value !== null) {\r",
+							"                for (const match of attributesList_recent_benefit_issuance_dates) {\r",
+							"                    for (let k = 0; k < recent_benefit_issuance_dates_length; i++) {\r",
+							"\r",
+							"                        pm.expect(responseMatches.matches[k].recent_benefit_issuance_dates[k]).to.have.property(match);\r",
+							"                    }\r",
+							"                }\r",
+							"            } else {\r",
+							"                console.log(\"recent_benefit_issuance_dates are\", recent_benefit_issuance_dates_value)\r",
+							"            }\r",
+							"\r",
+							"        }\r",
+							"\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"\r",
+							"pm.test(\"Recent Benefit Issuance Start and End Date Format validation\", () => {\r",
+							"  \r",
+							"    if (matchLength > 0) {\r",
+							"\r",
+							"        for (let i = 0; i < matchLength; i++) {\r",
+							"            var recent_benefit_issuance_dates_value = responseMatches.matches[i].recent_benefit_issuance_dates;\r",
+							"            var recent_benefit_issuance_dates_length = recent_benefit_issuance_dates_value.length;\r",
+							"            console.log(\"recent_benefit_issuance_dates_value---\", recent_benefit_issuance_dates_length)\r",
+							"            if (recent_benefit_issuance_dates_value !== null) {\r",
+							"\r",
+							"                for (let k = 0; k < recent_benefit_issuance_dates_length; i++) {\r",
+							"                    var startDate = recent_benefit_issuance_dates_value[k].start;\r",
+							"                    var endDate = recent_benefit_issuance_dates_value[k].end;\r",
+							"\r",
+							"                    pm.expect(startDate).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);\r",
+							"                    pm.expect(endDate).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);\r",
+							"                    if (startDate == null) {\r",
+							"                        pm.expect(endDate).to.be.eq(null);\r",
+							"\r",
+							"                    } else {\r",
+							"                        console.log(\"recent_benefit_issuance Start dates are\", startDate);\r",
+							"                        console.log(\"recent_benefit_issuance End dates are\", endDate);\r",
+							"\r",
+							"\r",
+							"                    }\r",
+							"\r",
+							"                }\r",
+							"\r",
+							"            }\r",
+							"        }\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Recent Benefit Issuance Date validation \", () => {\r",
+							"  \r",
+							"    if (matchLength > 0) {\r",
+							"\r",
+							"        for (let i = 0; i < matchLength; i++) {\r",
+							"            var recent_benefit_issuance_dates_value = responseMatches.matches[i].recent_benefit_issuance_dates;\r",
+							"            var recent_benefit_issuance_dates_length = recent_benefit_issuance_dates_value.length;\r",
+							"            console.log(\"recent_benefit_issuance_dates_value---\", recent_benefit_issuance_dates_length)\r",
+							"            if (recent_benefit_issuance_dates_value !== null) {\r",
+							"\r",
+							"                for (let k = 0; k < recent_benefit_issuance_dates_length; i++) {\r",
+							"                    var startDate = recent_benefit_issuance_dates_value[k].start;\r",
+							"                    var endDate = recent_benefit_issuance_dates_value[k].end;\r",
+							"\r",
+							"                    if (recent_benefit_issuance_start_dates == null) {\r",
+							"            pm.expect(recent_benefit_issuance_end_dates).to.be.eq(null);\r",
+							"        } else if (recent_benefit_issuance_start_dates !== null) {\r",
+							"            pm.expect(recent_benefit_issuance_end_dates).not.to.be.eq(null);\r",
+							"        }\r",
+							"                }\r",
+							"\r",
+							"            }\r",
+							"        }\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Vulnerable Individual validation\", () => {\r",
+							"    var vulnerable_individual = getAttrValue.attributeIs('vulnerable_individual');\r",
+							"    for (var k = 0; k < vulnerable_individual.length; k++) {\r",
+							"        console.log(\"Expected: \", vulnerable_individual[k], \"To be one of : true, false, null\");\r",
+							"        pm.expect(vulnerable_individual[k]).to.be.oneOf([true, false, null]);\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Match URL validation \", () => {\r",
+							"    var match_url = getAttrValue.attributeIs('match_url');\r",
+							"    for (var k = 0; k < match_url.length; k++) {\r",
+							"        console.log(\"Expected: \", match_url[k], \"To include Match ID: \", matchereResponse[k]);\r",
+							"        pm.expect((match_url[k])).to.include(matchereResponse[k]);\r",
+							"\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.request.removeHeader(\"Ocp-Apim-Subscription-Key\");\r",
+							"pm.request.removeHeader(\"X-Initiating-State\");\r",
+							"pm.request.headers.add({ key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"ea_findmatch_dupKey\") });\r",
+							"pm.request.headers.add({ key: \"X-Initiating-State\", value: \"EA\" });\r",
+							"const initiating_state = pm.request.headers.get(\"X-Initiating-State\");\r",
+							"console.log(\"Current initiating State: \" + initiating_state);\r",
+							"console.log('CSV data', pm.iterationData.get('lds_hash'), pm.iterationData.get('participant_id'), pm.iterationData.get('case_id'));\r",
+							"\r",
+							"console.log(pm.iterationData.toObject());\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": [\r\n        {\r\n        \"lds_hash\": \"{{lds_hash}}\",\r\n      \"participant_id\": \"{{participant_id}}\",\r\n      \"case_id\": \"{{case_id}}\",\r\n      \"search_reason\": \"{{search_reason}}\"\r\n        }\r\n    ]\r\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/match/v2/find_matches",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"match",
+						"v2",
+						"find_matches"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bulk Upload APIM EB-TEST",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.request.headers.add({key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"eb_uploadKey\")});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const uploadResponse = pm.response.json().data;\r",
+							"console.log(\"Upload Response \" + JSON.stringify(uploadResponse));\r",
+							"pm.variables.unset(\"upload_id\");\r",
+							"pm.collectionVariables.set(\"upload_id\", uploadResponse.upload_id);\r",
+							"\r",
+							"pm.test(\"Status code validation\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"const attributesList = [\"upload_id\"];\r",
+							"pm.test(\"Check the mandatory attributes \", () => {\r",
+							"    let keys = Object.keys(uploadResponse);\r",
+							"    //validating if has one parameter\r",
+							"    pm.expect(keys.length).to.equal(1);\r",
+							"\r",
+							"    //validating if contains upload_id attribute\r",
+							"    pm.expect(keys).to.include(\"upload_id\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/plain",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "file",
+					"file": {
+						"src": "/C:/Piipan/TestAutomationFramework-API/example.csv"
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/bulk/{{stateEB}}/v2/upload_all_participants/example.csv",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bulk",
+						"{{stateEB}}",
+						"v2",
+						"upload_all_participants",
+						"example.csv"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FindUploadById  APIM EB -TEST",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const upload_id = pm.variables.get(\"upload_id\");\r",
+							"pm.request.headers.add({key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"eb_uploadKey\")});\r",
+							"console.log(\"upload_id: \"+upload_id);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code validation\", function () {\r",
+							"   pm.expect(pm.response.code).to.be.oneOf([200,404]);\r",
+							"    console.log('Status ' + pm.response.code);\r",
+							"});\r",
+							"\r",
+							"const attributesList = [\"upload_identifier\", \"created_at\", \"participants_uploaded\", \"completed_at\", \"status\"];\r",
+							"\r",
+							"pm.test(\"Check the mandatory attributes \", () => {\r",
+							"let count = pm.environment.get(\"count\");\r",
+							"    if (!count) {\r",
+							"        count = 1;\r",
+							"\r",
+							"    }\r",
+							"    if (count < 3) {\r",
+							"\r",
+							"        postman.setNextRequest(\"FindUploadById  APIM EB -TEST\");\r",
+							"        if (pm.response.code == 200) {\r",
+							"            console.log(\"Current res: \" + JSON.stringify(pm.response.json()));\r",
+							"            postman.setNextRequest(\"Find Matches APIM EB-TEST\");\r",
+							"        }\r",
+							"        else if (pm.response.code == 404) {\r",
+							"            count = count + 1;\r",
+							"            pm.environment.set(\"count\", count);\r",
+							"        }\r",
+							"        setTimeout(() => { }, pm.environment.get(\"upload_delay\"));\r",
+							"    } else {\r",
+							"        pm.environment.unset(\"count\");\r",
+							"    }\r",
+							"\r",
+							"    for (const match of attributesList) {\r",
+							"        if(pm.response.code == 200){\r",
+							"        pm.expect(pm.response.json().data).to.have.property(match);\r",
+							"    }\r",
+							"    }\r",
+							"\r",
+							"    if(pm.response.code == 200){\r",
+							"    const upload_identifierResponse = pm.response.json().data.upload_identifier;\r",
+							"    const upload_id = pm.variables.get(\"upload_id\");\r",
+							"    console.log(\"Expected Upload ID: \" + upload_id + \" Actual: \" + upload_identifierResponse);\r",
+							"    pm.expect(upload_identifierResponse).to.eql(upload_id);\r",
+							"\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Upload Identifier length validation\", function () {\r",
+							"   const UploadIndentifier_length=  pm.collectionVariables.get(\"upload_id\").length;\r",
+							"   pm.expect(UploadIndentifier_length).lessThan(1000);\r",
+							"\r",
+							"   if(UploadIndentifier_length > 1000){\r",
+							"       pm.expect(pm.response.to.have.status(400))\r",
+							"   }else{\r",
+							"       console.log(\"Current length of Upload Identifier: \"+UploadIndentifier_length);\r",
+							"   }\r",
+							"\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Upload Identifier Special Character validation\", function () {\r",
+							"   const UploadIndentifier=  pm.collectionVariables.get(\"upload_id\");\r",
+							"   pm.expect(/^[0-9a-zA-Z\\-_]*$/.test(UploadIndentifier)).to.be.true;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Total Uploaded Data validation: Data Should be Equal\", function(){\r",
+							"    const total_row_From_file =  pm.environment.get(\"Total_Row\");\r",
+							"     if (pm.response.code !== 404){\r",
+							"    const status_response =pm.response.json().data.status;\r",
+							"    const total_row_uploaded_response =pm.response.json().data.participants_uploaded;\r",
+							"\r",
+							"    console.log(\"STATUS: \"+ status_response);\r",
+							"\r",
+							"   if(pm.response.code == 200 && status_response === \"COMPLETE\"){\r",
+							"   console.log(\"Record Upload: Expected- \"+total_row_From_file+\" Actual- \"+total_row_uploaded_response);\r",
+							"   pm.expect(total_row_From_file).to.eql(total_row_uploaded_response);\r",
+							"   }}\r",
+							"})\r",
+							"console.log(\"Current Successful Resp : \" + JSON.stringify(pm.response.json()));\r",
+							"pm.variables.unset(\"upload_id\");\r",
+							"pm.variables.unset(\"Total_Row\");\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/bulk/{{stateEB}}/v2/uploads/{{upload_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bulk",
+						"{{stateEB}}",
+						"v2",
+						"uploads",
+						"{{upload_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Matches APIM EB-TEST",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const res = pm.response.json().data;\r",
+							"const responseMatches = pm.response.json().data.results[0];\r",
+							"let matchLength = pm.response.json().data.results[0].matches.length;\r",
+							"const initiating_state = pm.request.headers.get(\"X-Initiating-State\");\r",
+							"const attributesListIfMatch = [\"match_id\", \"state\", \"case_id\", \"participant_id\", \"participant_closing_date\", \"recent_benefit_issuance_dates\", \"vulnerable_individual\", \"match_url\"];\r",
+							"const required_attributesListIfMatch = [\"match_id\", \"state\", \"participant_id\", \"match_url\"];\r",
+							"const attributesListIfNoMatch = [];\r",
+							"const attributesList_recent_benefit_issuance_dates = [\"start\", \"end\"];\r",
+							"\r",
+							"\r",
+							"pm.test(\"Status code validation\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response time is less than 3000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Verify Mandatory attributes Has value\", () => {\r",
+							"    for (const match of required_attributesListIfMatch) {\r",
+							"        if (matchLength > 0) {\r",
+							"            for (let i = 0; i < matchLength; i++) {\r",
+							"                pm.expect(responseMatches.matches[i].match).not.to.be.eq(null);\r",
+							"\r",
+							"            }\r",
+							"        }\r",
+							"\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Check the Presence of attributes \", () => {\r",
+							"    for (const match of attributesListIfMatch) {\r",
+							"        if (matchLength > 0) {\r",
+							"            for (let i = 0; i < matchLength; i++) {\r",
+							"                pm.expect(responseMatches.matches[i]).to.have.property(match);\r",
+							"            }\r",
+							"        }\r",
+							"\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Finding Match betwen state \", function () {\r",
+							"    for (let i = 0; i < matchLength; i++) {\r",
+							"        const stateT = responseMatches.matches[i].state;\r",
+							"        if (initiating_state === \"EC\") {\r",
+							"            pm.expect(stateT).to.not.eql(\"ec\");\r",
+							"            pm.expect(stateT.toUpperCase()).to.be.oneOf([\"EB\", \"MT\", \"EA\"]);\r",
+							"\r",
+							"        } else if (initiating_state === \"EB\") {\r",
+							"            pm.expect(stateT).to.not.eql(\"eb\");\r",
+							"            pm.expect(stateT.toUpperCase()).to.be.oneOf([\"MT\", \"EC\", \"EA\"]);\r",
+							"\r",
+							"        } else if (initiating_state === \"EA\") {\r",
+							"            pm.expect(stateT).to.not.eql(\"ea\");\r",
+							"            pm.expect(stateT.toUpperCase()).to.be.oneOf([\"EB\", \"EC\", \"MT\"]);\r",
+							"\r",
+							"        } else if (initiating_state === \"MT\") {\r",
+							"            pm.expect(stateT).to.not.eql(\"mt\");\r",
+							"            pm.expect(stateT.toUpperCase()).to.be.oneOf([\"EB\", \"EC\", \"EA\"]);\r",
+							"\r",
+							"        } else {\r",
+							"            pm.expect(0).to.be(1);\r",
+							"            console.log(\"Test failed due to state in response is invalid - \" + stateT)\r",
+							"        }\r",
+							"\r",
+							"    }\r",
+							"\r",
+							"});\r",
+							"\r",
+							"var matchereResponse;\r",
+							"pm.test(\"Matcher check\", () => {\r",
+							"\r",
+							"    matchereResponse = responseMatches.matches.map((match) => {\r",
+							"        return match.match_id;\r",
+							"    })\r",
+							"    if (matchereResponse.length > 0) {\r",
+							"        console.log(\"match id: ------ \", matchereResponse);\r",
+							"    } else {\r",
+							"        console.log(\"There are No match exist in the response\");\r",
+							"    }\r",
+							"\r",
+							"});\r",
+							"\r",
+							"\r",
+							"getAttrValue = {\r",
+							"    attributeIs(prop) {\r",
+							"        return responseMatches.matches.map((match) => {\r",
+							"\r",
+							"            if (prop === 'case_id')\r",
+							"                return match.case_id;\r",
+							"            if (prop === 'participant_id')\r",
+							"                return match.participant_id;\r",
+							"            if (prop === 'participant_closing_date')\r",
+							"                return match.participant_closing_date;\r",
+							"            if (prop === 'recent_benefit_issuance_dates')\r",
+							"                return match.recent_benefit_issuance_dates;\r",
+							"            if (prop === 'vulnerable_individual')\r",
+							"                return match.vulnerable_individual;\r",
+							"            if (prop === 'match_url')\r",
+							"                return match.match_url;\r",
+							"\r",
+							"        }, prop\r",
+							"        );\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Case_id validation\", () => {\r",
+							"    var case_ids = getAttrValue.attributeIs('case_id');\r",
+							"    for (var k = 0; k < case_ids.length; k++) {\r",
+							"        pm.expect(case_ids[k]).to.eq(pm.iterationData.get(\"case_id\"))\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"pm.test(\"Case ID length validation\", function () {\r",
+							"    if (matchLength > 0) {\r",
+							"        const case_id = responseMatches.matches[0].case_id;\r",
+							"        pm.expect(case_id.length).lessThan(21);\r",
+							"        console.log(\"Case ID Length: \" + JSON.stringify(case_id.length));\r",
+							"    } else if (matchLength == 0) {\r",
+							"        console.log(\"No match found. case_id not returned\")\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"case ID Special Character validation\", function () {\r",
+							"    if (matchLength > 0) {\r",
+							"        const case_id = responseMatches.matches[0].case_id;\r",
+							"        pm.expect(/^[0-9a-zA-Z\\-_]*$/.test(case_id)).to.be.true;\r",
+							"        console.log(\"Case ID: \" + JSON.stringify(case_id));\r",
+							"\r",
+							"    }\r",
+							"})\r",
+							"pm.test(\"participant_id validation check\", () => {\r",
+							"    var participant_ids = getAttrValue.attributeIs('participant_id');\r",
+							"    for (var k = 0; k < participant_ids.length; k++) {\r",
+							"        pm.expect(participant_ids[k]).to.eq(pm.iterationData.get(\"participant_id\"))\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"pm.test(\"Participant ID length validation\", function () {\r",
+							"\r",
+							"    if (matchLength > 0) {\r",
+							"        const participant_id = responseMatches.matches[0].participant_id;\r",
+							"        pm.expect(participant_id.length).lessThan(21);\r",
+							"        console.log(\"Participant ID Length: \" + JSON.stringify(participant_id.length));\r",
+							"\r",
+							"    } else if (matchLength == 0) {\r",
+							"        console.log(\"No match found. participant_id not returned\")\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"pm.test(\"Participant ID Special Character validation\", function () {\r",
+							"    if (matchLength > 0) {\r",
+							"        const participant_id = responseMatches.matches[0].participant_id;\r",
+							"        pm.expect(/^[0-9a-zA-Z\\-_]*$/.test(participant_id)).to.be.true;\r",
+							"        console.log(\"Participant ID: \" + JSON.stringify(participant_id));\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"\r",
+							"pm.test(\"participant_closing_date Format Value validation\", () => {\r",
+							"    if (matchLength > 0) {\r",
+							"        for (var k = 0; k < matchLength; k++) {\r",
+							"            var participant_closing_dates = responseMatches.matches[k].participant_closing_date;\r",
+							"            if (participant_closing_dates !== null) {\r",
+							"                console.log(\"participant_closing_dates\", participant_closing_dates);\r",
+							"                pm.expect(participant_closing_dates).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);\r",
+							"            }\r",
+							"\r",
+							"        }\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Recent Benefit Issuance Dates attributes validation\", () => {\r",
+							"    var recent_benefit_issuance_dates = getAttrValue.attributeIs('recent_benefit_issuance_dates');\r",
+							"\r",
+							"    if (matchLength > 0) {\r",
+							"\r",
+							"        for (let i = 0; i < matchLength; i++) {\r",
+							"            var recent_benefit_issuance_dates_value = responseMatches.matches[i].recent_benefit_issuance_dates;\r",
+							"            var recent_benefit_issuance_dates_length = recent_benefit_issuance_dates_value.length;\r",
+							"            console.log(\"recent_benefit_issuance_dates_value---\", recent_benefit_issuance_dates_length)\r",
+							"            if (recent_benefit_issuance_dates_value !== null) {\r",
+							"                for (const match of attributesList_recent_benefit_issuance_dates) {\r",
+							"                    for (let k = 0; k < recent_benefit_issuance_dates_length; i++) {\r",
+							"\r",
+							"                        pm.expect(responseMatches.matches[k].recent_benefit_issuance_dates[k]).to.have.property(match);\r",
+							"                    }\r",
+							"                }\r",
+							"            } else {\r",
+							"                console.log(\"recent_benefit_issuance_dates are\", recent_benefit_issuance_dates_value)\r",
+							"            }\r",
+							"\r",
+							"        }\r",
+							"\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"\r",
+							"pm.test(\"Recent Benefit Issuance Start and End Date Format validation\", () => {\r",
+							"  \r",
+							"    if (matchLength > 0) {\r",
+							"\r",
+							"        for (let i = 0; i < matchLength; i++) {\r",
+							"            var recent_benefit_issuance_dates_value = responseMatches.matches[i].recent_benefit_issuance_dates;\r",
+							"            var recent_benefit_issuance_dates_length = recent_benefit_issuance_dates_value.length;\r",
+							"            console.log(\"recent_benefit_issuance_dates_value---\", recent_benefit_issuance_dates_length)\r",
+							"            if (recent_benefit_issuance_dates_value !== null) {\r",
+							"\r",
+							"                for (let k = 0; k < recent_benefit_issuance_dates_length; i++) {\r",
+							"                    var startDate = recent_benefit_issuance_dates_value[k].start;\r",
+							"                    var endDate = recent_benefit_issuance_dates_value[k].end;\r",
+							"\r",
+							"                    pm.expect(startDate).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);\r",
+							"                    pm.expect(endDate).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);\r",
+							"                    if (startDate == null) {\r",
+							"                        pm.expect(endDate).to.be.eq(null);\r",
+							"\r",
+							"                    } else {\r",
+							"                        console.log(\"recent_benefit_issuance Start dates are\", startDate);\r",
+							"                        console.log(\"recent_benefit_issuance End dates are\", endDate);\r",
+							"\r",
+							"\r",
+							"                    }\r",
+							"\r",
+							"                }\r",
+							"\r",
+							"            }\r",
+							"        }\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Recent Benefit Issuance Date validation \", () => {\r",
+							"  \r",
+							"    if (matchLength > 0) {\r",
+							"\r",
+							"        for (let i = 0; i < matchLength; i++) {\r",
+							"            var recent_benefit_issuance_dates_value = responseMatches.matches[i].recent_benefit_issuance_dates;\r",
+							"            var recent_benefit_issuance_dates_length = recent_benefit_issuance_dates_value.length;\r",
+							"            console.log(\"recent_benefit_issuance_dates_value---\", recent_benefit_issuance_dates_length)\r",
+							"            if (recent_benefit_issuance_dates_value !== null) {\r",
+							"\r",
+							"                for (let k = 0; k < recent_benefit_issuance_dates_length; i++) {\r",
+							"                    var startDate = recent_benefit_issuance_dates_value[k].start;\r",
+							"                    var endDate = recent_benefit_issuance_dates_value[k].end;\r",
+							"\r",
+							"                    if (recent_benefit_issuance_start_dates == null) {\r",
+							"            pm.expect(recent_benefit_issuance_end_dates).to.be.eq(null);\r",
+							"        } else if (recent_benefit_issuance_start_dates !== null) {\r",
+							"            pm.expect(recent_benefit_issuance_end_dates).not.to.be.eq(null);\r",
+							"        }\r",
+							"                }\r",
+							"\r",
+							"            }\r",
+							"        }\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Vulnerable Individual validation\", () => {\r",
+							"    var vulnerable_individual = getAttrValue.attributeIs('vulnerable_individual');\r",
+							"    for (var k = 0; k < vulnerable_individual.length; k++) {\r",
+							"        console.log(\"Expected: \", vulnerable_individual[k], \"To be one of : true, false, null\");\r",
+							"        pm.expect(vulnerable_individual[k]).to.be.oneOf([true, false, null]);\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Match URL validation \", () => {\r",
+							"    var match_url = getAttrValue.attributeIs('match_url');\r",
+							"    for (var k = 0; k < match_url.length; k++) {\r",
+							"        console.log(\"Expected: \", match_url[k], \"To include Match ID: \", matchereResponse[k]);\r",
+							"        pm.expect((match_url[k])).to.include(matchereResponse[k]);\r",
+							"\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.request.removeHeader(\"Ocp-Apim-Subscription-Key\");\r",
+							"pm.request.removeHeader(\"X-Initiating-State\");\r",
+							"pm.request.headers.add({ key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"eb_findmatch_dupKey\") });\r",
+							"pm.request.headers.add({ key: \"X-Initiating-State\", value: \"EB\" });\r",
+							"const initiating_state = pm.request.headers.get(\"X-Initiating-State\");\r",
+							"console.log(\"Current initiating State: \" + initiating_state);\r",
+							"console.log('CSV data', pm.iterationData.get('lds_hash'), pm.iterationData.get('participant_id'), pm.iterationData.get('case_id'));\r",
+							"\r",
+							"console.log(pm.iterationData.toObject());\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": [\r\n        {\r\n        \"lds_hash\": \"{{lds_hash}}\",\r\n      \"participant_id\": \"{{participant_id}}\",\r\n      \"case_id\": \"{{case_id}}\",\r\n     \"search_reason\": \"{{search_reason}}\"\r\n        }\r\n    ]\r\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/match/v2/find_matches",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"match",
+						"v2",
+						"find_matches"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bulk Upload APIM EC-TEST",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const uploadResponse = pm.response.json().data;\r",
+							"console.log(\"Upload Response \" + JSON.stringify(uploadResponse));\r",
+							"pm.variables.unset(\"upload_id\");\r",
+							"pm.collectionVariables.set(\"upload_id\", uploadResponse.upload_id);\r",
+							"\r",
+							"pm.test(\"Status code validation\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"const attributesList = [\"upload_id\"];\r",
+							"pm.test(\"Check the mandatory attributes \", () => {\r",
+							"    let keys = Object.keys(uploadResponse);\r",
+							"    //validating if has one parameter\r",
+							"    pm.expect(keys.length).to.equal(1);\r",
+							"\r",
+							"    //validating if contains upload_id attribute\r",
+							"    pm.expect(keys).to.include(\"upload_id\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.request.headers.add({key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"ec_uploadKey\")});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/plain",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "file",
+					"file": {
+						"src": "example.csv"
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/bulk/{{stateEC}}/v2/upload_all_participants/example.csv",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bulk",
+						"{{stateEC}}",
+						"v2",
+						"upload_all_participants",
+						"example.csv"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bulk Upload APIM EC-TEST Invalid Subscription",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							" const uploadResponse = pm.response.json().message;\r",
+							"pm.test(\"Status code validation\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Bulk Upload - Error message validation\", function () {\r",
+							"     pm.expect(uploadResponse).to.contains(\"Access denied due to invalid subscription key. Make sure to provide a valid key for an active subscription\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.request.headers.add({key: \"Ocp-Apim-Subscription-Key\", value: \"8f7f91a583cb4e74936b494529\"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/plain",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "file",
+					"file": {
+						"src": "example.csv"
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/bulk/{{stateEC}}/v2/upload_all_participants/example.csv",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bulk",
+						"{{stateEC}}",
+						"v2",
+						"upload_all_participants",
+						"example.csv"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bulk Upload APIM EC-TEST Empty Subscription",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const uploadResponse = pm.response.json().message;\r",
+							"\r",
+							"pm.test(\"Status code validation\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Bulk Upload - Error message validation\", function () {\r",
+							"     pm.expect(uploadResponse).to.contains(\"Access denied due to invalid subscription key. Make sure to provide a valid key for an active subscription\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.request.headers.add({key: \"Ocp-Apim-Subscription-Key\", value: \"\"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/plain",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "file",
+					"file": {
+						"src": "example.csv"
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/bulk/{{stateEC}}/v2/upload_all_participants/example.csv",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bulk",
+						"{{stateEC}}",
+						"v2",
+						"upload_all_participants",
+						"example.csv"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FindUploadById  APIM EC -TEST status-api-06",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const upload_id = pm.variables.get(\"upload_id\");\r",
+							"pm.request.headers.add({key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"ea_uploadKey\")});\r",
+							"\r",
+							"console.log(\"upload_id: \"+upload_id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code validation For other State Identifier\", function () {\r",
+							"    \r",
+							"     pm.expect(pm.response.code).to.be.oneOf([404,401]);\r",
+							"    console.log('Status ' + pm.response.code);\r",
+							"});\r",
+							"console.log(\"Current Response : \" + JSON.stringify(pm.response.json()));\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/bulk/{{stateEA}}/v2/uploads/{{upload_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bulk",
+						"{{stateEA}}",
+						"v2",
+						"uploads",
+						"{{upload_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FindUploadById  APIM EC -TEST status-api-07",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const upload_id = pm.variables.get(\"upload_id\");\r",
+							"pm.request.headers.add({key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"ea_uploadKey\")});\r",
+							"\r",
+							"console.log(\"upload_id: \"+upload_id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code validation for Calling the API without an identifier\", function () {\r",
+							"    \r",
+							"     pm.response.to.have.status(404);\r",
+							"    console.log('Status ' + pm.response.code);\r",
+							"});\r",
+							"\r",
+							"console.log(\"Current Response : \" + JSON.stringify(pm.response.json()));\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/bulk/{{stateEC}}/v2/uploads",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bulk",
+						"{{stateEC}}",
+						"v2",
+						"uploads"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FindUploadById  APIM EC -TEST status-api-08_09",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const upload_id = pm.variables.get(\"upload_id\");\r",
+							"pm.request.headers.add({key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"ec_uploadKey\")});\r",
+							"\r",
+							"console.log(\"upload_id: \"+upload_id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"upload_identifier that is too long is rejected\", function () {\r",
+							"   const UploadIndentifier_length=  pm.collectionVariables.get(\"upload_id\").length;\r",
+							"   pm.expect(UploadIndentifier_length).lessThan(1000);\r",
+							"\r",
+							"   if(UploadIndentifier_length > 1000){\r",
+							"       pm.expect(pm.response.to.have.status(400))\r",
+							"   }else{\r",
+							"       console.log(\"Current length of Upload Identifier: \"+UploadIndentifier_length);\r",
+							"   }\r",
+							"});\r",
+							"pm.test(\"upload_identifier with special Characters is rejected\", function () {\r",
+							"   const UploadIndentifier=  pm.collectionVariables.get(\"upload_id\");\r",
+							"   pm.expect(/^[0-9a-zA-Z\\-_]*$/.test(UploadIndentifier)).to.be.true;\r",
+							"});\r",
+							"console.log(\"Current Response : \" + JSON.stringify(pm.response.json()));\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/bulk/{{stateEC}}/v2/uploads/{{upload_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bulk",
+						"{{stateEC}}",
+						"v2",
+						"uploads",
+						"{{upload_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FindUploadById  APIM EC -TEST",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const upload_id = pm.variables.get(\"upload_id\");\r",
+							"pm.request.headers.add({key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"ec_uploadKey\")});\r",
+							"\r",
+							"console.log(\"upload_id: \"+upload_id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code validation\", function () {\r",
+							"pm.expect(pm.response.code).to.be.oneOf([200,404]);\r",
+							"    console.log('Status ' + pm.response.code);\r",
+							"});\r",
+							"\r",
+							"const attributesList = [\"upload_identifier\", \"created_at\", \"participants_uploaded\", \"completed_at\", \"status\"];\r",
+							"\r",
+							"pm.test(\"Check the mandatory attributes \", () => {\r",
+							"let count = pm.environment.get(\"count\");\r",
+							"    if (!count) {\r",
+							"        count = 1;\r",
+							"\r",
+							"    }\r",
+							"    if (count < 3) {\r",
+							"\r",
+							"        postman.setNextRequest(\"FindUploadById  APIM EC -TEST\");\r",
+							"        if (pm.response.code == 200) {\r",
+							"            console.log(\"Current res: \" + JSON.stringify(pm.response.json()));\r",
+							"           postman.setNextRequest(\"FindUploadById  APIM EC -TEST status-api-10\");\r",
+							"        }\r",
+							"        else if (pm.response.code == 404) {\r",
+							"            count = count + 1;\r",
+							"            pm.environment.set(\"count\", count);\r",
+							"        }\r",
+							"        setTimeout(() => { }, pm.environment.get(\"upload_delay\"));\r",
+							"    } else {\r",
+							"        pm.environment.unset(\"count\");\r",
+							"    }\r",
+							"\r",
+							"    for (const match of attributesList) {\r",
+							"        if(pm.response.code == 200){\r",
+							"        pm.expect(pm.response.json().data).to.have.property(match);\r",
+							"    }\r",
+							"    }\r",
+							"\r",
+							"    if(pm.response.code == 200){\r",
+							"    const upload_identifierResponse = pm.response.json().data.upload_identifier;\r",
+							"    const upload_id = pm.variables.get(\"upload_id\");\r",
+							"    console.log(\"Expected Upload ID: \" + upload_id + \" Actual: \" + upload_identifierResponse);\r",
+							"    pm.expect(upload_identifierResponse).to.eql(upload_id);\r",
+							"\r",
+							"    }\r",
+							"});\r",
+							"pm.test(\"Upload Identifier length validation\", function () {\r",
+							"   const UploadIndentifier_length=  pm.collectionVariables.get(\"upload_id\").length;\r",
+							"   pm.expect(UploadIndentifier_length).lessThan(1000);\r",
+							"\r",
+							"   if(UploadIndentifier_length > 1000){\r",
+							"       pm.expect(pm.response.to.have.status(400))\r",
+							"   }else{\r",
+							"       console.log(\"Current length of Upload Identifier: \"+UploadIndentifier_length);\r",
+							"   }\r",
+							"\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Upload Identifier Special Character validation\", function () {\r",
+							"   const UploadIndentifier=  pm.collectionVariables.get(\"upload_id\");\r",
+							"   pm.expect(/^[0-9a-zA-Z\\-_]*$/.test(UploadIndentifier)).to.be.true;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Total Uploaded Data validation: Data Should be Equal\", function(){\r",
+							"    const total_row_From_file =  pm.environment.get(\"Total_Row\");\r",
+							"     if (pm.response.code !== 404){\r",
+							"    const status_response =pm.response.json().data.status;\r",
+							"    const total_row_uploaded_response =pm.response.json().data.participants_uploaded;\r",
+							"\r",
+							"    console.log(\"STATUS: \"+ status_response);\r",
+							"\r",
+							"   if(pm.response.code == 200 && status_response === \"COMPLETE\"){\r",
+							"   console.log(\"Record Upload: Expected- \"+total_row_From_file+\" Actual- \"+total_row_uploaded_response);\r",
+							"   pm.expect(total_row_From_file).to.eql(total_row_uploaded_response);\r",
+							"   }}\r",
+							"})\r",
+							"console.log(\"Current Successful Resp : \" + JSON.stringify(pm.response.json()));\r",
+							"pm.variables.unset(\"upload_id\");\r",
+							"pm.variables.unset(\"Total_Row\");\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/bulk/{{stateEC}}/v2/uploads/{{upload_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bulk",
+						"{{stateEC}}",
+						"v2",
+						"uploads",
+						"{{upload_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FindUploadById  APIM EC -TEST status-api-10",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const upload_id = pm.variables.get(\"upload_id\");\r",
+							"pm.request.headers.add({key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"ec_uploadKey\")});\r",
+							"console.log(\"upload_id: \"+upload_id);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Status code validation for Calling the API without an identifier\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"    console.log('Status ' + pm.response.code);\r",
+							"});\r",
+							"\r",
+							"console.log(\"Current Response : \" + JSON.stringify(pm.response.json()));\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/bulk/{{stateEC}}/v2/uploads/00000000000000000000",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"bulk",
+						"{{stateEC}}",
+						"v2",
+						"uploads",
+						"00000000000000000000"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Matches APIM -TEST EC",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const res = pm.response.json().data;\r",
+							"const responseMatches = pm.response.json().data.results[0];\r",
+							"let matchLength = pm.response.json().data.results[0].matches.length;\r",
+							"const initiating_state = pm.request.headers.get(\"X-Initiating-State\");\r",
+							"const attributesListIfMatch = [\"match_id\", \"state\", \"case_id\", \"participant_id\", \"participant_closing_date\", \"recent_benefit_issuance_dates\", \"vulnerable_individual\", \"match_url\"];\r",
+							"const required_attributesListIfMatch = [\"match_id\", \"state\", \"participant_id\", \"match_url\"];\r",
+							"const attributesListIfNoMatch = [];\r",
+							"const attributesList_recent_benefit_issuance_dates = [\"start\", \"end\"];\r",
+							"\r",
+							"\r",
+							"pm.test(\"Status code validation\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response time is less than 3000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Verify Mandatory attributes Has value\", () => {\r",
+							"    for (const match of required_attributesListIfMatch) {\r",
+							"        if (matchLength > 0) {\r",
+							"            for (let i = 0; i < matchLength; i++) {\r",
+							"                pm.expect(responseMatches.matches[i].match).not.to.be.eq(null);\r",
+							"\r",
+							"            }\r",
+							"        }\r",
+							"\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Check the Presence of attributes \", () => {\r",
+							"    for (const match of attributesListIfMatch) {\r",
+							"        if (matchLength > 0) {\r",
+							"            for (let i = 0; i < matchLength; i++) {\r",
+							"                pm.expect(responseMatches.matches[i]).to.have.property(match);\r",
+							"            }\r",
+							"        }\r",
+							"\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Finding Match betwen state \", function () {\r",
+							"    for (let i = 0; i < matchLength; i++) {\r",
+							"        const stateT = responseMatches.matches[i].state;\r",
+							"        if (initiating_state === \"EC\") {\r",
+							"            pm.expect(stateT).to.not.eql(\"ec\");\r",
+							"            pm.expect(stateT.toUpperCase()).to.be.oneOf([\"EB\", \"MT\", \"EA\"]);\r",
+							"\r",
+							"        } else if (initiating_state === \"EB\") {\r",
+							"            pm.expect(stateT).to.not.eql(\"eb\");\r",
+							"            pm.expect(stateT.toUpperCase()).to.be.oneOf([\"MT\", \"EC\", \"EA\"]);\r",
+							"\r",
+							"        } else if (initiating_state === \"EA\") {\r",
+							"            pm.expect(stateT).to.not.eql(\"ea\");\r",
+							"            pm.expect(stateT.toUpperCase()).to.be.oneOf([\"EB\", \"EC\", \"MT\"]);\r",
+							"\r",
+							"        } else if (initiating_state === \"MT\") {\r",
+							"            pm.expect(stateT).to.not.eql(\"mt\");\r",
+							"            pm.expect(stateT.toUpperCase()).to.be.oneOf([\"EB\", \"EC\", \"EA\"]);\r",
+							"\r",
+							"        } else {\r",
+							"            pm.expect(0).to.be(1);\r",
+							"            console.log(\"Test failed due to state in response is invalid - \" + stateT)\r",
+							"        }\r",
+							"\r",
+							"    }\r",
+							"\r",
+							"});\r",
+							"\r",
+							"var matchereResponse;\r",
+							"pm.test(\"Matcher check\", () => {\r",
+							"\r",
+							"    matchereResponse = responseMatches.matches.map((match) => {\r",
+							"        return match.match_id;\r",
+							"    })\r",
+							"    if (matchereResponse.length > 0) {\r",
+							"        console.log(\"match id: ------ \", matchereResponse);\r",
+							"    } else {\r",
+							"        console.log(\"There are No match exist in the response\");\r",
+							"    }\r",
+							"\r",
+							"});\r",
+							"\r",
+							"\r",
+							"getAttrValue = {\r",
+							"    attributeIs(prop) {\r",
+							"        return responseMatches.matches.map((match) => {\r",
+							"\r",
+							"            if (prop === 'case_id')\r",
+							"                return match.case_id;\r",
+							"            if (prop === 'participant_id')\r",
+							"                return match.participant_id;\r",
+							"            if (prop === 'participant_closing_date')\r",
+							"                return match.participant_closing_date;\r",
+							"            if (prop === 'recent_benefit_issuance_dates')\r",
+							"                return match.recent_benefit_issuance_dates;\r",
+							"            if (prop === 'vulnerable_individual')\r",
+							"                return match.vulnerable_individual;\r",
+							"            if (prop === 'match_url')\r",
+							"                return match.match_url;\r",
+							"\r",
+							"        }, prop\r",
+							"        );\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Case_id validation\", () => {\r",
+							"    var case_ids = getAttrValue.attributeIs('case_id');\r",
+							"    for (var k = 0; k < case_ids.length; k++) {\r",
+							"        pm.expect(case_ids[k]).to.eq(pm.iterationData.get(\"case_id\"))\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"pm.test(\"Case ID length validation\", function () {\r",
+							"    if (matchLength > 0) {\r",
+							"        const case_id = responseMatches.matches[0].case_id;\r",
+							"        pm.expect(case_id.length).lessThan(21);\r",
+							"        console.log(\"Case ID Length: \" + JSON.stringify(case_id.length));\r",
+							"    } else if (matchLength == 0) {\r",
+							"        console.log(\"No match found. case_id not returned\")\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"case ID Special Character validation\", function () {\r",
+							"    if (matchLength > 0) {\r",
+							"        const case_id = responseMatches.matches[0].case_id;\r",
+							"        pm.expect(/^[0-9a-zA-Z\\-_]*$/.test(case_id)).to.be.true;\r",
+							"        console.log(\"Case ID: \" + JSON.stringify(case_id));\r",
+							"\r",
+							"    }\r",
+							"})\r",
+							"pm.test(\"participant_id validation check\", () => {\r",
+							"    var participant_ids = getAttrValue.attributeIs('participant_id');\r",
+							"    for (var k = 0; k < participant_ids.length; k++) {\r",
+							"        pm.expect(participant_ids[k]).to.eq(pm.iterationData.get(\"participant_id\"))\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"pm.test(\"Participant ID length validation\", function () {\r",
+							"\r",
+							"    if (matchLength > 0) {\r",
+							"        const participant_id = responseMatches.matches[0].participant_id;\r",
+							"        pm.expect(participant_id.length).lessThan(21);\r",
+							"        console.log(\"Participant ID Length: \" + JSON.stringify(participant_id.length));\r",
+							"\r",
+							"    } else if (matchLength == 0) {\r",
+							"        console.log(\"No match found. participant_id not returned\")\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"pm.test(\"Participant ID Special Character validation\", function () {\r",
+							"    if (matchLength > 0) {\r",
+							"        const participant_id = responseMatches.matches[0].participant_id;\r",
+							"        pm.expect(/^[0-9a-zA-Z\\-_]*$/.test(participant_id)).to.be.true;\r",
+							"        console.log(\"Participant ID: \" + JSON.stringify(participant_id));\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"\r",
+							"pm.test(\"participant_closing_date Format Value validation\", () => {\r",
+							"    if (matchLength > 0) {\r",
+							"        for (var k = 0; k < matchLength; k++) {\r",
+							"            var participant_closing_dates = responseMatches.matches[k].participant_closing_date;\r",
+							"            if (participant_closing_dates !== null) {\r",
+							"                console.log(\"participant_closing_dates\", participant_closing_dates);\r",
+							"                pm.expect(participant_closing_dates).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);\r",
+							"            }\r",
+							"\r",
+							"        }\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Recent Benefit Issuance Dates attributes validation\", () => {\r",
+							"    var recent_benefit_issuance_dates = getAttrValue.attributeIs('recent_benefit_issuance_dates');\r",
+							"\r",
+							"    if (matchLength > 0) {\r",
+							"\r",
+							"        for (let i = 0; i < matchLength; i++) {\r",
+							"            var recent_benefit_issuance_dates_value = responseMatches.matches[i].recent_benefit_issuance_dates;\r",
+							"            var recent_benefit_issuance_dates_length = recent_benefit_issuance_dates_value.length;\r",
+							"            console.log(\"recent_benefit_issuance_dates_value---\", recent_benefit_issuance_dates_length)\r",
+							"            if (recent_benefit_issuance_dates_value !== null) {\r",
+							"                for (const match of attributesList_recent_benefit_issuance_dates) {\r",
+							"                    for (let k = 0; k < recent_benefit_issuance_dates_length; i++) {\r",
+							"\r",
+							"                        pm.expect(responseMatches.matches[k].recent_benefit_issuance_dates[k]).to.have.property(match);\r",
+							"                    }\r",
+							"                }\r",
+							"            } else {\r",
+							"                console.log(\"recent_benefit_issuance_dates are\", recent_benefit_issuance_dates_value)\r",
+							"            }\r",
+							"\r",
+							"        }\r",
+							"\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"\r",
+							"pm.test(\"Recent Benefit Issuance Start and End Date Format validation\", () => {\r",
+							"  \r",
+							"    if (matchLength > 0) {\r",
+							"\r",
+							"        for (let i = 0; i < matchLength; i++) {\r",
+							"            var recent_benefit_issuance_dates_value = responseMatches.matches[i].recent_benefit_issuance_dates;\r",
+							"            var recent_benefit_issuance_dates_length = recent_benefit_issuance_dates_value.length;\r",
+							"            console.log(\"recent_benefit_issuance_dates_value---\", recent_benefit_issuance_dates_length)\r",
+							"            if (recent_benefit_issuance_dates_value !== null) {\r",
+							"\r",
+							"                for (let k = 0; k < recent_benefit_issuance_dates_length; i++) {\r",
+							"                    var startDate = recent_benefit_issuance_dates_value[k].start;\r",
+							"                    var endDate = recent_benefit_issuance_dates_value[k].end;\r",
+							"\r",
+							"                    pm.expect(startDate).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);\r",
+							"                    pm.expect(endDate).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);\r",
+							"                    if (startDate == null) {\r",
+							"                        pm.expect(endDate).to.be.eq(null);\r",
+							"\r",
+							"                    } else {\r",
+							"                        console.log(\"recent_benefit_issuance Start dates are\", startDate);\r",
+							"                        console.log(\"recent_benefit_issuance End dates are\", endDate);\r",
+							"\r",
+							"\r",
+							"                    }\r",
+							"\r",
+							"                }\r",
+							"\r",
+							"            }\r",
+							"        }\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Recent Benefit Issuance Date validation \", () => {\r",
+							"  \r",
+							"    if (matchLength > 0) {\r",
+							"\r",
+							"        for (let i = 0; i < matchLength; i++) {\r",
+							"            var recent_benefit_issuance_dates_value = responseMatches.matches[i].recent_benefit_issuance_dates;\r",
+							"            var recent_benefit_issuance_dates_length = recent_benefit_issuance_dates_value.length;\r",
+							"            console.log(\"recent_benefit_issuance_dates_value---\", recent_benefit_issuance_dates_length)\r",
+							"            if (recent_benefit_issuance_dates_value !== null) {\r",
+							"\r",
+							"                for (let k = 0; k < recent_benefit_issuance_dates_length; i++) {\r",
+							"                    var startDate = recent_benefit_issuance_dates_value[k].start;\r",
+							"                    var endDate = recent_benefit_issuance_dates_value[k].end;\r",
+							"\r",
+							"                    if (recent_benefit_issuance_start_dates == null) {\r",
+							"            pm.expect(recent_benefit_issuance_end_dates).to.be.eq(null);\r",
+							"        } else if (recent_benefit_issuance_start_dates !== null) {\r",
+							"            pm.expect(recent_benefit_issuance_end_dates).not.to.be.eq(null);\r",
+							"        }\r",
+							"                }\r",
+							"\r",
+							"            }\r",
+							"        }\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Vulnerable Individual validation\", () => {\r",
+							"    var vulnerable_individual = getAttrValue.attributeIs('vulnerable_individual');\r",
+							"    for (var k = 0; k < vulnerable_individual.length; k++) {\r",
+							"        console.log(\"Expected: \", vulnerable_individual[k], \"To be one of : true, false, null\");\r",
+							"        pm.expect(vulnerable_individual[k]).to.be.oneOf([true, false, null]);\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Match URL validation \", () => {\r",
+							"    var match_url = getAttrValue.attributeIs('match_url');\r",
+							"    for (var k = 0; k < match_url.length; k++) {\r",
+							"        console.log(\"Expected: \", match_url[k], \"To include Match ID: \", matchereResponse[k]);\r",
+							"        pm.expect((match_url[k])).to.include(matchereResponse[k]);\r",
+							"\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.request.removeHeader(\"Ocp-Apim-Subscription-Key\");\r",
+							"pm.request.removeHeader(\"X-Initiating-State\");\r",
+							"pm.request.headers.add({key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"ec_findmatch_dupKey\")});\r",
+							"pm.request.headers.add({key:\"X-Initiating-State\", value: \"EC\"});\r",
+							"const initiating_state = pm.request.headers.get(\"X-Initiating-State\");\r",
+							"console.log(\"Current initiating State: \" +initiating_state);\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": [\r\n        {\r\n        \"lds_hash\": \"{{lds_hash}}\",\r\n      \"participant_id\": \"{{participant_id}}\",\r\n      \"case_id\": \"{{case_id}}\",\r\n      \"search_reason\": \"{{search_reason}}\"\r\n        }\r\n    ]\r\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/match/v2/find_matches",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"match",
+						"v2",
+						"find_matches"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Matches APIM match-api-12",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const res = pm.response.json().data;\r",
+							"const responseMatches = pm.response.json().data.results[0];\r",
+							"const matchLength = pm.response.json().data.results[0].matches.length;\r",
+							"const initiating_state = pm.request.headers.get(\"X-Initiating-State\");\r",
+							"\r",
+							"pm.test(\"Status code validation\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Finding Match betwen state \", function () {\r",
+							"    for (let i = 0; i < matchLength; i++) {\r",
+							"    const stateT = responseMatches.matches[i].state;\r",
+							"    if(initiating_state === \"EC\"){\r",
+							"       pm.expect(stateT).to.not.eql(\"ec\");\r",
+							"       pm.expect(stateT.toUpperCase()).to.be.oneOf([\"EB\", \"MT\",\"EA\"]);\r",
+							"   \r",
+							"    }else if(initiating_state === \"EB\"){\r",
+							"    pm.expect(stateT).to.not.eql(\"eb\");\r",
+							"    pm.expect(stateT.toUpperCase()).to.be.oneOf([\"MT\", \"EC\",\"EA\"]);\r",
+							"\r",
+							"    }else if(initiating_state === \"EA\"){\r",
+							"    pm.expect(stateT).to.not.eql(\"ea\");\r",
+							"    pm.expect(stateT.toUpperCase()).to.be.oneOf([\"EB\", \"EC\",\"MT\"]);\r",
+							"\r",
+							"    }else if(initiating_state === \"MT\"){\r",
+							"    pm.expect(stateT).to.not.eql(\"mt\");\r",
+							"    pm.expect(stateT.toUpperCase()).to.be.oneOf([\"EB\", \"EC\",\"EA\"]);\r",
+							"\r",
+							"    }else{\r",
+							"    pm.expect(0).to.be(1);\r",
+							"    console.log(\"Test failed due to state in response is invalid - \" + stateT)\r",
+							"    }\r",
+							"\r",
+							"}\r",
+							"\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Matcher check\", ()=>{\r",
+							"    var matchereResponse =  responseMatches.matches.map((match) => {\r",
+							"        return match.match_id\r",
+							"        }\r",
+							"        );\r",
+							"    const count= {};\r",
+							"    if(matchereResponse >= 0){\r",
+							"\r",
+							"    for(const matches of matchereResponse){\r",
+							"        count[matches]=count[matches] ? count[matches] + 1 : 1;\r",
+							"    }\r",
+							"   for(var k=0; k< matchereResponse.length; k ++){\r",
+							"    pm.expect(count[matchereResponse[1]]).to.be(1);\r",
+							"   }\r",
+							"    }else {\r",
+							"        console.log(\"There are only one matcher exist in the response\");\r",
+							"    }\r",
+							"\r",
+							"})\r",
+							"getAttrValue = {\r",
+							"    attributeIs(prop){\r",
+							"       return responseMatches.matches.map((match) => {\r",
+							"           console.log('match value', match);\r",
+							"           console.log('prop value', prop);\r",
+							"           if(prop === 'case_id')\r",
+							"               return match.case_id;\r",
+							"            if(prop === 'participant_id')\r",
+							"               return match.participant_id;\r",
+							"        },prop\r",
+							"        );\r",
+							"    }\r",
+							"}\r",
+							"pm.test(\"Case_id validation check\", ()=>{\r",
+							"    var case_ids =  getAttrValue.attributeIs('case_id');\r",
+							"    if(matchLength >0){\r",
+							"   for(var k=0; k< case_ids.length; k ++){\r",
+							"    pm.expect(case_ids[k]).to.eq(pm.iterationData.get(\"case_id\"))\r",
+							"   }\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"participant_id validation check\", ()=>{\r",
+							"    var participant_ids =  getAttrValue.attributeIs('participant_id');\r",
+							"    if(matchLength >0){\r",
+							"   for(var k=0; k< participant_ids.length; k ++){\r",
+							"    pm.expect(participant_ids[k]).to.eq(pm.iterationData.get(\"participant_id\"))\r",
+							"   }\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Response time is less than 3000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+							"});\r",
+							"\r",
+							"const attributesList = [\"match_id\", \"state\", \"case_id\", \"participant_id\", \"participant_closing_date\",\"recent_benefit_issuance_dates\",\"vulnerable_individual\",\"match_url\"];\r",
+							"const mandatoryAttributesList = [\"match_id\", \"state\", \"participant_id\",\"match_url\"];\r",
+							"pm.test(\"Validate Presence of attributes In response \", ()=>{\r",
+							"\r",
+							"    if(matchLength >0){\r",
+							"    for(const match of attributesList){\r",
+							"        \r",
+							"    pm.expect(responseMatches.matches[0]).to.have.property(match);\r",
+							"    }\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Check the mandatory attributes \", ()=>{\r",
+							"\r",
+							"    if(matchLength >0){\r",
+							"    for(const match of attributesList){\r",
+							"        \r",
+							"    pm.expect(responseMatches.matches[0]).to.have.property(match);\r",
+							"    }\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Case ID length validation\", function(){\r",
+							"    if(matchLength >0){\r",
+							"    const case_id = responseMatches.matches[0].case_id;\r",
+							"    pm.expect(case_id.length).lessThan(21);\r",
+							"console.log(\"Case ID Length: \"+ JSON.stringify(case_id.length));\r",
+							"    }else if (matchLength == 0) {\r",
+							"        console.log(\"No match found. Case_id not returned\")\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"case ID Special Character validation\", function(){\r",
+							"     if(matchLength >0){\r",
+							"    const case_id = responseMatches.matches[0].case_id;\r",
+							"    pm.expect(/^[0-9a-zA-Z\\-_]*$/.test(case_id)).to.be.true;\r",
+							"console.log(\"Case ID: \"+ JSON.stringify(case_id));\r",
+							"\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Participant ID length validation\", function(){\r",
+							"    if(matchLength >0){\r",
+							"    const participant_id = responseMatches.matches[0].participant_id;\r",
+							"    pm.expect(participant_id.length).lessThan(21);\r",
+							"console.log(\"Participant ID Length: \"+ JSON.stringify(participant_id.length));\r",
+							"    }else if (matchLength == 0) {\r",
+							"        console.log(\"No match found. Participant_id not returned\")\r",
+							"    }\r",
+							"})\r",
+							"pm.test(\"Participant ID Special Character validation\", function(){\r",
+							"     if(matchLength >0){\r",
+							"    const participant_id = responseMatches.matches[0].participant_id;\r",
+							"    pm.expect(/^[0-9a-zA-Z\\-_]*$/.test(participant_id)).to.be.true;\r",
+							"console.log(\"Participant ID: \"+ JSON.stringify(participant_id));\r",
+							"\r",
+							"    }\r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.request.removeHeader(\"Ocp-Apim-Subscription-Key\");\r",
+							"pm.request.removeHeader(\"X-Initiating-State\");\r",
+							"pm.request.headers.add({ key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"ea_findmatch_dupKey\") });\r",
+							"pm.request.headers.add({ key: \"X-Initiating-State\", value: \"EB\" });\r",
+							"const initiating_state = pm.request.headers.get(\"X-Initiating-State\");\r",
+							"console.log(\"Current initiating State: \" + initiating_state);\r",
+							"console.log('CSV data', pm.iterationData.get('lds_hash'), pm.iterationData.get('participant_id'), pm.iterationData.get('case_id'));\r",
+							"console.log(pm.iterationData.toObject());\r",
+							"\r",
+							"var list = pm.info.iterationCount;\r",
+							"console.log(list);\r",
+							"pm.environment.set(\"Total_Records\", list);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": [\r\n        {\r\n      \"lds_hash\": \"{{lds_hash}}\",\r\n      \"participant_id\": \"{{participant_id}}\",\r\n      \"case_id\": \"{{case_id}}\",\r\n      \"search_reason\": \"{{search_reason}}\"\r\n        }\r\n    ]\r\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/match/v2/find_matches",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"match",
+						"v2",
+						"find_matches"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Matches APIM End",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"    const res = pm.response.json().data;\r",
+							"    const matchLength = pm.response.json().data.results[0].matches.length;\r",
+							"\r",
+							"pm.test(\"Match Found\", function () {\r",
+							"    console.log(\"Current length of Results: \"+matchLength);\r",
+							"    pm.expect(matchLength).to.greaterThan(0);\r",
+							"});\r",
+							"pm.test(\"Final Match Response\" , function(){\r",
+							"const expectedStatusCode = 200;\r",
+							"\r",
+							" if( pm.response.code !== expectedStatusCode){\r",
+							"         const resp = pm.response.json().errors;\r",
+							"         console.log(\"Find Match Error Response: \"+JSON.stringify(resp));\r",
+							"    }else{\r",
+							"        const respp = pm.response.json().data;\r",
+							"        console.log(\"Find Match Response: \"+JSON.stringify(respp));\r",
+							"    }\r",
+							"\r",
+							"});\r",
+							"pm.collectionVariables.clear();\r",
+							"pm.variables.unset(\"upload_id\");\r",
+							"pm.variables.unset(\"Total_Row\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//const state1dupeKey = pm.variables.get(\"state1dupeKey\");\r",
+							"pm.request.headers.add({key: \"Ocp-Apim-Subscription-Key\", value: pm.environment.get(\"ec_findmatch_dupKey\")});\r",
+							"pm.request.headers.add({key:\"X-Initiating-State\", value: \"EC\"});\r",
+							"\r",
+							"const initiating_state = pm.request.headers.get(\"X-Initiating-State\");\r",
+							"\r",
+							"console.log(\"Current initiating State: \" +initiating_state);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": [\r\n        {\r\n        \"lds_hash\": \"{{lds_hash}}\",\r\n      \"participant_id\": \"{{participant_id}}\",\r\n      \"case_id\": \"{{case_id}}\",\r\n      \"search_reason\": \"application\"\r\n        }\r\n    ]\r\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/match/v2/find_matches",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"match",
+						"v2",
+						"find_matches"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.request.removeHeader(\"Ocp-Apim-Subscription-Key\");",
+					"pm.request.removeHeader(\"X-Initiating-State\");",
+					"const stateEAdupeKey = `${pm.environment.get(\"stateEA\")}_dupKey`;",
+					"const stateEAUploadKey = `${pm.environment.get(\"stateEA\")}_uploadKey`;",
+					"pm.collectionVariables.set(\"stateEAdupeKey\", stateEAdupeKey);",
+					"pm.collectionVariables.set(\"stateEAUploadKey\", stateEAUploadKey);",
+					"",
+					"functions = {",
+					"checkStatus: function(pmWrap,statusCode) {",
+					"   pmWrap.test(`Status code is ${statusCode}`, function () {",
+					"    pmWrap.response.to.have.status(statusCode);",
+					"});",
+					"}",
+					"}",
+					"const jar = pm.cookies.jar();",
+					"",
+					"jar.clear(pm.request.url, function (error) {",
+					"  // error - <Error>",
+					"});",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

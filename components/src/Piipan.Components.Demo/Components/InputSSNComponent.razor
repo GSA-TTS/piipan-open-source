@@ -1,0 +1,21 @@
+﻿@using Piipan.Components.Demo.Models
+@using static Piipan.Components.Shared.CommonConstants
+@code {
+    [Parameter] public InputSSNModel SSNModel { get; set; } = new InputSSNModel();
+}
+
+<UsaForm Model="SSNModel">
+    <UsaFormGroup>
+        <HintContent>###-##-####</HintContent>
+        <ChildContent>
+            <UsaInputSSN @bind-Value="SSNModel.OptionalSSN" />
+        </ChildContent>
+    </UsaFormGroup>
+    <UsaFormGroup>
+        <HintContent>###-##-####</HintContent>
+        <ChildContent>
+            <UsaInputSSN @bind-Value="SSNModel.RequiredSSN" />
+        </ChildContent>
+    </UsaFormGroup>
+    <button class="@ButtonClass">Submit</button>
+</UsaForm>

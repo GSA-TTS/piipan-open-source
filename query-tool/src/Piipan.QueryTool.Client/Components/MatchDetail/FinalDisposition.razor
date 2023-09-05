@@ -1,0 +1,62 @@
+﻿@using Piipan.Match.Api.Models.Resolution
+@code {
+    [Parameter] public bool InitiatingState { get; set; }
+    [Parameter] public DispositionModel DispositionData { get; set; }
+
+    private (string,string)[] DropdownOptionsOne = new (string,string)[] {("Benefits Approved", "Benefits Approved"), ("Benefits Denied", "Benefits Denied")};
+    private (string,string)[] DropdownOptionsTwo = new (string, string)[] { ("Benefits Terminated", "Benefits Terminated"), ("Benefits Unchanged", "Benefits Unchanged") };
+
+    private string DispositonLabelString => DispositionData.FinalDisposition switch
+    {
+
+        "Benefits Approved" => "Benefits Start Date",
+        "Benefits Terminated" => "Benefits End Date",
+        _ => "Final Disposition Date"
+    };
+    private RenderFragment DispositionLabel => @<text>@DispositonLabelString</text>;
+
+    private void FinalDispositionChanged(string value)
+    {
+        DispositionData.FinalDisposition = value;
+        if (!string.IsNullOrEmpty(value) && DispositionData.FinalDispositionDate == null && 
+            (DispositionData.FinalDisposition == "Benefits Unchanged" || DispositionData.FinalDisposition == "Benefits Denied"))
+        {
+            DispositionData.FinalDispositionDate = DateTime.Now.Date;
+        }
+        else if ((value == "Benefits Approved" || value == "Benefits Terminated") && DispositionData.FinalDispositionDate == DateTime.Now.Date)
+        {
+            DispositionData.FinalDispositionDate = null;
+        }
+    }
+    protected override void OnInitialized()
+    {
+        DispositionData.InitialActionChanged += InitialActionChangedHandler;
+    }
+    public void Dispose()
+    {
+        DispositionData.InitialActionChanged -= InitialActionChangedHandler;
+    }
+    private void InitialActionChangedHandler() => InvokeAsync(StateHasChanged);
+    private bool disableInputs => string.IsNullOrEmpty(DispositionData.InitialActionTaken) && string.IsNullOrEmpty(DispositionData.FinalDisposition) && DispositionData.FinalDispositionDate == null;
+}
+<div id="final-disposition-section"  class="FinalDispositionDiv">
+    <h5 class="FinalDispositionHeader">Final Disposition</h5>
+    <p class="FinalDispositionText">Final Disposition information can be added once the initial Action has been selected.</p>
+    <div id="final-disposition-radio-button-section" class="@(disableInputs ? "disabled-area" : "")" aria-disabled="@(disableInputs ? "true" : "false")">
+    <div class="ResolutionFieldsDropdownWidth">
+        <UsaFormGroup>
+            <UsaSelect DropdownOptions="@(InitiatingState ? DropdownOptionsOne : DropdownOptionsTwo)" 
+            Value="@DispositionData.FinalDisposition" ValueChanged="(value => FinalDispositionChanged(value))"
+            ValueExpression="() => DispositionData.FinalDisposition" disabled="@disableInputs" />
+        </UsaFormGroup>
+    </div>
+        
+    <div name="finalDispositionDateDiv" style="visibility: @(!String.IsNullOrEmpty(DispositionData.FinalDisposition) || DispositionData.FinalDispositionDate != null ? "visible" : "hidden")">
+        <UsaFormGroup LabelOverride="DispositionLabel" ErrorPlaceholderOverride="@DispositonLabelString" Required=true>
+            <UsaInputDate @bind-Value="DispositionData.FinalDispositionDate" disabled="@disableInputs" />
+        </UsaFormGroup>
+    
+    </div>
+    
+</div>
+</div>
