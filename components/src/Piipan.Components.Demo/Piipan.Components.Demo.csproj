@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
 	  <TargetFramework>net6.0</TargetFramework>
@@ -22,7 +22,7 @@
   <ItemGroup>
 	  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.13" />
 	  <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.13" PrivateAssets="all" />
-	  <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
+	  <PackageReference Include="System.Net.Http.Json" Version="7.0.1" />
   </ItemGroup>
 	<!--
     Because our static analysis tool, CodeQL, autobuilds C# with the UseSharedCompilation flag, we check this flag to avoid running npm tasks for these types of builds.
