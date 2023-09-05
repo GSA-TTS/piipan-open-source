@@ -1,0 +1,46 @@
+﻿@using static LayoutConstants
+@code {
+    [CascadingParameter] public UsaAccordion AccordionGroup { get; set; }
+    [Parameter] public RenderFragment HeadingContent { get; set; }
+    [Parameter] public RenderFragment BodyContent { get; set; }
+    [Parameter] public bool StartsExpanded { get; set; }
+
+    public bool Expanded { get; set; } = false;
+    private string contentId = Guid.NewGuid().ToString();
+
+    protected override void OnInitialized()
+    {
+        Expanded = StartsExpanded;
+        AccordionGroup?.Items.Add(this);
+        base.OnInitialized();
+    }
+
+    /// <summary>
+    /// Called by the parent Accordion to close when single-select and another item was opened.
+    /// Also called by itself when the accordion item is clicked
+    /// </summary>
+    public void Toggle()
+    {
+        Expanded = !Expanded;
+        if (Expanded)
+        {
+            AccordionGroup?.Expand(this);
+        }
+        StateHasChanged();
+    }
+}
+
+<h4 class="@AccordionHeadingClass">
+    <button
+        type="button"
+        class="@AccordionButtonClass"
+        aria-expanded="@(Expanded ? "true" : "false")"
+        aria-controls="@contentId"
+        @onclick="Toggle"
+    >
+        @HeadingContent
+    </button>
+</h4>
+<div id="@contentId" class="@AccordionContentClass usa-prose" hidden="@(!Expanded)">
+    @BodyContent
+</div>

@@ -1,0 +1,63 @@
+﻿@using Bunit;
+@using Microsoft.AspNetCore.Components.Web
+@using Moq
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Components.MatchDetail
+@using Piipan.QueryTool.Client.Pages
+@using Piipan.Shared.Client.Api
+@using Piipan.Shared.Client.DTO
+@using Xunit;
+@inherits BaseComponentTest<MatchDetailPage>
+@code {
+    /// <summary>
+    /// Setup the component and register Javascript mocks
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        MockApiService.Setup(n => n.GetMatchDetailById(It.IsAny<string>()))
+            .ReturnsAsync(new ApiResponse<MatchResApiResponse>
+            {
+                Value = new MatchResApiResponse
+                {
+                    Data = new MatchDetailsDto
+                    {
+                        Initiator = "EA",
+                        States = new string[] { "EA", "EB" },
+                        Status = "open",
+                        Dispositions = new[]
+                    {
+                    new Disposition
+                    {
+                        State = "ea",
+                        VulnerableIndividual = false
+                    },
+                    new Disposition
+                    {
+                        State = "eb",
+                        VulnerableIndividual = false
+                    }
+                    },
+                        MatchId = "M123456"
+                    }
+                }
+            });
+        Component = Render<MatchDetailPage>(@<MatchDetailPage MatchId="@InitialValues.MatchId" />);
+    }
+
+    [Fact]
+    public void MatchDetailPageTests_RendersCorrectly()
+    {
+        // Arrange
+        InitialValues.MatchId = "M123456";
+        CreateTestComponent();
+
+        // Assert
+        var pageTitleComponent = Component.FindComponent<PageTitle>();
+        var renderedFragment = Render(pageTitleComponent.Instance.ChildContent);
+        renderedFragment.MarkupMatches(@<text>NAC Match Detail</text>);
+
+        var matchDetailWrapper = Component.FindComponent<MatchDetailWrapper>();
+        Assert.Equal("M123456", matchDetailWrapper.Instance.MatchId);
+    }
+}

@@ -1,0 +1,66 @@
+﻿@inject IJSRuntime JSRuntime
+@code {
+    [Parameter] public string TooltipText { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public TooltipRole TooltipRole { get; set; } = TooltipRole.Label;
+
+    public record TooltipDisplayAttributes
+    {
+        public bool Flip { get; set; }
+        public decimal XPercent { get; set; }
+        public bool Processed { get; set; }
+    }
+
+    private bool didHover = false;
+    private bool didFocus = false;
+    private ElementReference TooltipElement;
+    TooltipDisplayAttributes latestDisplayAttributes = new();
+    public void ShowTooltip()
+    {
+        latestDisplayAttributes = new();
+    }
+
+    IJSObjectReference javascriptReference;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (javascriptReference == null)
+        {
+            javascriptReference = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Piipan.Components/Tooltips/UsaTooltip.razor.js");    
+        }
+        if ((didHover || didFocus) && !latestDisplayAttributes.Processed)
+        {
+            latestDisplayAttributes = await javascriptReference.InvokeAsync<TooltipDisplayAttributes>("ShowTooltip", TooltipElement) ?? new();
+            latestDisplayAttributes.Processed = true;
+            Console.WriteLine(latestDisplayAttributes);
+            StateHasChanged();
+        }
+    }
+    private void KeyPressed(KeyboardEventArgs keyArgs)
+    {
+        if (keyArgs.Key == "Escape")
+        {
+            didHover = false;
+            didFocus = false;
+        }
+    }
+}
+
+<span class="usa-tooltip">
+    <button tabindex="0" @onkeydown=KeyPressed @onfocus="@(() => { didFocus = !didHover; ShowTooltip(); })"
+        @onmouseover=@(() => { didHover = !didFocus; ShowTooltip(); })
+        @onmouseout=@(() => didHover = false)
+        @onblur="@(() => didFocus = false)"
+            type="button" class="usa-tooltip__trigger usa-button usa-button--unstyled" style="margin-top: 0;" data-position="top" 
+            aria-labelledby="@(TooltipRole == TooltipRole.Label ? $"tooltip-{TooltipElement.Id}" : null)" 
+            aria-describedby="@(TooltipRole == TooltipRole.Description ? $"tooltip-{TooltipElement.Id}" : null)">
+        @ChildContent
+    </button>
+    <span id="tooltip-@TooltipElement.Id" 
+        @ref="TooltipElement" 
+        class="usa-tooltip__body usa-tooltip__body--@(latestDisplayAttributes.Flip ? "bottom" : "top") @(didHover || didFocus ? "is-set is-visible" : "")" 
+        role="tooltip" 
+        aria-hidden="@(didHover || didFocus ? "false" : "true")"
+        style="--translateXPercent: @(latestDisplayAttributes.XPercent * 100)%"
+    >@TooltipText</span>
+</span>

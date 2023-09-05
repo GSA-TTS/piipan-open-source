@@ -1,0 +1,50 @@
+﻿@using Piipan.Match.Api.Models.Resolution
+@using static Piipan.QueryTool.Client.Helpers.ValueToDisplayHelper
+@using Piipan.QueryTool.Client.Helpers
+@code {
+    [Parameter] public Disposition Disposition { get; set; }
+    [Parameter] public bool InitiatingState { get; set; }
+    [Parameter] public DateTime? MatchDate { get; set; }
+    [Parameter] public string InitiatingStateAbbr { get; set; }
+    [Parameter] public string InitiatingStateName { get; set; }
+
+    RenderFragment header =>
+        @<h5>@StateHelper.GetStateName(Disposition.State) <span>(@(InitiatingState ? "Initiating" : "Matching") State)</span></h5>
+    ;
+
+    List<DisplayInfo> StateValues { get; set; } = new();
+
+    protected override void OnParametersSet()
+    {
+        StateValues = new();
+        StateValues.Add(new("Vulnerable Individual", Disposition.VulnerableIndividual));
+
+        var invalidMatchString = ValueToDisplayHelper.GetDisplayValue(Disposition.InvalidMatch);
+        if (Disposition.InvalidMatch == true)
+        {
+            invalidMatchString += $", {Disposition.InvalidMatchReason}";
+            if (!string.IsNullOrEmpty(Disposition.OtherReasoningForInvalidMatch))
+            {
+                invalidMatchString += $": {Disposition.OtherReasoningForInvalidMatch}";
+            }
+        }
+
+        StateValues.Add(new("Invalid Match", invalidMatchString));
+        StateValues.Add(new("Initial Action Taken", Disposition.InitialActionTaken));
+        StateValues.Add(new("Initial Action Date", Disposition.InitialActionAt));
+        StateValues.Add(new("Final Disposition Taken", Disposition.FinalDisposition));
+
+        if (!string.IsNullOrWhiteSpace(Disposition.FinalDisposition))
+        {
+            string finalDispositionDateDisplay = Disposition.FinalDisposition switch
+            {
+                "Benefits Approved" => "Benefits Start Date",
+                "Benefits Terminated" => "Benefits End Date",
+                _ => "Final Disposition Date"
+            };
+            StateValues.Add(new(finalDispositionDateDisplay, Disposition.FinalDispositionDate));
+        }
+    }
+}
+
+<StateInformation StateInfo="StateValues" Header="header" isMatchInformationComponent=true/>

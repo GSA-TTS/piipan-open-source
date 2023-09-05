@@ -1,0 +1,22 @@
+﻿@using Piipan.Components.Layout
+@using Piipan.Components.Modals
+@using static Piipan.Components.Shared.CommonConstants
+@code {
+    string message = "";
+    private void OpenModal(bool forceAction)
+    {
+        ModalManager.Show(new DemoModalComponent
+        {
+            ContinueCallback = () =>
+            {
+                message = "Continue button pressed";
+                StateHasChanged();
+            }
+        }, new ModalInfo { ForceAction = forceAction });
+    }
+}
+
+<button type="button" @onclick="() => OpenModal(false)" class="@ButtonClass">Show Default Modal</button>
+<button type="button" @onclick="() => OpenModal(true)" class="@ButtonClass">Show Forced Action Modal</button>
+
+<p>@message</p>

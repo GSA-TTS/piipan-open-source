@@ -1,0 +1,57 @@
+{
+    "fields": [
+      {
+        "name": "lds_hash",
+        "type": "string",
+        "description": "SHA-512 digest of participant's last name, DoB, and SSN. See pprl.md for details",
+        "constraints": {
+          "pattern": "^[0-9a-f]{128}$",
+          "required": true
+        }
+      },
+      {
+        "name": "case_id",
+        "type": "string",
+        "description": "Participant's state-specific case identifier. Can be the same for multiple participants.",
+        "constraints": {
+          "pattern": "^[A-Za-z0-9-_]+$",
+          "minLength": 1,
+          "maxLength":20
+        }
+      },
+      {
+        "name": "participant_id",
+        "type": "string",
+        "description": "Participant's state-specific identifier. Unique to the participant. Must not include social security number or other identifying information used outside of the benefits eligibility context.",
+        "constraints": {
+          "pattern": "^[A-Za-z0-9-_]+$",
+          "required": true,
+          "maxLength":20
+        }
+      },
+      {
+        "name": "participant_closing_date",
+        "type": "date",
+        "description": "Date when the participant's case will close. This will be the last date the participant is eligible to receive benefits. Leave this field blank if the participant will continue receiving benefits until the next recertification period."
+      },
+      {
+        "name": "recent_benefit_issuance_dates",
+        "type": "string",
+        "description": "List of up to the last 3 date ranges that participant received benefits, formatted as ISO 8601 time intervals (YYYY-MM-DD/YYYY-MM-DD) separated by spaces. Date ranges do not need to be consecutive. Fewer than 3 months can be entered for newer participants. This should only include the last three dates for the most recent benefits issued.",
+        "constraints": {
+          "pattern": "([0-9]{4}-[0-9]{1,2}-[0-9]{1,2}/[0-9]{4}-[0-9]{1,2}-[0-9]{1,2} ?){0,3}"
+        }
+      },
+      {
+        "name": "vulnerable_individual",
+        "type": "boolean",
+        "description": "Location protection flag for vulnerable individuals. True values indicate that the individual's location must be protected from disclosure to avoid harm to the individual. The field value can be omitted if the risk of harm has not been assessed.",
+        "trueValues": [
+          "true"
+        ],
+        "falseValues": [
+          "false"
+        ]
+      }
+    ]
+  }

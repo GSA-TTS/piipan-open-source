@@ -1,0 +1,11 @@
+﻿@using Piipan.Shared.Client.DTO
+@using Piipan.Shared.Client.Helpers
+@inject ClientAppDataDto InjectedData
+@code {
+    [Parameter] public ClientAppDataDto AppData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        PropertyCopier.CopyPropertiesTo(AppData, InjectedData);
+    }
+}

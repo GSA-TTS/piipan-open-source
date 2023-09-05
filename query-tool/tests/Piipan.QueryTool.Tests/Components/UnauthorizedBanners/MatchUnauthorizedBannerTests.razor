@@ -1,0 +1,57 @@
+﻿@using Piipan.Components.Alerts
+@using Piipan.Components.Enums
+@using System.Linq.Expressions
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Components.UnauthorizedBanners
+@using Piipan.QueryTool.Client.Models
+@using static Piipan.Components.Alerts.AlertConstants
+@inherits BaseComponentTest<MatchUnauthorizedBanner>
+
+@code {
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public MatchUnauthorizedBannerTests() : base()
+    {
+
+    }
+
+    /// <summary>
+    /// Create a generic unauthorized banner component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        AppData.HelpDeskEmail = "test@usda.example";
+        base.CreateTestComponent();
+        Component = Render<MatchUnauthorizedBanner>(
+            @<MatchUnauthorizedBanner>
+            </MatchUnauthorizedBanner>
+        );
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of the generic unauthorized banner
+    /// </summary>
+    [Fact]
+    public void Match_Unauthorized_Banner_Should_Exist_And_Have_Correct_Markup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div class="usa-alert usa-alert--slim usa-alert--info " role="alert">
+              <div class="usa-alert__body">
+                <div class="usa-alert__text">
+                  <p>This Match ID does not exist or you do not have adequate permissions. For additional information, please contact the
+                    <a href="mailto:test@usda.example">help desk</a>.</p>
+                </div>
+              </div>
+            </div>
+        );
+    }
+
+    #endregion
+}

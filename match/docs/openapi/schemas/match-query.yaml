@@ -1,0 +1,428 @@
+MatchRequest:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+            - data
+        properties:
+          data:
+            type: array
+            description: "An array containing 1 to 50 individuals to match against records of active participants in other States"
+            minItems: 1
+            maxItems: 50
+            items:
+              $ref: '#/Person'
+      examples:
+        Single person:
+          $ref: '#/MatchRequestExamples/Single'
+        Single required person:
+          $ref: '#/MatchRequestExamples/SingleRequired'
+        Multiple persons:
+          $ref: '#/MatchRequestExamples/Multiple'
+MatchRequestWithPii:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+            - data
+        properties:
+          data:
+            type: array
+            minItems: 1
+            maxItems: 50
+            items:
+              $ref: '#/PersonWithPii'
+Person:
+  type: object
+  required:
+    - lds_hash
+    - search_reason
+    - participant_id
+  properties:
+    lds_hash:
+      type: string
+      description: "SHA-512 digest of participant's last name, DoB, and SSN. See docs/pprl.md for details"
+      pattern: "^[0-9a-f]{128}$"
+    participant_id:
+      type: string
+      description: "Participant's state-specific identifier. Unique to the participant. Must not include social security number or other identifying information used outside of the benefits eligibility context."
+      pattern: "^[A-Za-z0-9-_]+$"
+    case_id:
+      type: string
+      description: "Participant's state-specific case number"
+      pattern: "^[A-Za-z0-9-_]+$"
+    search_reason:
+      type: string
+      description: "The case action or other valid reason for performing the NAC search.  Valid options are 'application', 'recertification', 'new_household_member', or 'other'"
+    vulnerable_individual:
+      type: boolean
+      description: "Location protection flag for vulnerable individuals. True values indicate that the individual’s location must be protected from disclosure to avoid harm to the individual. Apply the same protections to true and null values."
+PersonWithPii:
+  type: object
+  required:
+    - first
+    - last
+    - dob
+    - ssn
+  properties:
+    first:
+      type: string
+      description: "Person's first name"
+    middle:
+      type: string
+      description: "Person's middle name"
+    last:
+      type: string
+      description: "Person's last name"
+    ssn:
+      type: string
+      description: "Person's social security number"
+      pattern: '^\d{3}-\d{2}-\d{4}$'
+    dob:
+      type: string
+      format: "date"
+      description: "Person's date of birth"
+MatchRequestExamples:
+  Single:
+    description: "An example request to query a single person, with values for all fields"
+    value:
+      data:
+        - lds_hash: "eaa834c957213fbf958a5965c46fa50939299165803cd8043e7b1b0ec07882dbd5921bce7a5fb45510670b46c1bf8591bf2f3d28d329e9207b7b6d6abaca5458"
+          case_id: "CaseNumber12345"
+          participant_id: "ParticipantId12345"
+          search_reason: "application"
+          vulnerable_individual: true
+  SingleRequired:
+    description: "An example request to query a single person, with values for all required fields"
+    value:
+      data:
+        - lds_hash: "eaa834c957213fbf958a5965c46fa50939299165803cd8043e7b1b0ec07882dbd5921bce7a5fb45510670b46c1bf8591bf2f3d28d329e9207b7b6d6abaca5458"
+          participant_id: "ParticipantId12345"
+          search_reason: "other"
+  Multiple:
+    description: "A request with multiple persons"
+    value:
+      data:
+        - lds_hash: "eaa834c957213fbf958a5965c46fa50939299165803cd8043e7b1b0ec07882dbd5921bce7a5fb45510670b46c1bf8591bf2f3d28d329e9207b7b6d6abaca5458"
+        - lds_hash: "97719c32bb3c6a5e08c1241a7435d6d7047e75f40d8b3880744c07fef9d586954f77dc93279044c662d5d379e9c8a447ce03d9619ce384a7467d322e647e5d95"
+
+#/components/schemas/MatchResponse
+MatchResponse:
+  title: Match response
+  type: object
+  properties:
+    data:
+      type: object
+      nullable: true
+      description: The response payload. Either an errors or data property will be present in the response, but not both.
+      required:
+        - results
+        - errors
+      properties:
+        results:
+          type: array
+          description: "Array of query results. For every person provided in the request, a result is returned, even if no matches are found. If a query fails, the failure data will be in the errors array."
+          items:
+            $ref: '#/Result'
+        errors:
+          type: array
+          description: "Array of error objects corresponding to a person in the request. If a query for a single person fails, the failure data will display here. Note that a single person in a request could have multiple error items."
+          items:
+            $ref: '#/DataError'
+    errors:
+      type: array
+      nullable: true
+      description: "Holds HTTP and other top-level errors. Either an errors or data property will be present in the response, but not both."
+      items:
+        $ref: '#/ResponseError'
+        
+GetMatchesResponse:
+  title: Get Matches response
+  type: object
+  properties:
+    data:
+      type: array
+      nullable: true
+      description: The response payload. Either an errors or data property will be present in the response, but not both.
+      items:
+            $ref: '#/GetMatchesResult'
+            
+GetMatchesResult:
+  type: object
+  required:
+    - dispositions
+    - initiator
+    - match_id
+    - created_at
+    - participants
+    - states
+    - status
+  properties:
+    created_at:
+      type: string
+      description: "The date the match was created on"
+    dispositions:
+      type: array
+      description: "The dispostions of each state"
+      items:
+        $ref: '../schemas/match-query.yaml#/Disposition'
+    initiator:
+      type: string
+      description: "The state that initiated the match"
+    match_id: 
+      type: string
+      description: "The unique id that identifies the match"
+    participants:
+      type: array
+      description: "The participant was matched in both states"
+      items:
+        $ref: '../schemas/match-query.yaml#/Participant'
+    states:
+      type: array
+      description: "The states that are involved in the match"
+    status:
+      type: string
+      description: "The status of whether or not the match resolution has been closed. Possible statuses are open or closed"
+      
+Participant:
+  type: object
+  required:
+    - case_id
+    - participant_id
+    - recent_benefit_issuance_dates
+    - state
+  properties:
+    case_id:
+      type: string
+      description: "The identifier for this participants instance of benefits"
+    participant_closing_date:
+      type: string
+      description: "The last date the participant will recieve benefits in that state"
+    participant_id:
+      type: string
+      description: "An identifier for the participant"
+    recent_benefit_issuance_dates:
+      type: array
+      description: "The list of months the participant has recently recieved benefits"
+      items:
+        $ref: '#/Issuance_Dates'
+    state:
+      type: string
+      description: "The state that the other parameters refer to"
+      
+Issuance_Dates:
+  type: object
+  required:
+    - start
+    - end
+  properties:
+    start:
+      type: string
+      description: "The start of that months benefits"
+    end:
+      type: string
+      description: "The end of that months benefits"
+ 
+Disposition:
+  type: object
+  required:
+    - state
+  properties:
+    initial_action_at:
+      type: string
+      description: "The date the initial action was taken"
+    initial_action_taken:
+      type: string
+      description: "Which action was taken"
+    invalid_match:
+      type: boolean
+      description: "Whether or not the match was valid"
+    final_disposition:
+      type: string
+      description: "What the final dispostion was"
+    final_disposition_date:
+      type: string
+      description: "The date the final disposition was taken on"
+    vulnerable_individual:
+      type: boolean
+      description: "A true, false, or null value on whether or not the participants location needs to be protected"
+    state:
+      type: string
+      description: "The state that took these actions"
+
+Result:
+  type: object
+  required:
+    - index
+    - matches
+  properties:
+    index:
+      type: integer
+      description: "The index of the person that the result corresponds to, starting from 0. Index is derived from the implicit order of persons provided in the request."
+    matches:
+      type: array
+      items:
+        $ref: './participant-record.yaml#/ParticipantRecord'
+
+MatchResponseExamples:
+  Single:
+    description: "A query for a single person returning a single match"
+    value:
+      data:
+        results:
+          - index: 0
+            matches:
+              - $ref: './participant-record.yaml#/ParticipantRecordExamples/All'
+        errors: []
+  None:
+    description: "A query for a single person returning no matches"
+    value:
+      data:
+        results:
+          - index: 0
+            matches: []
+        errors: []
+  Multiple:
+    description: "A query for one person returning multiple matches"
+    value:
+      data:
+        results:
+          - index: 0
+            matches:
+              - $ref: './participant-record.yaml#/ParticipantRecordExamples/AllEB'
+              - $ref: './participant-record.yaml#/ParticipantRecordExamples/Required'
+        errors: []
+  MultipleRecords:
+    description: "A query for two persons returning one match for each person"
+    value:
+      data:
+        results:
+          - index: 0
+            matches:
+              - $ref: './participant-record.yaml#/ParticipantRecordExamples/Required'
+          - index: 1
+            matches:
+              - $ref: './participant-record.yaml#/ParticipantRecordExamples/All'
+        errors: []
+  MultipleRecordsOneMatch:
+    description: "A query for two persons returning no matches for one person and a match for the other"
+    value:
+      data:
+        results:
+          - index: 0
+            matches: []
+          - index: 1
+            matches:
+              - $ref: './participant-record.yaml#/ParticipantRecordExamples/Required'
+        errors: []
+  MultipleRecordsOneError:
+    description: "A query for two persons returning a successful result for one person and an error for the other person"
+    value:
+      data:
+        results:
+          - index: 1
+            matches:
+              - $ref: './participant-record.yaml#/ParticipantRecordExamples/Required'
+        errors:
+          - index: 0
+            code: "XYZ"
+            title: "Internal Server Exception"
+            detail: "Unexpected Server Error. Please try again."
+  TopLevelError:
+    description: "An example response for an invalid request"
+    value:
+      errors:
+        - status: "400"
+          code: "XYZ"
+          title: "Bad Request"
+          detail: "Request payload exceeds maxiumum count"
+
+DataError:
+  type: object
+  required:
+    - index
+  properties:
+    index:
+      type: integer
+      description: "The index of the person that the result corresponds to, starting from 0. Index is derived from the implicit order of persons provided in the request."
+    code:
+      type: string
+      description: "The application-specific error code"
+    title:
+      type: string
+      description: "The short, human-readable summary of the error, consistent across all occurrences of the error"
+    detail:
+      type: string
+      description: "The human-readable explanation specific to this occurrence of the error"
+
+ResponseError:
+  type: object
+  required:
+    - status
+  properties:
+    status:
+      type: string
+      description: "The HTTP status code"
+    code:
+      type: string
+      description: "The application-specific error code"
+    title:
+      type: string
+      description: "The short, human-readable summary of the error, consistent across all occurrences of the error"
+    detail:
+      type: string
+      description: "The human-readable explanation specific to this occurrence of the error"
+
+components:
+  parameters:
+    From:
+      in: header
+      name: From
+      schema:
+        type: string
+      description: "As in the HTTP/1.1 RFC, used for logging purposes as a means for identifying the source of invalid or unwanted requests. The interpretation of this field is that the request is being performed on behalf of the state government-affiliated person whose email address (or username) is specified here. It is not used for authentication or authorization."
+    InitiatingState:
+      in: header
+      name: X-Initiating-State
+      schema:
+        type: string
+      description: "Two-letter postal abbreviation for the caller's state role"
+      required: true
+  responses:
+    '200':
+      description: "Successful response. Returns match response items."
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/match-query.yaml#/MatchResponse'
+          examples:
+            Single match:
+              $ref: '../schemas/match-query.yaml#/MatchResponseExamples/Single'
+            No matches:
+              $ref: '../schemas/match-query.yaml#/MatchResponseExamples/None'
+            Multiple matches:
+              $ref: '../schemas/match-query.yaml#/MatchResponseExamples/Multiple'
+            Multiple persons with matches:
+              $ref: '../schemas/match-query.yaml#/MatchResponseExamples/MultipleRecords'
+            Multiple persons with one match:
+              $ref: '../schemas/match-query.yaml#/MatchResponseExamples/MultipleRecordsOneMatch'
+            Multiple persons with errors:
+              $ref: '../schemas/match-query.yaml#/MatchResponseExamples/MultipleRecordsOneError'
+            Top-level error:
+              $ref: '../schemas/match-query.yaml#/MatchResponseExamples/TopLevelError'
+    '400':
+      description: "Bad request. Request body does not match the required format."
+    '401':
+      description: "Unauthorized"
+    '429':
+      description: "Too Many Requests. The status code indicates the user has sent too many requests in a given amount of time 'rate limiting'."
+    '200_Get_Matches':
+      description: "Successful response. Returns matches"
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/match-query.yaml#/GetMatchesResponse'

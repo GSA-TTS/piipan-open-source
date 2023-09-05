@@ -1,0 +1,129 @@
+﻿@using Piipan.Components.Tables
+@using Piipan.Components.Tag
+@using Piipan.Components.Enums
+@using System.Linq.Expressions
+@inherits BaseTest<UsaTable<DummyTableData>>
+
+@code {
+    private IElement? element;
+
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public UsaTableTests() : base()
+    {
+        InitialValues = new UsaTable<DummyTableData>
+            {
+                Data = new List<DummyTableData>()
+            };
+    }
+
+    /// <summary>
+    /// Create an alert box component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        Component = Render<UsaTable<DummyTableData>>(
+            @<UsaTable T="DummyTableData" Data="InitialValues.Data" Striped="InitialValues.Striped">
+                <UsaTableColumn T="DummyTableData" Name="Column 1">
+                    <Template Context="record">
+                        @record.Col1 Data
+                    </Template>
+                </UsaTableColumn>
+                <UsaTableColumn T="DummyTableData" Field="((t) => t.Col2)" Name="Column 2" />
+            </UsaTable>
+        );
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of a table
+    /// </summary>
+    [Fact]
+    public void Table_Should_Exist_And_Have_Correct_Markup_NoData()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<table class="usa-table " >
+              <thead >
+                <tr >
+                  <th scope="col">Column 1</th>
+                  <th scope="col">Column 2</th>
+                </tr>
+              </thead>
+              <tbody ></tbody>
+            </table>
+        );
+    }
+
+    /// <summary>
+    /// Verify the default markup of a table with data
+    /// </summary>
+    [Fact]
+    public void Table_Should_Exist_And_Have_Correct_Markup_WithData()
+    {
+        // Arrange
+        InitialValues.Data = GenerateRows(3);
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<table class="usa-table " >
+              <thead >
+                <tr >
+                  <th scope="col">Column 1</th>
+                  <th scope="col">Column 2</th>
+                </tr>
+              </thead>
+              <tbody >
+                <tr >
+                  <td>Test 1 Data</td>
+                  <td>1</td>
+                </tr>
+                <tr >
+                  <td>Test 2 Data</td>
+                  <td>2</td>
+                </tr>
+                <tr >
+                  <td>Test 3 Data</td>
+                  <td>3</td>
+                </tr>
+              </tbody>
+        </table>
+    );
+    }
+
+    /// <summary>
+    /// Verify the table has a striped class when striped
+    /// </summary>
+    [Fact]
+    public void Table_Should_BeStriped_WhenStripedParameterSet()
+    {
+        // Arrange
+        InitialValues.Data = GenerateRows(3);
+        InitialValues.Striped = true;
+        CreateTestComponent();
+
+        // Assert
+        Assert.True(Component!.Find(".usa-table").ClassList.Contains("usa-table--striped"));
+    }
+
+    private List<DummyTableData> GenerateRows(int rows)
+    {
+        List<DummyTableData> dummyDatas = new List<DummyTableData>();
+        for (int i = 1; i <= rows; i++)
+        {
+            dummyDatas.Add(new DummyTableData
+                {
+                    Col1 = $"Test {i}",
+                    Col2 = i
+                });
+        }
+        return dummyDatas;
+    }
+    #endregion
+}

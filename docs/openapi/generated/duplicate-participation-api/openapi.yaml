@@ -1,0 +1,325 @@
+openapi: 3.0.0
+info:
+  title: Duplicate Participation API
+  version: 2.0.0
+  description: The API where matching will occur
+servers:
+  - url: /match/v2
+paths:
+  /find_matches:
+    post:
+      operationId: Find matches
+      tags:
+        - Match
+      summary: Search for all matching participant records using de-identified data
+      description: 'Searches all state databases for any participant records that are an exact match to the `lds_hash` of persons provided in the request. Does not search the database for the state initiating the request. Each state is allowed a maximum of 1,050 requests per minute.'
+      parameters:
+        - in: header
+          name: From
+          schema:
+            type: string
+          description: 'As in the HTTP/1.1 RFC, used for logging purposes as a means for identifying the source of invalid or unwanted requests. The interpretation of this field is that the request is being performed on behalf of the state government-affiliated person whose email address (or username) is specified here. It is not used for authentication or authorization.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+              properties:
+                data:
+                  type: array
+                  description: An array containing 1 to 50 individuals to match against records of active participants in other States
+                  minItems: 1
+                  maxItems: 50
+                  items:
+                    type: object
+                    required:
+                      - lds_hash
+                      - search_reason
+                      - participant_id
+                    properties:
+                      lds_hash:
+                        type: string
+                        description: 'SHA-512 digest of participant''s last name, DoB, and SSN. See docs/pprl.md for details'
+                        pattern: '^[0-9a-f]{128}$'
+                      participant_id:
+                        type: string
+                        description: Participant's state-specific identifier. Unique to the participant. Must not include social security number or other identifying information used outside of the benefits eligibility context.
+                        pattern: '^[A-Za-z0-9-_]+$'
+                      case_id:
+                        type: string
+                        description: Participant's state-specific case number
+                        pattern: '^[A-Za-z0-9-_]+$'
+                      search_reason:
+                        type: string
+                        description: 'The case action or other valid reason for performing the NAC search.  Valid options are ''application'', ''recertification'', ''new_household_member'', or ''other'''
+                      vulnerable_individual:
+                        type: boolean
+                        description: Location protection flag for vulnerable individuals. True values indicate that the individual’s location must be protected from disclosure to avoid harm to the individual. Apply the same protections to true and null values.
+            examples:
+              Single person:
+                description: 'An example request to query a single person, with values for all fields'
+                value:
+                  data:
+                    - lds_hash: eaa834c957213fbf958a5965c46fa50939299165803cd8043e7b1b0ec07882dbd5921bce7a5fb45510670b46c1bf8591bf2f3d28d329e9207b7b6d6abaca5458
+                      case_id: CaseNumber12345
+                      participant_id: ParticipantId12345
+                      search_reason: application
+                      vulnerable_individual: true
+              Single required person:
+                description: 'An example request to query a single person, with values for all required fields'
+                value:
+                  data:
+                    - lds_hash: eaa834c957213fbf958a5965c46fa50939299165803cd8043e7b1b0ec07882dbd5921bce7a5fb45510670b46c1bf8591bf2f3d28d329e9207b7b6d6abaca5458
+                      participant_id: ParticipantId12345
+                      search_reason: other
+              Multiple persons:
+                description: A request with multiple persons
+                value:
+                  data:
+                    - lds_hash: eaa834c957213fbf958a5965c46fa50939299165803cd8043e7b1b0ec07882dbd5921bce7a5fb45510670b46c1bf8591bf2f3d28d329e9207b7b6d6abaca5458
+                    - lds_hash: 97719c32bb3c6a5e08c1241a7435d6d7047e75f40d8b3880744c07fef9d586954f77dc93279044c662d5d379e9c8a447ce03d9619ce384a7467d322e647e5d95
+      responses:
+        '200':
+          description: Successful response. Returns match response items.
+          content:
+            application/json:
+              schema:
+                title: Match response
+                type: object
+                properties:
+                  data:
+                    type: object
+                    nullable: true
+                    description: 'The response payload. Either an errors or data property will be present in the response, but not both.'
+                    required:
+                      - results
+                      - errors
+                    properties:
+                      results:
+                        type: array
+                        description: 'Array of query results. For every person provided in the request, a result is returned, even if no matches are found. If a query fails, the failure data will be in the errors array.'
+                        items:
+                          type: object
+                          required:
+                            - index
+                            - matches
+                          properties:
+                            index:
+                              type: integer
+                              description: 'The index of the person that the result corresponds to, starting from 0. Index is derived from the implicit order of persons provided in the request.'
+                            matches:
+                              type: array
+                              items:
+                                type: object
+                                required:
+                                  - state
+                                  - participant_id
+                                  - case_id
+                                  - match_id
+                                  - match_url
+                                  - lds_hash
+                                properties:
+                                  match_id:
+                                    type: string
+                                    description: Unique identifier for the match. Generated by the NAC system when a match is found.
+                                  state:
+                                    type: string
+                                    description: State/territory two-letter postal abbreviation
+                                  case_id:
+                                    type: string
+                                    description: Participant's state-specific case identifier. Can be the same for multiple participants.
+                                  participant_id:
+                                    type: string
+                                    description: Participant's state-specific identifier. Unique to the participant. Must not include social security number or other identifying information used outside of the benefits eligibility context.
+                                  participant_closing_date:
+                                    type: string
+                                    pattern: '^\d{4}-\d{2}-\d{2}$'
+                                    example: '2021-01-31'
+                                    description: Date when the Participant's case will close. This will be the last date the participate is eligible to receive benefits.
+                                  recent_benefit_issuance_dates:
+                                    type: array
+                                    description: Collection of up to 3 date ranges that participant has been receiving benefits at the time the match was found.
+                                    minLength: 0
+                                    maxLength: 3
+                                    items:
+                                      type: object
+                                      description: A single date range
+                                      properties:
+                                        start:
+                                          type: string
+                                          format: date
+                                          pattern: '^\d{4}-\d{2}-\d{2}$'
+                                          description: start date for date range
+                                        end:
+                                          type: string
+                                          format: date
+                                          pattern: '^\d{4}-\d{2}-\d{2}$'
+                                          description: end date for date range
+                                  vulnerable_individual:
+                                    type: boolean
+                                    nullable: true
+                                    example: true
+                                    description: Location protection flag for vulnerable individuals. True values indicate that the individual’s location must be protected from disclosure to avoid harm to the individual. Apply the same protections to true and null values.
+                                  match_url:
+                                    type: string
+                                    description: URL to visit to view details about this match.
+                      errors:
+                        type: array
+                        description: 'Array of error objects corresponding to a person in the request. If a query for a single person fails, the failure data will display here. Note that a single person in a request could have multiple error items.'
+                        items:
+                          type: object
+                          required:
+                            - index
+                          properties:
+                            index:
+                              type: integer
+                              description: 'The index of the person that the result corresponds to, starting from 0. Index is derived from the implicit order of persons provided in the request.'
+                            code:
+                              type: string
+                              description: The application-specific error code
+                            title:
+                              type: string
+                              description: 'The short, human-readable summary of the error, consistent across all occurrences of the error'
+                            detail:
+                              type: string
+                              description: The human-readable explanation specific to this occurrence of the error
+                  errors:
+                    type: array
+                    nullable: true
+                    description: 'Holds HTTP and other top-level errors. Either an errors or data property will be present in the response, but not both.'
+                    items:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                          description: The HTTP status code
+                        code:
+                          type: string
+                          description: The application-specific error code
+                        title:
+                          type: string
+                          description: 'The short, human-readable summary of the error, consistent across all occurrences of the error'
+                        detail:
+                          type: string
+                          description: The human-readable explanation specific to this occurrence of the error
+              examples:
+                Single match:
+                  description: A query for a single person returning a single match
+                  value:
+                    data:
+                      results:
+                        - index: 0
+                          matches:
+                            - match_id: BCD2345
+                              state: ea
+                              case_id: string
+                              participant_id: string
+                              participant_closing_date: '2021-10-13'
+                              recent_benefit_issuance_dates:
+                                - start: '2021-05-01'
+                                  end: '2021-05-31'
+                                - start: '2021-04-01'
+                                  end: '2021-04-30'
+                                - start: '2021-03-01'
+                                  end: '2021-03-31'
+                              vulnerable_individual: true
+                              match_url: 'https://nac.example/match/BCD2345'
+                      errors: []
+                No matches:
+                  description: A query for a single person returning no matches
+                  value:
+                    data:
+                      results:
+                        - index: 0
+                          matches: []
+                      errors: []
+                Multiple matches:
+                  description: A query for one person returning multiple matches
+                  value:
+                    data:
+                      results:
+                        - index: 0
+                          matches:
+                            - match_id: XYZ9876
+                              state: eb
+                              case_id: string
+                              participant_id: string
+                              participant_closing_date: '2021-10-13'
+                              recent_benefit_issuance_dates:
+                                - start: '2021-05-01'
+                                  end: '2021-05-31'
+                                - start: '2021-04-01'
+                                  end: '2021-04-30'
+                                - start: '2021-03-01'
+                                  end: '2021-03-31'
+                              vulnerable_individual: true
+                              match_url: 'https://nac.example/match/XYZ9876'
+                            - match_id: 4567CDF
+                              state: ec
+                              case_id: string
+                              participant_id: string
+                              participant_closing_date: null
+                              vulnerable_individual: null
+                              match_url: 'https://nac.example/match/4567CDF'
+                      errors: []
+                Multiple persons with matches:
+                  description: A query for two persons returning one match for each person
+                  value:
+                    data:
+                      results:
+                        - index: 0
+                          matches:
+                            - $ref: '#/paths/~1find_matches/post/responses/200/content/application~1json/examples/Multiple%20matches/value/data/results/0/matches/1'
+                        - index: 1
+                          matches:
+                            - $ref: '#/paths/~1find_matches/post/responses/200/content/application~1json/examples/Single%20match/value/data/results/0/matches/0'
+                      errors: []
+                Multiple persons with one match:
+                  description: A query for two persons returning no matches for one person and a match for the other
+                  value:
+                    data:
+                      results:
+                        - index: 0
+                          matches: []
+                        - index: 1
+                          matches:
+                            - $ref: '#/paths/~1find_matches/post/responses/200/content/application~1json/examples/Multiple%20matches/value/data/results/0/matches/1'
+                      errors: []
+                Multiple persons with errors:
+                  description: A query for two persons returning a successful result for one person and an error for the other person
+                  value:
+                    data:
+                      results:
+                        - index: 1
+                          matches:
+                            - $ref: '#/paths/~1find_matches/post/responses/200/content/application~1json/examples/Multiple%20matches/value/data/results/0/matches/1'
+                      errors:
+                        - index: 0
+                          code: XYZ
+                          title: Internal Server Exception
+                          detail: Unexpected Server Error. Please try again.
+                Top-level error:
+                  description: An example response for an invalid request
+                  value:
+                    errors:
+                      - status: '400'
+                        code: XYZ
+                        title: Bad Request
+                        detail: Request payload exceeds maxiumum count
+        '400':
+          description: Bad request. Request body does not match the required format.
+        '429':
+          description: Too Many Requests. The status code indicates the user has sent too many requests in a given amount of time 'rate limiting'.
+security:
+  - ApiKeyAuth: []
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Ocp-Apim-Subscription-Key

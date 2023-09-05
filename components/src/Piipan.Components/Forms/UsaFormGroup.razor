@@ -1,0 +1,47 @@
+﻿@using static FormConstants
+@using static Shared.CommonConstants
+@using static Piipan.Shared.API.Validation.ValidationConstants
+@code {
+    [CascadingParameter] public UsaForm Form { get; set; }
+    [Parameter] public RenderFragment LabelOverride { get; set; }
+    [Parameter] public string ErrorPlaceholderOverride { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment HintContent { get; set; }
+    [Parameter] public bool Required { get; set; }
+
+    // More code in code behind
+}
+
+<CascadingValue Value="this">
+    <div class="@InputFormGroupClass @(HasErrors ? InputFormGroupErrorClass : "")">
+        <UsaLabel Status="Status">
+            @if (LabelOverride != null)
+            {
+                @LabelOverride
+            }
+            else
+            {
+                @Label
+            }
+        </UsaLabel>
+        @if (HintContent != null)
+        {
+            <span class="@HintClass">@HintContent</span>
+        }
+        @if (HasErrors)
+        {
+            <span class="@InputErrorMessageClass" id="@(InputElementId)-message" role="alert">
+                @foreach (var message in ValidationMessages)
+                {
+                    var splitMessages = message.Split('\n');
+                    @foreach (var splitMessage in splitMessages)
+                    {
+                        @splitMessage.Replace(ValidationFieldPlaceholder, (ErrorPlaceholderOverride ?? Label))
+                        <br />
+                    }
+                }
+            </span>
+        }
+        @ChildContent
+    </div>
+</CascadingValue>

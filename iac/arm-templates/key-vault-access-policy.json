@@ -1,0 +1,97 @@
+{
+   "$schema":"https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+   "contentVersion":"1.0.0.0",
+   "parameters":{
+      "applicationId":{
+         "type":"string",
+         "defaultValue":"",
+         "metadata":{
+            "description":"Application ID of the client making request on behalf of a principal."
+         }
+      },
+      "keyVaultName":{
+         "type":"string",
+         "metadata":{
+            "description":"Key Vault Name"
+         }
+      },
+      "objectId":{
+         "type":"string",
+         "metadata":{
+            "description":"The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies."
+         }
+      },
+      "permissionsCertificates":{
+         "type":"array",
+         "defaultValue":[],
+         "metadata":{
+            "description":"Permissions the identity has for certificates."
+         }
+      },
+      "permissionsKeys":{
+         "type":"array",
+         "defaultValue":[],
+         "metadata":{
+            "description":"Permissions the identity has for keys."
+         }
+      },
+      "permissionsSecrets":{
+         "type":"array",
+         "defaultValue":[],
+         "metadata":{
+            "description":"Permissions the identity has for secrets."
+         }
+      },
+      "permissionsStorage":{
+         "type":"array",
+         "defaultValue":[],
+         "metadata":{
+            "description":"Permissions the identity has for storage accounts."
+         }
+      },
+      "policyOperation":{
+         "type":"string",
+         "defaultValue":"Add",
+         "allowedValues":[
+            "Add",
+            "Delete",
+            "Replace"
+         ],
+         "metadata":{
+            "description":"The type of operation to perform for the access policy."
+         }
+      },
+      "tenantId":{
+         "type":"string",
+         "defaultValue":"[subscription().tenantId]",
+         "metadata":{
+            "description":"The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault."
+         }
+      }
+   },
+   "variables":{},
+   "resources":[
+      {
+         "type":"Microsoft.KeyVault/vaults/accessPolicies",
+         "apiVersion":"2021-11-01-preview",
+         "name":"[concat(parameters('keyVaultName'), '/', parameters('policyOperation'))]",
+         "location":"[resourceGroup().location]",
+         "properties":{
+            "accessPolicies":[
+               {
+                  "applicationId":"[parameters('applicationId')]",
+                  "objectId":"[parameters('objectId')]",
+                  "permissions":{
+                     "certificates":"[parameters('permissionsCertificates')]",
+                     "keys":"[parameters('permissionsKeys')]",
+                     "secrets":"[parameters('permissionsSecrets')]",
+                     "storage":"[parameters('permissionsStorage')]"
+                  },
+                  "tenantId":"[subscription().tenantId]"
+               }
+            ]
+         }
+      }
+   ],
+   "outputs":{}
+}

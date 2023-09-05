@@ -1,0 +1,112 @@
+﻿@using Piipan.Components.Modals
+@using Piipan.Components.Routing
+@using Piipan.Match.Api.Models
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Helpers
+@using Piipan.QueryTool.Client.Modals
+@inject IJSRuntime JSRuntime
+@inject IModalManager ModalManager
+@inject PiipanNavigationManager NavigationManager
+
+@code {
+    [Parameter] public List<MatchResApiResponse> QueryResult { get; set; }
+
+    private bool MultipleStateView = false;
+
+    protected override void OnInitialized()
+    {
+        MultipleStateView = ClientAppData.Location.Length != 2 || ClientAppData.States?.Length != 1;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("piipan.utilities.scrollToElement", "match-results-area");
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void ResultClicked(MatchResApiResponse record)
+    {
+        void Navigate()
+        {
+            NavigationManager.NavigateTo($"/match/{record.Data.MatchId}", false);
+        }
+        if (record.Data.Dispositions.Any(n => n.VulnerableIndividual == true))
+        {
+            ModalManager.Show<VulnerableIndividualModal>(
+                new VulnerableIndividualModal()
+                {
+                    ContinueCallback = Navigate
+                },
+                new ModalInfo
+                {
+                    ForceAction = true
+                }
+            );
+        }
+        else
+        {
+            Navigate();
+        }
+    }
+
+    private string MatchingStateTableResults(MatchResApiResponse result)
+    {
+        if (MultipleStateView)
+        {
+            return string.Join(", ", result.Data.States.OrderBy(state => state).Select(state => StateHelper.GetStateName(state)));
+        }
+        else
+        {
+            return StateHelper.GetStateName(result.Data.States.FirstOrDefault(s => !string.Equals(s, ClientAppData.States.FirstOrDefault(), StringComparison.OrdinalIgnoreCase)));
+        }
+    }
+
+    private string VulnerableIndivudualTableResults(MatchResApiResponse result)
+    {
+        if (MultipleStateView)
+        {
+            return string.Join(",", result.Data.Dispositions.OrderBy(d => d.State).Select(n => ValueToDisplayHelper.GetDisplayValue(n.VulnerableIndividual)));
+        }
+        else
+        {
+            Disposition matchingStateDisposition = result.Data.Dispositions.FirstOrDefault(d => !string.Equals(d.State, ClientAppData.States[0], StringComparison.OrdinalIgnoreCase));
+            return ValueToDisplayHelper.GetDisplayValue(matchingStateDisposition.VulnerableIndividual);
+        }
+    }
+
+}
+
+<section class="border-top-1px border-base-light margin-top-6" id="match-results-area">
+    <h2>Find a Match Record Search Results</h2>
+    <p>This participant was found in another state. Select the Match ID for more information.</p>
+    <table class="usa-table">
+        <thead>
+            <tr>
+                <th scope="col">Match ID</th>
+
+                @if (MultipleStateView)
+                {
+                    <th scope="col">States Involved</th>
+                }
+                else
+                {
+                    <th scope="col">Matching State</th>
+                }
+                <th scope="col">Vulnerable Individual</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var result in QueryResult)
+        {
+            <tr>
+                <td><a href="/match/@result.Data.MatchId" @onclick="@(() => ResultClicked(result))" @onclick:preventDefault>@result.Data.MatchId</a></td>
+                <td>@MatchingStateTableResults(result)</td>
+                <td>@VulnerableIndivudualTableResults(result)</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</section>

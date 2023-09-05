@@ -1,0 +1,362 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appAddress": {
+            "type": "string",
+            "metadata": {
+                "description": "url address of the app that will use the front door. Do not include http/s prefix."
+            }
+        },
+        "frontDoorHostName": {
+            "type": "string",
+            "metadata": {
+                "description": "Host name of the app that will use the front door"
+            }
+        },
+        "frontDoorName": {
+            "type": "string",
+            "metadata": {
+                "description": "The desired name of the frontdoor resource. frontDoorHostName subdomain must be same as frontdoor name."
+            }
+        },
+        "resourceGroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the resource group"
+            }
+        },
+        "resourceTags": {
+            "type": "object",
+            "metadata": {
+                "description": "resource tags associated with your project"
+            }
+        },
+        "wafPolicyName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the WAF policy"
+            }
+        },
+        "wafMode": {
+            "type": "string",
+            "allowedValues": [
+                "Detection",
+                "Prevention"
+            ],
+            "defaultValue": "Prevention",
+            "metadata": {
+                "description": "Describes if it is in detection mode or prevention mode at policy level."
+            }
+        },
+        "prefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Environment-specific resource naming prefix"
+            }
+        },
+        "env": {
+            "type": "string",
+            "metadata": {
+                "description": "Development environment indicator"
+            }
+        },
+        "rulesEngineName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the rules engine to be created with Security Headers"
+            }
+        },
+        "diagnosticSettingName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Diagnostic Setting Name."
+            }
+        },
+        "eventHubAuthorizationRuleId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Event Hub Authorization Rule Id."
+            }
+        },
+        "eventHubName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Event Hub Name."
+            }
+        },
+        "workspaceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Log Analytics Workspace Id."
+            }
+        }
+    },
+    "variables": {
+        "location": "global", /* front-door location must be global */
+        "wafLocation": "global" /* waf location must be global */,
+        "eventhubName": "[concat(parameters('prefix'), '-evh-monitoring-', parameters('env'))]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2022-05-01",
+            "type": "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies",
+            "name": "[parameters('wafPolicyName')]",
+            "tags": "[parameters('resourceTags')]",
+            "location": "[variables('wafLocation')]",
+            "properties": {
+                "policySettings": {
+                    "mode": "[parameters('wafMode')]",
+                    "enabledState": "Enabled"
+                },
+                "customRules": {
+                    "rules": [
+                        {
+                            "action": "Block",
+                            "enabledState": "Enabled",
+                            "matchConditions": [
+                                {
+                                    "matchValue": [
+                                        "POST"
+                                    ],
+                                    "matchVariable": "RequestMethod",
+                                    "operator": "Equal"
+                                }
+                            ],
+                            "name": "rateLimitByRequestMethod",
+                            "priority": "100",
+                            "rateLimitDurationInMinutes": "5",
+                            "rateLimitThreshold": "10000",
+                            "ruleType": "RateLimitRule"
+                        }
+                    ]
+                },
+                "managedRules": {
+                    "managedRuleSets": [
+                        {
+                            "ruleSetType": "DefaultRuleSet",
+                            "ruleSetVersion": "1.0",
+                            "exclusions": [
+                                {
+                                    "matchVariable": "RequestBodyPostArgNames",
+                                    "selectorMatchOperator": "Contains",
+                                    "selector": "__RequestVerificationToken" /* Verification Token passed in the form */
+                                },
+                                {
+                                    "matchVariable": "RequestCookieNames",
+                                    "selectorMatchOperator": "Contains",
+                                    "selector": ".AspNetCore.Session" /* AspNet Session variable passed as a Cookie */
+                                },
+                                {
+                                    "matchVariable": "RequestCookieNames",
+                                    "selectorMatchOperator": "Contains",
+                                    "selector": ".AspNetCore.Antiforgery" /* Antiforgery Token passed as a Cookie */
+                                },
+                                {
+                                    "matchVariable": "RequestCookieNames",
+                                    "selectorMatchOperator": "Contains",
+                                    "selector": "Nonce" /* The Nonce is passed back from EAuth after authenticating as a Cookie to retrieve the AppServiceAuthSession */
+                                },
+                                {
+                                    "matchVariable": "RequestCookieNames",
+                                    "selectorMatchOperator": "Contains",
+                                    "selector": "AppServiceAuthSession" /* The Authentication Session variable passed from EAuth as a Cookie */
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "apiVersion": "2020-07-01",
+            "type": "Microsoft.Network/frontdoors",
+            "name": "[parameters('frontDoorName')]",
+            "tags": "[parameters('resourceTags')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[concat(subscription().id, '/resourceGroups/', parameters('resourceGroupName'), '/providers/Microsoft.Network/frontdoorwebapplicationfirewallpolicies/', parameters('wafPolicyName'))]"
+            ],
+            "properties": {
+                "friendlyName": "[parameters('frontDoorName')]",
+                "enabledState": "Enabled",
+                "healthProbeSettings": [
+                    {
+                        "name": "healthProbeSettings1",
+                        "properties": {
+                            "path": "/health-probe.html",
+                            "protocol": "Https",
+                            "intervalInSeconds": 30,
+                            "healthProbeMethod": "Head",
+                            "enabledState": "Enabled"
+                        }
+                    }
+                ],
+                "loadBalancingSettings": [
+                    {
+                        "name": "loadBalancingSettings1",
+                        "properties": {
+                            "sampleSize": 4,
+                            "successfulSamplesRequired": 2,
+                            "additionalLatencyMilliseconds": 0
+                        }
+                    }
+                ],
+                "frontendEndpoints": [
+                    {
+                        "name": "[concat('azurefd-net-', uniqueString(parameters('frontDoorName')))]", /* eg: my-frontend */
+                        "properties": {
+                            "hostName": "[parameters('frontDoorHostName')]", /* eg: my-frontend.azurefd.net */
+                            "sessionAffinityEnabledState": "Disabled",
+                            "sessionAffinityTtlSeconds": 0,
+                            "webApplicationFirewallPolicyLink": {
+                                /* the resource id of the waf policy just created */
+                                "id": "[concat(subscription().id, '/resourceGroups/', parameters('resourceGroupName'), '/providers/Microsoft.Network/frontdoorwebapplicationfirewallpolicies/', parameters('wafPolicyName'))]"
+                            },
+                            "customHttpsConfiguration": null
+                        }
+                    }
+                ],
+                "backendPools": [
+                    {
+                        "name": "[concat('backend-pool-', uniqueString(parameters('frontDoorName')))]",
+                        "properties": {
+                            "backends": [
+                                {
+                                    "address": "[parameters('appAddress')]",
+                                    "privateLinkResourceId": null,
+                                    "privateLinkLocation": null,
+                                    "privateEndpointStatus": null,
+                                    "privateLinkApprovalMessage": null,
+                                    "enabledState": "Enabled",
+                                    "httpPort": 80,
+                                    "httpsPort": 443,
+                                    "priority": 1,
+                                    "weight": 50,
+                                    "backendHostHeader": "[parameters('appAddress')]"
+                                }
+                            ],
+                            "loadBalancingSettings": {
+                                "id": "[resourceId('Microsoft.Network/frontDoors/loadBalancingSettings', parameters('frontDoorName'), 'loadBalancingSettings1')]"
+                            },
+                            "healthProbeSettings": {
+                                "id": "[resourceId('Microsoft.Network/frontDoors/healthProbeSettings', parameters('frontDoorName'), 'healthProbeSettings1')]"
+                            }
+                        }
+                    }
+                ],
+                "routingRules": [
+                    {
+                        "name": "routingRule1",
+                        "properties": {
+                            "frontendEndpoints": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/frontDoors/frontendEndpoints', parameters('frontDoorName'), concat('azurefd-net-', uniqueString(parameters('frontDoorName'))))]"
+                                }
+                            ],
+                            "acceptedProtocols": [
+                                "Https"
+                            ],
+                            "patternsToMatch": [
+                                "/*"
+                            ],
+                            "routeConfiguration": {
+                                "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorForwardingConfiguration",
+                                "forwardingProtocol": "HttpsOnly",
+                                "backendPool": {
+                                    "id": "[resourceId('Microsoft.Network/frontDoors/backendPools', parameters('frontDoorName'), concat('backend-pool-', uniqueString(parameters('frontDoorName'))))]"
+                                }
+                            },
+                            "enabledState": "Enabled"
+                        }
+                    },
+                    {
+                        "name": "httpRedirect",
+                        "properties": {
+                            "frontendEndpoints": [
+                                {
+                                    "id": "[resourceId('Microsoft.Network/frontDoors/frontendEndpoints', parameters('frontDoorName'), concat('azurefd-net-', uniqueString(parameters('frontDoorName'))))]"
+                                }
+                            ],
+                            "acceptedProtocols": [
+                                "Http"
+                            ],
+                            "patternsToMatch": [
+                                "/*"
+                            ],
+                            "routeConfiguration": {
+                                "redirectType": "PermanentRedirect",
+                                "redirectProtocol": "HttpsOnly",
+                                "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorRedirectConfiguration"
+                            },
+                            "enabledState": "Enabled"
+                        }
+                    }
+                ],
+                "backendPoolsSettings": {
+                    "enforceCertificateNameCheck": "Enabled",
+                    "sendRecvTimeoutSeconds": 30
+                }
+            }
+        },
+        {
+            /* https://docs.microsoft.com/en-us/azure/azure-monitor/essentials/resource-manager-diagnostic-settings */
+            "type": "Microsoft.Network/frontdoors/providers/diagnosticSettings",
+            "name": "[concat(parameters('frontDoorName'), '/Microsoft.Insights/', parameters('diagnosticSettingName'))]",
+            "apiVersion": "2021-05-01-preview",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/frontdoors', parameters('frontDoorName'))]"
+            ],
+            "properties": {
+                "eventHubAuthorizationRuleId": "[parameters('eventHubAuthorizationRuleId')]",
+                "eventHubName": "[parameters('eventHubName')]",
+                "workspaceId": "[parameters('workspaceId')]",
+                "logs": [
+                    /* Category names from `az monitor diagnostic settings categories list` */
+                    {
+                        "category": "FrontdoorAccessLog",
+                        "enabled": true
+                    },
+                    {
+                        "category": "FrontdoorWebApplicationFirewallLog",
+                        "enabled": true
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/frontdoors/rulesengines",
+            "apiVersion": "2020-05-01",
+            "name": "[concat(parameters('frontDoorName'), '/', parameters('rulesEngineName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/frontdoors', parameters('frontDoorName'))]"
+            ],
+            "properties": {
+                "resourceState": "Enabled",
+                "rules": [
+                    {
+                        "name": "AddSecurityHeaders",
+                        "priority": 0,
+                        "action": {
+                            "requestHeaderActions": [],
+                            "responseHeaderActions": [
+                                {
+                                    "headerActionType": "Overwrite",
+                                    "headerName": "Strict-Transport-Security",
+                                    "value": "max-age=31536000; includeSubDomains; preload"
+                                },
+                                {
+                                    "headerActionType": "Overwrite",
+                                    "headerName": "X-Frame-Options",
+                                    "value": "DENY"
+                                }
+                            ]
+                        },
+                        "matchConditions": [],
+                        "matchProcessingBehavior": "Continue"
+                    }
+                ]
+            }
+        }
+    ]
+}

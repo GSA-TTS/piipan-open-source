@@ -1,0 +1,28 @@
+﻿@using static LayoutConstants
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public bool Multiselectable { get; set; } = false;
+
+    public List<UsaAccordionItem> Items { get; set; } = new List<UsaAccordionItem>();
+
+    /// <summary>
+    /// Called after the accordion item is expanded. Used to close the other accordion items if the accordion list single-select
+    /// </summary>
+    /// <param name="item"></param>
+    public void Expand(UsaAccordionItem item)
+    {
+        if (!Multiselectable)
+        {
+            foreach (var unselectedItem in Items.Where(n => n != item && n.Expanded))
+            {
+                unselectedItem.Toggle();
+            }
+        }
+    }
+}
+
+<div class="@AccordionClass" aria-multiselectable="@(Multiselectable ? "true" : "false")">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+</div>

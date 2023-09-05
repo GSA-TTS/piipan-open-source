@@ -1,0 +1,229 @@
+﻿@using Piipan.Components.Forms
+@using static Piipan.Components.Forms.FormConstants
+@inherits BaseTest<UsaInputText>
+@code {
+    public class TestModel {
+        public string? NotRequiredField { get; set; }
+
+        [UsaRequired]
+        [Display(Name = "Required Field")]
+        public string? RequiredField { get; set; }
+    }
+    private IRenderedComponent<UsaForm>? form = null;
+    private IElement? inputElement = null;
+    private TestModel model = new TestModel();
+    private RenderFragment? renderFragment = null;
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of an input text
+    /// </summary>
+    [Fact]
+    public void Input_Should_Exist_And_Have_Correct_Markup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<input class="@InputClass" id="model_NotRequiredField" name="model.NotRequiredField" style="" />
+        );
+    }
+
+    /// <summary>
+    /// Verify that when the value changes, the backend model is updated
+    /// </summary>
+    [Fact]
+    public void Input_Should_Bind_Value_On_Change()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        inputElement!.Change("Test");
+
+        // Assert
+        Assert.Equal("Test", model.NotRequiredField);
+    }
+
+    /// <summary>
+    /// Verify the label "for" attribute matches the input's ID
+    /// </summary>
+    [Fact]
+    public void Input_Should_Have_An_Accessible_Label()
+    {
+        // Arrange
+        CreateTestComponent();
+        var labelElement = form!.Find("label");
+
+        // Assert
+        Assert.Equal(labelElement.GetAttribute("for"), inputElement!.Id);
+    }
+
+    /// <summary>
+    /// Verify the required attribute is present when the field has the UsaRequired data annotation
+    /// </summary>
+    [Fact]
+    public void Input_Should_Have_Required_Attribute_When_Field_Is_Required()
+    {
+        // Arrange
+        renderFragment = RequiredFieldRenderFragment();
+        CreateTestComponent();
+
+        // Assert
+        Assert.True(inputElement!.HasAttribute("required"));
+    }
+
+    /// <summary>
+    /// Verify the required attribute is NOT present when the field does NOT have the UsaRequired data annotation
+    /// </summary>
+    [Fact]
+    public void Input_Should_Not_Have_Required_Attribute_When_Field_Is_Not_Required()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Assert.False(inputElement!.HasAttribute("required"));
+    }
+
+    /// <summary>
+    /// Verify that any additional html attributes are added to the input field
+    /// </summary>
+    [Fact]
+    public void Input_Should_Be_Able_To_Take_Extra_Parameters()
+    {
+        // Arrange
+        renderFragment = @<UsaInputText @bind-Value=model.RequiredField data-extra-param="test" />;
+        CreateTestComponent();
+
+        // Assert
+        Assert.Equal("test", inputElement!.GetAttribute("data-extra-param"));
+    }
+
+    /// <summary>
+    /// Verify that if the value isn't set that we don't get errors if field is not required
+    /// </summary>
+    [Fact]
+    public void Input_Should_Not_Have_Errors_When_Empty_And_Not_Required()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        inputElement!.Blur();
+
+        // Assert
+        AssertHasNoErrors();
+    }
+
+    /// <summary>
+    /// Verify that if the value isn't set that we get errors if field is required
+    /// </summary>
+    [Fact]
+    public void Input_Should_Have_Errors_When_Empty_And_Required()
+    {
+        // Arrange
+        renderFragment = RequiredFieldRenderFragment();
+        CreateTestComponent();
+
+        // Act
+        inputElement!.Blur();
+
+        // Assert
+        AssertHasRequiredErrors();
+    }
+
+    /// <summary>
+    /// Verify that if the value is set that we do NOT get errors if field is required
+    /// </summary>
+    [Fact]
+    public void Input_Should_Not_Have_Errors_When_Not_Empty_And_Required()
+    {
+        // Arrange
+        renderFragment = RequiredFieldRenderFragment();
+        CreateTestComponent();
+
+        // Act
+        inputElement!.Change("Test");
+        inputElement!.Blur();
+
+        // Assert
+        AssertHasNoErrors();
+    }
+
+    /// <summary>
+    /// Verify that we get errors when the value is set and then cleared if field is required
+    /// </summary>
+    [Fact]
+    public void Input_Should_Have_Errors_When_Changed_Back_To_Empty_And_Required()
+    {
+        // Arrange
+        renderFragment = RequiredFieldRenderFragment();
+        CreateTestComponent();
+
+        // Act
+        inputElement!.Change("Test");
+        inputElement!.Blur();
+
+        // Assert
+        AssertHasNoErrors();
+
+        // Act
+        inputElement!.Change("");
+        inputElement!.Blur();
+
+        // Assert
+        AssertHasRequiredErrors();
+    }
+
+    #endregion Tests
+
+    #region Helper Function
+
+    private RenderFragment RequiredFieldRenderFragment() => 
+        @<UsaInputText @bind-Value="model.RequiredField" />;
+
+    protected override void CreateTestComponent()
+    {
+        JSInterop.SetupVoid("piipan.utilities.registerFormValidation", _ => true);
+        var componentFragment = Render<UsaForm>(
+            @<UsaForm Model="model">
+                <UsaFormGroup>
+                    @if (renderFragment == null)
+                    {
+                        <UsaInputText @bind-Value="model.NotRequiredField" />
+                    }
+                    else
+                    {
+                        @renderFragment
+                    }
+                </UsaFormGroup>
+            </UsaForm>
+        );
+        form = componentFragment;
+        Component = componentFragment.FindComponent<UsaInputText>();
+        inputElement = componentFragment.Find($".{InputClass}");
+    }
+
+    private void AssertHasNoErrors()
+    {
+        Assert.False(inputElement!.ClassList.Contains(InputErrorClass));
+        var errorSpans = form!.FindAll($".{InputErrorMessageClass}");
+        var errorForms = form!.FindAll($".{InputFormGroupErrorClass}");
+        Assert.Equal(0, errorForms.Count);
+        Assert.Equal(0, errorSpans.Count);
+    }
+
+    private void AssertHasRequiredErrors()
+    {
+        Assert.True(inputElement!.ClassList.Contains(InputErrorClass));
+        var errorForms = form!.FindAll($".{InputFormGroupErrorClass}");
+        var errorSpan = form!.Find($".{InputErrorMessageClass}");
+        Assert.Equal("Required Field is required", errorSpan.TextContent);
+        Assert.Equal(1, errorForms.Count);
+    }
+
+    #endregion Helper Functions
+}

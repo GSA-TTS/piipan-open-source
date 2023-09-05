@@ -1,0 +1,111 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "emailAddress": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the email Address for the Action Group"
+            }
+        },
+        "eventHubName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the name of the specific Event Hub queue"
+            }
+        },
+        "eventHubNameSpace": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Event Hub namespace"
+            }
+        }
+    },
+    "variables": {
+        "actionGroupName": "ServiceHealth",
+        "alertScope": "[format('/subscriptions/{0}', subscription().subscriptionId)]",
+        "groupShortName": "Svc Health"
+    },
+    "resources": [
+        {
+            "type": "microsoft.insights/actionGroups",
+            "apiVersion": "2019-06-01",
+            "name": "[variables('actionGroupName')]",
+            "location": "Global",
+            "tags": {
+                "Action Group": "[variables('actionGroupName')]"
+            },
+            "properties": {
+                "groupShortName": "[variables('groupShortName')]",
+                "enabled": true,
+                /* Disabling role receiver notifications, as they can be numerous
+                "armRoleReceivers": [
+                    {
+                        "name": "Contributor",
+                        "roleId": "Contributor",
+                        "useCommonAlertSchema": true
+                    },
+                    {
+                        "name": "Owner",
+                        "roleId": "Owner",
+                        "useCommonAlertSchema": true
+                    }
+                ],
+                */
+                "emailReceivers": [
+                    {
+                        "name": "[concat(variables('actionGroupName'), ' - Email')]",
+                        "emailAddress": "[parameters('emailAddress')]",
+                        "useCommonAlertSchema": true
+                    }
+                ],
+                "eventHubReceivers": [
+                    {
+                        "eventHubName": "[parameters('eventHubName')]",
+                        "eventHubNameSpace": "[parameters('eventHubNameSpace')]",
+                        "name": "[concat(variables('actionGroupName'), ' - Event Hub')]",
+                        "subscriptionId": "[variables('alertScope')]",
+                        "useCommonAlertSchema": true
+                    }
+                ],
+                "smsReceivers": [],
+                "webhookReceivers": []
+            }
+        },
+        {
+            "type": "microsoft.insights/activityLogAlerts",
+            "apiVersion": "2017-04-01",
+            "name": "Service Health Alert",
+            "location": "Global",
+            "properties": {
+                "scopes": [
+                    "[variables('alertScope')]"
+                ],
+                "condition": {
+                    "allOf": [
+                        {
+                            "field": "category",
+                            "equals": "[variables('actionGroupName')]"
+                        },
+                        {
+                            "field": "properties.incidentType",
+                            "equals": "Incident"
+                        }
+                    ]
+                },
+                "actions": {
+                    "actionGroups": [
+                        {
+                            "actionGroupId": "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]",
+                            "webhookProperties": {}
+                        }
+                    ]
+                },
+                "enabled": true
+            },
+            "dependsOn": [
+                "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]"
+            ]
+        }
+    ]
+}

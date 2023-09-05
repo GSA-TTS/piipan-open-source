@@ -1,0 +1,11 @@
+//
+//  USWDS Overrides for usa-table and table elements
+//
+
+.usa-prose>table thead td,
+.usa-prose>table thead th,
+.usa-table thead td,
+.usa-table thead th {
+  @include u-bg('primary');
+  @include u-text('white');
+}

@@ -1,0 +1,122 @@
+﻿@using Piipan.Components
+@using System.Linq.Expressions
+@using Piipan.Components.Layout
+@using static Piipan.Components.Layout.LayoutConstants
+@inherits BaseTest<UsaAccordionItem>
+
+@code {
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public UsaAccordionItemTests() : base()
+    {
+        InitialValues = new UsaAccordionItem()
+        {
+            HeadingContent = @<span>Test Header</span>,
+            BodyContent = @<p>Body Content</p>,
+            StartsExpanded = true
+        };
+    }
+    protected override void CreateTestComponent()
+    {
+        Component = Render<UsaAccordionItem>(
+            @<UsaAccordionItem StartsExpanded="@InitialValues.StartsExpanded">
+                <HeadingContent>@InitialValues.HeadingContent</HeadingContent>
+                <BodyContent>@InitialValues.BodyContent</BodyContent>
+            </UsaAccordionItem>
+        );
+    }
+    #region Tests
+
+    /// <summary>
+    /// Verify that the markup that is generated for this accordion item is what we expect
+    /// </summary>
+    [Fact]
+    public void Accordion_Should_Exist_And_Have_Correct_Markup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        VerifyOpen();
+    }
+
+    /// <summary>
+    /// Verify that the markup that is generated for this accordion item is what we expect when it starts collapsed
+    /// </summary>
+    [Fact]
+    public void Accordion_Should_Be_Able_To_Start_Collapsed()
+    {
+        // Arrange
+        InitialValues.StartsExpanded = false;
+        CreateTestComponent();
+
+        // Assert
+        VerifyClosed();
+    }
+
+    /// <summary>
+    /// Verify that the markup that is generated for this accordion item is what we expect after we close it
+    /// </summary>
+    [Fact]
+    public void Accordion_Should_Close_When_Clicked()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        Component!.Find($".{AccordionButtonClass}").Click();
+
+        // Assert
+        VerifyClosed();
+    }
+
+    /// <summary>
+    /// Verify that the markup that is generated for this accordion item is what we expect after we close it and reopen it
+    /// </summary>
+    [Fact]
+    public void Accordion_Should_Close_And_Reopen_When_Clicked_Twice()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        Component!.Find($".{AccordionButtonClass}").Click();
+        Component!.Find($".{AccordionButtonClass}").Click();
+
+        // Assert
+        VerifyOpen();
+    }
+    #endregion Tests
+
+    #region Helper Functions
+    private void VerifyClosed()
+    {
+        var id = Component!.Find($".{AccordionContentClass}").Id;
+        RenderFragment renderFragment = __builder =>
+        {
+            <h4 class="@AccordionHeadingClass">
+                <button class="@AccordionButtonClass" type="button" aria-expanded="false" aria-controls="@id"><span>Test Header</span></button>
+            </h4>
+            <div id="@id" class="@AccordionContentClass usa-prose" hidden>
+                <p>Body Content</p>
+            </div>
+        };
+        Component!.MarkupMatches(renderFragment);
+    }
+    private void VerifyOpen()
+    {
+        var id = Component!.Find($".{AccordionContentClass}").Id;
+        RenderFragment renderFragment = __builder =>
+        {
+            <h4 class="@AccordionHeadingClass">
+                <button class="@AccordionButtonClass" type="button" aria-expanded="true" aria-controls="@id"><span>Test Header</span></button>
+            </h4>
+            <div id="@id" class="@AccordionContentClass usa-prose">
+                <p>Body Content</p>
+            </div>
+        };
+        Component!.MarkupMatches(renderFragment);
+    }
+    #endregion Helper Functions
+}

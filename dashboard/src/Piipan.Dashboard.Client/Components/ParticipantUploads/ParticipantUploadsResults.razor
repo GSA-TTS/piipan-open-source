@@ -1,0 +1,67 @@
+﻿@using Piipan.Components.Tables
+@using Piipan.Dashboard.Client.DTO
+@using Piipan.Metrics.Api
+@inject IJSRuntime JSRuntime
+@code {
+
+    [Parameter] public ParticipantUploadRequestFilter Filter { get; set; } = new();
+    private ApiResponse<UploadResponseDto> _uploadResponse = null;
+    private ParticipantUploadRequestFilter _previousFilter = null;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // This filter is a record, which allows us to compare the values of the filter to see if we need to do another filter to get the data.
+        if (_previousFilter != Filter) {
+            // Fetch
+            var offset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow);
+            _uploadResponse = await PiipanApi.GetUploads(Filter with { HoursOffset = (int)offset.TotalHours });
+
+            // If the only difference is the page, scroll directly to the table. They are just paging through the results.
+            if (_previousFilter != null && _previousFilter with { Page = Filter.Page } == Filter) {
+                await JSRuntime.InvokeVoidAsync("piipan.utilities.scrollToElement", "participant-upload-results");
+            }
+        }
+        
+        // Perform a shallow clone to compare with later.
+        _previousFilter = Filter with { };
+    }
+
+
+}
+
+<div id="participant-upload-results">
+@if (_uploadResponse == null) {
+    <p>Loading...</p>
+}
+else if (_uploadResponse?.Value?.ParticipantUploadResults.Count > 0)
+{
+    <UsaTable Data="_uploadResponse.Value.ParticipantUploadResults" Striped="true">
+        <UsaTableColumn T="ParticipantUpload" Name="State">
+            <Template Context="record">
+                @{
+                    var state = ClientAppData.StateInfo.Results.FirstOrDefault(n => n.StateAbbreviation.Equals(record.State, StringComparison.OrdinalIgnoreCase));
+                }
+                @state?.State @(record?.State != null ? $"({record.State.ToUpper()})" : "")
+            </Template>
+        </UsaTableColumn>
+        <UsaTableColumn T="ParticipantUpload" Name="Upload Status">
+            <Template Context="record">
+                @record.Status?.ToLowerExceptFirstLetter()
+            </Template>
+        </UsaTableColumn>
+        <UsaTableColumn T="ParticipantUpload" Name="Timestamp at Processing Start">
+            <Template Context="record">
+                @record.UploadedAt.ToFullTimeWithTimezone()
+            </Template>
+        </UsaTableColumn>
+    </UsaTable>
+    <UsaPagination 
+        CurrentPage="Filter.Page"
+                NumberOfPages="(int)(_uploadResponse.Value.Total / Filter.PerPage + (_uploadResponse.Value.Total % Filter.PerPage != 0 ? 1 : 0))"
+                LinkWithParams="@($"/ParticipantUploads{_uploadResponse.Value.PageParams}")"
+                TableId="participant-upload-results" />
+}
+else {
+    <h3>No results</h3>
+}
+</div>

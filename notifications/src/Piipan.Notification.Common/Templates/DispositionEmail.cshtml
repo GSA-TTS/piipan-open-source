@@ -1,0 +1,258 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.Notification.Common.Models
+@using Piipan.Notification.Common.Utilities
+@using Piipan.Shared.Extensions
+@model NotificationRecord
+
+@{
+
+    string currentProperty;
+    string UpdatedHtml(bool initState, params string[] otherProperties)
+    {
+        bool isUpdated;
+        // If matching state email is null, this email is going to initiating state. If the property is also initiating state, do nothing.
+        if (initState && Model.MatchingStateEmailRecipientsModel == null)
+        {
+            isUpdated = false;
+        }
+        // If here, the property is initiating state, but we are sending an email to the matching state. Figure out if this field has changed.
+        else if (initState)
+        {
+            isUpdated = Model.DispositionUpdates.InitStateUpdates.Contains(currentProperty);
+            if (otherProperties.Length > 0)
+            {
+                foreach (var property in otherProperties)
+                {
+                    isUpdated |= Model.DispositionUpdates.InitStateUpdates.Contains(property);
+                }
+            }
+        }
+        // If initiating state email is null, this email is going to matching state. If the property is also matching state, do nothing.
+        else if (!initState && Model.InitiatingStateEmailRecipientsModel == null)
+        {
+            isUpdated = false;
+        }
+        else
+        {
+            isUpdated = Model.DispositionUpdates.MatchingStateUpdates.Contains(currentProperty);
+            if (otherProperties.Length > 0)
+            {
+                foreach (var property in otherProperties)
+                {
+                    isUpdated |= Model.DispositionUpdates.MatchingStateUpdates.Contains(property);
+                }
+            }
+        }
+        return isUpdated ? "<span class=\"match-change\">&#9679;</span>" : "";
+    }
+    string FinalDispositionDateDisplay(string finalDisposition)
+    {
+        return finalDisposition switch
+        {
+            "Benefits Approved" => "Benefits Start Date",
+            "Benefits Terminated" => "Benefits End Date",
+            _ => "Final Disposition Date"
+        };
+    }
+}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        a {
+            color: #005EA2 !important;
+        }
+
+        .usa-button a {
+            text-decoration: none !important;
+        }
+        .usa-button {
+            font-family: Source Sans Pro Web,Helvetica Neue,Helvetica,Roboto,Arial,sans-serif;
+            font-size: 17px;
+            line-height: .9;
+            color: #fff !important;
+            background-color: #005ea2 !important;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            border: 0;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-block;
+            font-weight: 700;
+            mso-line-height-rule: exactly;
+            mso-text-raise: 6px;
+            line-height: 40px;
+            text-decoration: none !important;
+        }
+
+        .match-change {
+            color: #D54309;
+        }
+
+        th {
+            text-align: left;
+            font-weight: 400;
+            color: #045881;
+        }
+
+            th.fit {
+                width: 0;
+            }
+            th.wide {
+                width: 800px;
+            }
+
+        .match-data {
+            width: 100%;
+            max-width: 800px;
+        }
+        body {
+            font-family: Source Sans Pro Web,Helvetica Neue,Helvetica,Roboto,Arial,sans-serif;
+            font-size: 15px;
+        }
+    </style>
+
+</head>
+<body>
+    <p>This is an automated notification and we are unable to accept replies. If you need additional assistance, please contact us at <a href="mailto:@(Model.MatchEmailDetails.ReplyToEmail)?subject=NAC%20Match%20@(Model.MatchResEvent.MatchId)">@Model.MatchEmailDetails.ReplyToEmail</a>.</p>
+    <p>An update was made to NAC Match ID <a href="@Model.MatchEmailDetails.MatchingUrl" title="View Match">@Model.MatchResEvent.MatchId</a>.</p>
+    <p>
+        <strong>Initiating State:</strong> @Model.MatchEmailDetails.InitState
+        <br>
+        <strong>Matching State:</strong> @Model.MatchEmailDetails.MatchingState
+        <br>
+        <strong>NAC Match ID:</strong> <a href="@Model.MatchEmailDetails.MatchingUrl" title="View Match">@Model.MatchResEvent.MatchId</a>
+        <br />
+        <strong>Match Record Created:</strong> @ValueToDisplayHelper.GetDisplayValue(Model.MatchEmailDetails.CreateDate?.ToEasternTime())
+    </p>
+    <p><span class="match-change">&#9679;</span> indicates most recently updated information</p>
+    <table class="match-data">
+        <thead>
+            <tr>
+                <th class="fit"></th>
+                <th class="wide"><strong>@Model.MatchEmailDetails.InitState</strong> (Initiating State)</th>
+                <th class="fit"></th>
+                <th class="wide"><strong>@Model.MatchEmailDetails.MatchingState</strong> (Matching State)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                @{
+                    currentProperty = "VulnerableIndividual";
+                }
+                <td class="fit">@Html.Raw(UpdatedHtml(true))</td>
+                <td><strong>Vulnerable Individual:</strong> @ValueToDisplayHelper.GetDisplayValue(Model.MatchResEvent.InitStateDisposition.VulnerableIndividual)</td>
+                <td class="fit">@Html.Raw(UpdatedHtml(false))</td>
+                <td><strong>Vulnerable Individual:</strong> @ValueToDisplayHelper.GetDisplayValue(Model.MatchResEvent.MatchingStateDisposition.VulnerableIndividual)</td>
+            </tr>
+            <tr>
+                @{
+                    currentProperty = "InvalidMatch";
+                }
+                <td class="fit">@Html.Raw(UpdatedHtml(true, "InvalidMatchReason", "OtherReasoningForInvalidMatch"))</td>
+                <td>@{
+                        <text><strong>Invalid Match:</strong></text>
+                    }
+                    @{
+                        <text> @ValueToDisplayHelper.GetDisplayValue(Model.MatchResEvent.InitStateDisposition.InvalidMatch)</text>
+                    }
+                    @if (Model.MatchResEvent.InitStateDisposition.InvalidMatch == true)
+                    {
+                        <text>, @Model.MatchResEvent.InitStateDisposition.InvalidMatchReason</text>
+                        @if (!string.IsNullOrEmpty(Model.MatchResEvent.InitStateDisposition.OtherReasoningForInvalidMatch))
+                        {
+                            <text>: @Model.MatchResEvent.InitStateDisposition.OtherReasoningForInvalidMatch</text>
+                        }
+                    }
+                </td>
+                <td class="fit">@Html.Raw(UpdatedHtml(false, "InvalidMatchReason", "OtherReasoningForInvalidMatch"))</td>
+                <td>@{
+                        <text><strong>Invalid Match:</strong></text>
+                    }
+                    @{
+                                                <text> @ValueToDisplayHelper.GetDisplayValue(Model.MatchResEvent.MatchingStateDisposition.InvalidMatch)</text>
+                    }
+                    @if (Model.MatchResEvent.MatchingStateDisposition.InvalidMatch == true)
+                    {
+                        <text>, @Model.MatchResEvent.MatchingStateDisposition.InvalidMatchReason</text>
+                        @if (!string.IsNullOrEmpty(Model.MatchResEvent.MatchingStateDisposition.OtherReasoningForInvalidMatch))
+                        {
+                            <text>: @Model.MatchResEvent.MatchingStateDisposition.OtherReasoningForInvalidMatch</text>
+                        }
+                    }
+                </td>
+
+            </tr>
+            <tr>
+                @{
+                    currentProperty = "InitialActionTaken";
+                }
+                <td class="fit">@Html.Raw(UpdatedHtml(true))</td>
+                <td><strong>Initial Action Taken:</strong> @ValueToDisplayHelper.GetDisplayValue(Model.MatchResEvent.InitStateDisposition.InitialActionTaken)</td>
+                <td class="fit">@Html.Raw(UpdatedHtml(false))</td>
+                <td><strong>Initial Action Taken:</strong> @ValueToDisplayHelper.GetDisplayValue(Model.MatchResEvent.MatchingStateDisposition.InitialActionTaken)</td>
+            </tr>
+            <tr>
+                @{
+                    currentProperty = "InitialActionAt";
+                }
+                <td class="fit">@Html.Raw(UpdatedHtml(true))</td>
+                <td><strong>Initial Action Date:</strong> @ValueToDisplayHelper.GetDisplayValue(Model.MatchResEvent.InitStateDisposition.InitialActionAt)</td>
+                <td class="fit">@Html.Raw(UpdatedHtml(false))</td>
+                <td><strong>Initial Action Date:</strong> @ValueToDisplayHelper.GetDisplayValue(Model.MatchResEvent.MatchingStateDisposition.InitialActionAt)</td>
+            </tr>
+            <tr>
+                @{
+                    currentProperty = "FinalDisposition";
+                }
+                <td class="fit">@Html.Raw(UpdatedHtml(true))</td>
+                <td><strong>Final Disposition Taken:</strong> @ValueToDisplayHelper.GetDisplayValue(Model.MatchResEvent.InitStateDisposition.FinalDisposition)</td>
+                <td class="fit">@Html.Raw(UpdatedHtml(false))</td>
+                <td><strong>Final Disposition Taken:</strong> @ValueToDisplayHelper.GetDisplayValue(Model.MatchResEvent.MatchingStateDisposition.FinalDisposition)</td>
+            </tr>
+            <tr>
+                @{
+                    currentProperty = "FinalDispositionDate";
+                }
+                <td class="fit">@Html.Raw(UpdatedHtml(true))</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(Model.MatchResEvent.InitStateDisposition.FinalDisposition))
+                    {
+                        <strong>@FinalDispositionDateDisplay(Model.MatchResEvent.InitStateDisposition.FinalDisposition):</strong> @ValueToDisplayHelper.GetDisplayValue(Model.MatchResEvent.InitStateDisposition.FinalDispositionDate)
+                    }
+                </td>
+                <td class="fit">@Html.Raw(UpdatedHtml(false))</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(Model.MatchResEvent.MatchingStateDisposition.FinalDisposition))
+                    {
+                        <strong>@FinalDispositionDateDisplay(Model.MatchResEvent.MatchingStateDisposition.FinalDisposition):</strong> @ValueToDisplayHelper.GetDisplayValue(Model.MatchResEvent.MatchingStateDisposition.FinalDispositionDate)
+                    }
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p style="margin-bottom: 5px;">Click on the NAC Match ID link to go to the match record.</p>
+    <table>
+        <tbody>
+            <tr>
+                <td class="usa-button">
+                    <a href="@Model.MatchEmailDetails.MatchingUrl" title="View Match" class="usa-button">&nbsp;&nbsp;&nbsp;&nbsp;View NAC Match ID @Model.MatchEmailDetails.MatchId&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p>Use the NAC Match ID to communicate with @(Model.MatchingStateEmailRecipientsModel == null ? Model.MatchEmailDetails.MatchingState : Model.MatchEmailDetails.InitState) about this match. <strong>Do not share PII over email.</strong></p>
+    <hr>
+    <p>
+        <a href="@Environment.GetEnvironmentVariable("QueryToolUrl")" title="Go To NAC Main Page"><img src="cid:usda-img" alt="USDA National Accuracy Clearinghouse" /></a>
+    </p>
+
+    <p>This electronic message contains information generated by the USDA solely for the intended recipients. Any unauthorized interception of this message or the use or disclosure of the information it contains may violate the law and subject the violator to civil or criminal penalties. If you believe you have received this message in error, please notify the sender and delete the email immediately.</p>
+</body>
+</html>

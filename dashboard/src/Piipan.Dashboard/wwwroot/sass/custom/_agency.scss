@@ -1,0 +1,31 @@
+//
+//  Agency header area
+//
+.agency {
+  display: flex;
+  align-items: center;
+
+  img {
+    width: 4rem;
+    height: 100%;
+  }
+
+  .agency__text--top {
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1;
+    @include at-media('mobile-lg') {
+      font-size: 1.3rem;
+    }
+  }
+
+  .agency__text--bottom {
+    font-size: .7rem;
+    font-weight: 300;
+    text-transform: uppercase;
+    margin-top: .3rem;
+    @include at-media('mobile-lg') {
+      font-size: 0.9rem;
+    }
+  }
+}

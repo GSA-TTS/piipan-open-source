@@ -1,0 +1,175 @@
+﻿@using AngleSharp.Html.Dom
+@using Piipan.Components.Alerts
+@using Piipan.Components.Forms
+@using static Piipan.Components.Forms.FormConstants
+@using static Piipan.Components.Shared.CommonConstants
+@using static Piipan.Shared.API.Validation.ValidationConstants
+@inherits BaseTest<UsaForm>
+@code {
+    public class TestModel
+    {
+        [UsaRequired]
+        [Display(Name = "Required Field")]
+        public string? RequiredField { get; set; }
+    }
+    private IElement? inputElement = null;
+    private TestModel model = new TestModel();
+    private RenderFragment? renderFragment = null;
+    private UsaForm Form;
+    private bool formSubmitted = false;
+
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public UsaFormTests() : base()
+    {
+        InitialValues = new UsaForm
+        {
+            OnSubmit = async () =>
+            {
+                bool valid = await Form.ValidateForm();
+                if (valid)
+                {
+                    formSubmitted = true; // simulate a form submit
+                }
+            }
+        };
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify that the error box shows up when you submit an invalid form, and it scrolls to the errors
+    /// </summary>
+    [Fact]
+    public async Task Form_Validation_Shows_Error_Box()
+    {
+        // Arrange
+        CreateTestComponent();
+        JSInterop.SetupVoid("piipan.utilities.scrollToElement", _ => true).SetVoidResult();
+
+        // Assert
+        // When the form first loads, there is no alert box.
+        Assert.False(Component!.HasComponent<UsaAlertBox>());
+
+        // Act
+        await Component.InvokeAsync(async () => await Form.SubmitForm());
+
+        // Assert
+        // When the form first loads, there is no alert box.
+        Assert.True(Component!.HasComponent<UsaAlertBox>());
+        JSInterop.VerifyInvoke("piipan.utilities.scrollToElement");
+    }
+
+    /// <summary>
+    /// Verify that when the button inside the error alert is clicked, focus shifts to the corresponding element
+    /// </summary>
+    [Fact]
+    public async Task Form_Validation_When_Clicking_Error_Focuses_Element()
+    {
+        // Arrange
+        CreateTestComponent();
+        JSInterop.SetupVoid("piipan.utilities.scrollToElement", _ => true).SetVoidResult();
+        JSInterop.SetupVoid("piipan.utilities.focusElement", _ => true).SetVoidResult();
+
+        // Assert
+        // When the form first loads, there is no alert box.
+        Assert.False(Component!.HasComponent<UsaAlertBox>());
+
+        // Act
+        // Submit the invalid form
+        await Component.InvokeAsync(async () => await Form.SubmitForm());
+        // Click the first error
+        Component!.FindComponent<UsaAlertBox>().Find("button").Click();
+
+        // Assert
+        // When the form first loads, there is no alert box.
+        JSInterop.VerifyInvoke("piipan.utilities.focusElement");
+    }
+
+    /// <summary>
+    /// Verify that when there are server errors, the alert box shows on page load
+    /// </summary>
+    [Fact]
+    public async Task Form_Shows_Alert_Box_When_Loaded_With_Errors()
+    {
+        // Arrange
+        InitialValues.SubmitErrors = new List<(string Property, string Error)>()
+        {
+            ("model_RequiredField", $"{ValidationFieldPlaceholder} is required"),
+            ("model_RequiredField", $"Testing link in the middle: {ValidationFieldPlaceholder} is required"),
+            ("", "Some other server error")
+        };
+        model.RequiredField = "Some value";
+        CreateTestComponent();
+
+        // Act - Submit the form and SubmitErrors are returned
+        await Component.InvokeAsync(async () => await Form.SubmitForm());
+        var errorListItems = Component!.FindComponent<UsaAlertBox>().FindAll("li");
+
+        // Assert
+        // When the form first loads, there is no alert box.
+        Assert.Equal(3, errorListItems.Count);
+        errorListItems[0].MarkupMatches(
+            @<li>
+                <button class="@ButtonClass @ButtonUnstyledClass">Required Field</button> is required
+            </li>
+        );
+        errorListItems[1].MarkupMatches(
+            @<li>
+                Testing link in the middle: <button class="@ButtonClass @ButtonUnstyledClass">Required Field</button> is required
+            </li>
+        );
+        errorListItems[2].MarkupMatches(
+            @<li>
+                Some other server error
+            </li>
+        );
+    }
+
+    /// <summary>
+    /// Verify that OnSubmit is called so that the calling component can process (set button states, etc)
+    /// </summary>
+    [Fact]
+    public async Task Form_When_Form_Is_Submitted_OnSubmit_Is_Called()
+    {
+        // Arrange
+        string testString = "";
+        InitialValues.OnSubmit = async () => { bool valid = await Form.ValidateForm(); testString = $"Form Valid: {valid}"; };
+        CreateTestComponent();
+
+        // Act
+        // Submit the invalid form
+        await Component.InvokeAsync(async () => await Form.SubmitForm());
+
+        // Assert
+        Assert.Equal("Form Valid: False", testString);
+    }
+
+    #endregion Tests
+
+    #region Helper Function
+
+    protected override void CreateTestComponent()
+    {
+        JSInterop.SetupVoid("piipan.utilities.registerFormValidation", _ => true);
+        Component = Render<UsaForm>(
+            @<UsaForm Model="model" @ref="Form" SubmitErrors="InitialValues.SubmitErrors" OnSubmit="InitialValues.OnSubmit">
+                <UsaFormGroup>
+                    @if (renderFragment == null)
+                    {
+                        <UsaInputText @bind-Value="model.RequiredField" />
+                    }
+                    else
+                    {
+                        @renderFragment
+                    }
+                </UsaFormGroup>
+            </UsaForm>
+        );
+        inputElement = Component.Find($".{InputClass}");
+        JSInterop.SetupVoid("piipan.utilities.setCursorPosition", _ => true);
+    }
+
+    #endregion Helper Functions
+}

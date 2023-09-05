@@ -1,0 +1,13 @@
+﻿@page "/match"
+@using Piipan.QueryTool.Client.Components
+@code {
+    protected override void OnInitialized()
+    {
+        ClientAppData.CurrentPage = "match";
+    }
+}
+<PageTitle>NAC Match Search</PageTitle>
+
+<div class="grid-container">
+    <MatchForm />
+</div>

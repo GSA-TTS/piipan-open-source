@@ -1,0 +1,10 @@
+{
+  "coverage-gutters.coverageFileNames": [
+    "**/Piipan.Participants.Core.Tests/**/coverage.info",
+  ],
+  "coverage-gutters.showLineCoverage": false,
+  "coverage-gutters.coverageReportFileName": "index.html",
+  "csharp.semanticHighlighting.enabled": true,
+  "omnisharp.defaultLaunchSolution": "participants.sln",
+  "editor.acceptSuggestionOnCommitCharacter": false,
+}

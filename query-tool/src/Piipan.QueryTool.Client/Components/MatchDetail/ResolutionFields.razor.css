@@ -1,0 +1,19 @@
+﻿.infoSavedText {
+    margin-bottom: 24px;
+}
+
+h3 {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 33px;
+    margin: 0;
+}
+
+.ResolutionFieldsSave {
+    margin-top: 5px;
+}
+
+.ResolutionFieldsDropdownWidth {
+    max-width: 296px;
+}

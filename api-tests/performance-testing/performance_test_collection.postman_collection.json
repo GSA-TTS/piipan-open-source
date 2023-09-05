@@ -1,0 +1,79 @@
+{
+	"info": {
+		"_postman_id": "73d49955-bc80-4122-8024-989e26a25ee9",
+		"name": "PerformanceTestCollection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19296339"
+	},
+	"item": [
+		{
+			"name": "Find Matches APIM-PerformanceTest",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const res = pm.response.json().data;\r",
+							"const responseMatches = pm.response.json().data.results[0];\r",
+							"\r",
+							"pm.test(\"Status code validation\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var list = pm.info.iterationCount;\r",
+							"console.log(list);\r",
+							"pm.environment.set(\"Total_Records\", list);\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "",
+						"type": "text"
+					},
+					{
+						"key": "X-Initiating-State",
+						"value": "EC",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": [\r\n        {\r\n      \"lds_hash\": \"{{lds_hash}}\",\r\n      \"participant_id\": \"{{participant_id}}\",\r\n      \"case_id\": \"{{case_id}}\",\r\n      \"search_reason\": \"application\"\r\n        }\r\n    ]\r\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/match/v2/find_matches",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"match",
+						"v2",
+						"find_matches"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

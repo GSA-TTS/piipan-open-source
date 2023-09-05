@@ -1,0 +1,17 @@
+﻿.usa-modal {
+    max-width: 29rem;
+}
+
+.usa-modal .usa-modal__main {
+    margin: 0 1.25rem;
+}
+
+.usa-modal ::deep .usa-modal__heading {
+    margin-bottom: 1rem;
+    font-family: Source Sans Pro Web,Helvetica Neue,Helvetica,Roboto,Arial,sans-serif;
+    font-size: 1.5rem;
+}
+
+.usa-modal ::deep .usa-prose {
+    font-size: 1rem;
+}

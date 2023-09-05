@@ -1,0 +1,46 @@
+﻿@using Piipan.Components.Alerts
+@using Piipan.Components.Enums
+@using Piipan.Metrics.Api
+@code {
+    public ApiResponse<ParticipantUploadStatistics> Statistics { get; set; } = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var offset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow);
+        Statistics = await PiipanApi.GetUploadStatistics(new ParticipantUploadStatisticsRequest
+            {
+                HoursOffset = (int)offset.TotalHours
+            });
+    }
+}
+
+<h2>Daily Upload Information</h2>
+@{
+    string timeZoneAbbreviation = TimeZoneInfo.Local.IsDaylightSavingTime(DateTime.Now) ? TimeZoneInfo.Local.DaylightName : TimeZoneInfo.Local.StandardName;
+}
+@if (Statistics == null) {
+    <p>Loading...</p>
+}
+else {
+    if (Statistics.Errors.Count > 0) {
+        <UsaAlertBox Slim="true" AlertSeverity="AlertSeverity.Error">
+            @foreach (var error in Statistics.Errors)
+            {
+                <p>@error.Error</p>
+            }
+        </UsaAlertBox>
+    }
+    else if (Statistics.Value != null) {
+        <span>last synced on @DateTime.Now.ToString("MM/dd/yyyy h:mm:ss tt").ToUpper() @timeZoneAbbreviation</span>
+        <div id="statistic-wrapper">
+            <div class="statistic-card">
+                <h3>Daily Failed Uploads</h3>
+                <span class="statistic-number">@Statistics.Value.TotalFailure</span>
+            </div>
+            <div class="statistic-card">
+                <h3>Daily Uploads Completed (out of @(ClientAppData.StateInfo.Results.Count()))</h3>
+                <span class="statistic-number">@Statistics.Value.TotalComplete</span>
+            </div>
+        </div>
+    }
+}

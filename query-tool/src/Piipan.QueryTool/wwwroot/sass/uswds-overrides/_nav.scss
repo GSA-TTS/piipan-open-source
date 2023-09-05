@@ -1,0 +1,79 @@
+//
+// USWDS Overrides for usa-nav and related classes
+//
+
+.usa-nav {
+  // fixes user dropdown from hiding behind main content
+  @include at-media('desktop') {
+    position: static;
+  }
+}
+
+.usa-nav__primary.usa-accordion {
+    margin-top: 1rem;
+
+    .usa-accordion__button[aria-expanded="true"] .usa-button--unstyled {
+        color: #fff;
+    }
+} 
+
+@media (min-width: 64em) {
+    .usa-nav-primary {
+        background: #045881;
+
+        .usa-nav__primary > .usa-nav__primary-item {
+            position: relative;
+
+            &:not(:last-child):after {
+                border-right: 1px solid #fff;
+                content: "";
+                display: block;
+                height: 2rem;
+                position: absolute;
+                right: 0;
+                bottom: 1rem;
+            }
+
+            > a.usa-nav__link {
+                padding-top: 24px;
+                padding-bottom: 25px;
+                color: #fff;
+                font-weight: 400;
+                text-align: center;
+
+                span {
+                    line-height: 1;
+                    display: block;
+                    font-size: 1rem;
+                    position: relative;
+                    text-transform: uppercase;
+                }
+
+                span:before {
+                    display: block;
+                    content: attr(data-title);
+                    font-weight: bold;
+                    height: 0;
+                    overflow: hidden;
+                    visibility: hidden;
+                }
+
+                &:hover, &.usa-current {
+                    color: #fff;
+                    font-weight: bold;
+
+                    &::after {
+                        background-color: #fff;
+                        bottom: unset;
+                        margin-top: 5px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/* Issue where entire website would have a blue outline */
+[tabindex="-1"]:focus {
+    outline: none;
+}

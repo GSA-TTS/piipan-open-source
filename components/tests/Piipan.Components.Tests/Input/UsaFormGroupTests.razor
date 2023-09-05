@@ -1,0 +1,130 @@
+﻿@using AngleSharp.Html.Dom
+@using Piipan.Components.Alerts
+@using Piipan.Components.Forms
+@using static Piipan.Components.Forms.FormConstants
+@using static Piipan.Components.Shared.CommonConstants
+@inherits BaseTest<UsaFormGroup>
+@code {
+    public class TestModel {
+        [Display(Name = "Not Required Field")]
+        public string? NotRequiredField { get; set; }
+
+        [UsaRequired]
+        [Display(Name = "Required Field")]
+        public string? RequiredField { get; set; }
+    }
+    private IRenderedComponent<UsaForm>? form = null;
+    private IElement? inputElement = null;
+    private TestModel model = new TestModel();
+
+    #region Tests
+
+
+    /// <summary>
+    /// Verify that when the label override is not set the label is set to the display name of the field
+    /// </summary>
+    [Fact]
+    public void Form_When_Default_Label_Use_Control_Display_Name()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.FindComponent<UsaLabel>().MarkupMatches(
+            @<label class="usa-label" for="@Component!.Instance.InputElementId">
+                Not Required Field
+            </label>
+        );
+    }
+    
+    /// <summary>
+    /// Verify that when the field is required, the required asterisk is shown
+    /// </summary>
+    [Fact]
+    public void Form_Label_Shows_Required_Asterisk_When_Field_Is_Required()
+    {
+        // Arrange
+        InitialValues.ChildContent = 
+            @<UsaInputText @bind-Value="model.RequiredField" />;
+        CreateTestComponent();
+
+        // Assert
+        Component!.FindComponent<UsaLabel>().MarkupMatches(
+            @<label class="usa-label" for="@Component!.Instance.InputElementId">
+                Required Field <span class="usa-required">*</span>
+            </label>
+        );
+    }
+
+    /// <summary>
+    /// Verify that when the label is overridden it is displayed instead of the property name
+    /// </summary>
+    [Fact]
+    public void Form_When_Label_Override_Is_Set_It_Is_Used()
+    {
+        // Arrange
+        InitialValues.LabelOverride = @<span>Overriding the label!</span>;
+        CreateTestComponent();
+
+        // Assert
+        Component!.FindComponent<UsaLabel>().MarkupMatches(
+            @<label class="usa-label" for="@Component!.Instance.InputElementId">
+                <span>Overriding the label!</span>
+            </label>
+        );
+    }
+
+    /// <summary>
+    /// Verify that when the hint content is not specified it does not exist on the form
+    /// </summary>
+    [Fact]
+    public void Form_When_Hint_Content_Is_Null_It_Is_Missing()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Assert.Empty(Component!.FindAll($".{HintClass}"));
+    }
+
+    /// <summary>
+    /// Verify that when the hint content is specified it exists on the form
+    /// </summary>
+    [Fact]
+    public void Form_When_Hint_Content_Is_Not_Null_It_Exists()
+    {
+        // Arrange
+        InitialValues.HintContent = @<text>Hint Content</text>;
+        CreateTestComponent();
+
+        // Assert
+        var hintElement = Component!.Find($".{HintClass}");
+        hintElement.MarkupMatches(
+            @<span class="@HintClass">Hint Content</span>
+        );
+    }
+
+    #endregion Tests
+
+    #region Helper Function
+    public UsaFormGroupTests()
+    {
+        InitialValues.ChildContent = 
+            @<UsaInputText @bind-Value="model.NotRequiredField" />;
+    }
+    protected override void CreateTestComponent()
+    {
+        form = Render<UsaForm>(
+            @<UsaForm Model="model">
+                <UsaFormGroup LabelOverride="@InitialValues.LabelOverride" 
+                    HintContent="InitialValues.HintContent"
+                    ChildContent="InitialValues.ChildContent">
+                </UsaFormGroup>
+            </UsaForm>
+        );
+        Component = form.FindComponent<UsaFormGroup>();
+        inputElement = Component.Find($".{InputClass}");
+    }
+
+    #endregion Helper Functions
+}

@@ -1,0 +1,31 @@
+﻿@page "/alert-box"
+@using Piipan.Components.Alerts
+@using Piipan.Components.Enums
+@using static Piipan.Components.Forms.FormConstants
+@inherits BaseComponent
+@code {
+    protected override string[] Files { get; set; } = { "components/AlertBoxComponent.razor" };
+
+    private AlertSeverity AlertSeverity { get; set; } = AlertSeverity.Error;
+}
+
+<h1>Alert Box</h1>
+
+<UsaAccordion Multiselectable="true">
+    <UsaAccordionItem StartsExpanded="true">
+        <HeadingContent>Component Demo</HeadingContent>
+        <BodyContent>
+            <EditForm Model="AlertSeverity">
+                <h2 style="margin: 0;">Show Alert As:</h2>
+                <InputSelect class="@InputClass" @bind-Value="AlertSeverity">
+                    <option value="@AlertSeverity.Error">Error</option>
+                    <option value="@AlertSeverity.Warning">Warning</option>
+                    <option value="@AlertSeverity.Info">Info</option>
+                    <option value="@AlertSeverity.Success">Success</option>
+                </InputSelect>
+            </EditForm>
+            <AlertBoxComponent AlertSeverity="AlertSeverity" />
+        </BodyContent>
+    </UsaAccordionItem>
+    <CodeArea FileContents="fileContents" />
+</UsaAccordion>

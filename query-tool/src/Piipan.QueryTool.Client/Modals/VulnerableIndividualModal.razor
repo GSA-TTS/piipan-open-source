@@ -1,0 +1,34 @@
+﻿@using Piipan.Components.Modals
+@inject IModalManager ModalManager
+
+@code {
+    [CascadingParameter] public ModalInfo ModalInfo { get; set; }
+    [Parameter] public Action ContinueCallback { get; set; }
+    private void Continue()
+    {
+        ModalManager.Close(ModalInfo);
+        if (ContinueCallback != null)
+        {
+            ContinueCallback?.Invoke();    
+        }
+    }
+}
+
+
+<h2 class="usa-modal__heading" id="VulnerableIndividualModal-heading">
+    Vulnerable Individual Alert
+</h2>
+<div class="usa-prose">
+    <p id="VulnerableIndividualModal-description">
+    A vulnerable individual is a participant that should have their location protected and this participant's location is not to be revealed in any communications.
+    </p>
+</div>
+<div class="usa-modal__footer">
+    <ul class="usa-button-group">
+    <li class="usa-button-group__item">
+        <button type="button" class="usa-button" @onclick="Continue">
+        Continue
+        </button>
+    </li>
+    </ul>
+</div>

@@ -1,0 +1,24 @@
+﻿@using System.Linq.Expressions
+@implements IDisposable
+@typeparam T
+
+@code {
+    [Parameter] public string Name { get; set; }
+    [Parameter] public Expression<Func<T, object>> Field { get; set; }
+
+    [Parameter] public RenderFragment<T> Template { get; set; }
+    [CascadingParameter] protected UsaTable<T> DataTable { get; set; }
+
+    protected override void OnInitialized()
+    {
+        DataTable.AddColumn(this);
+    }
+
+    public virtual void Dispose()
+    {
+        DataTable.RemoveColumn(this);
+    }
+}
+
+<th scope="col">@Name</th>
+

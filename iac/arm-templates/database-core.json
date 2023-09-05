@@ -1,0 +1,477 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "administratorLogin": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "Database administrator login name"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "The location where the resources will be deployed."
+            }
+        },
+        "resourceTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Resource Tags for project"
+            }
+        },
+        "secretName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the secret."
+            }
+        },
+        "serverName": {
+            "type": "string",
+            "metadata": {
+                "description": "Server Name for Azure database for PostgreSQL"
+            }
+        },
+        "vaultName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the keyvault that contains the secret."
+            }
+        },
+        "vaultResourceGroupName": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().name]",
+            "metadata": {
+                "description": "The name of the resource group that contains the keyvault."
+            }
+        },
+        "vaultSubscription": {
+            "type": "string",
+            "defaultValue": "[subscription().subscriptionId]",
+            "metadata": {
+                "description": "The name of the subscription that contains the keyvault."
+            }
+        },
+        "privateEndpointName": {
+            "type": "string",
+            "metadata": {
+                "description": "name of the private endpoint for the database server"
+            }
+        },
+        "vnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "name of the Virtual Network the private endpoint will use"
+            }
+        },
+        "subnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "name of the Virtual Network subnet delegated to the private endpoint"
+            }
+        },
+        "privateDnsZoneName": {
+            "type": "string",
+            "defaultValue": "privatelink.postgres.database.azure.com"
+        },
+        "diagnosticSettingName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Diagnostic Setting Name."
+            }
+        },
+        "eventHubAuthorizationRuleId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Event Hub Authorization Rule Id."
+            }
+        },
+        "eventHubName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Event Hub Name."
+            }
+        },
+        "workspaceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Log Analytics Workspace Id."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "dynamicSecret",
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "administratorLogin": {
+                            "type": "string"
+                        },
+                        "administratorLoginPassword": {
+                            "type": "securestring"
+                        },
+                        "location": {
+                            "type": "string"
+                        },
+                        "resourceTags": {
+                            "type": "object",
+                            "metadata": {
+                                "description": "Resource Tags for project"
+                            }
+                        },
+                        "serverName": {
+                            "type": "string",
+                            "metadata": {
+                                "description": "Server Name for Azure database for PostgreSQL"
+                            }
+                        },
+                        "privateEndpointName": {
+                            "type": "string"
+                        },
+                        "vnetName": {
+                            "type": "string"
+                        },
+                        "subnetName": {
+                            "type": "string"
+                        },
+                        "privateDnsZoneName": {
+                            "type": "string"
+                        },
+                        "diagnosticSettingName": {
+                            "type": "string"
+                        },
+                        "eventHubAuthorizationRuleId": {
+                            "type": "string"
+                        },
+                        "eventHubName": {
+                            "type": "string"
+                        },
+                        "workspaceId": {
+                            "type": "string"
+                        }
+                    },
+                    "variables": {
+                        "firewallrules": {
+                            "batch": {
+                                "rules": [
+                                    // TODO: Remove AllowAllWindowsAzureIps when we define all of our private subnets/network security groups
+                                    {
+                                        "name": "AllowAllWindowsAzureIps",
+                                        "StartIpAddress": "0.0.0.0",
+                                        "EndIpAddress": "0.0.0.0"
+                                    },
+                                    // represents entire GSA network
+                                    {
+                                        "Name": "GSA-network",
+                                        "StartIpAddress": "159.142.0.0",
+                                        "EndIpAddress": "159.142.255.255"
+                                    }
+                                ]
+                            }
+                        },
+                        "pvtendpointdnsgroupname": "[concat(parameters('privateEndpointName'),'/dnsgroup')]"
+                    },
+                    "resources": [
+                        // postgres server
+                        {
+                            "type": "Microsoft.DBforPostgreSQL/servers",
+                            "apiVersion": "2017-12-01-preview",
+                            "name": "[parameters('serverName')]",
+                            "location": "[parameters('location')]",
+                            "tags": "[parameters('resourceTags')]",
+                            "sku": {
+                                "name": "GP_Gen5_2",
+                                "tier": "GeneralPurpose",
+                                "capacity": 2,
+                                "size": 5120,
+                                "family": "Gen5"
+                            },
+                            "properties": {
+                                "createMode": "Default",
+                                "version": "11",
+                                "minimalTlsVersion": "TLS1_2",
+                                "administratorLogin": "[parameters('administratorLogin')]",
+                                "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+                                "storageProfile": {
+                                    "storageMB": 5120,
+                                    "backupRetentionDays": 7,
+                                    "geoRedundantBackup": "Enabled",
+                                    "storageAutoGrow": "Enabled"
+                                },
+                                "previewFeature": "",
+                                "infrastructureEncryption": "Disabled",
+                                "publicNetworkAccess": "Enabled" // This gets disabled later in iac
+                            }
+                        },
+                        // firewall rules
+                        {
+                            "type": "Microsoft.DBforPostgreSQL/servers/firewallRules",
+                            "apiVersion": "2017-12-01",
+                            "name": "[concat(parameters('serverName'),'/',variables('firewallrules').batch.rules[copyIndex()].Name)]",
+                            "location": "[parameters('location')]",
+                            "copy": {
+                                "name": "firewallRulesCopy",
+                                "mode": "Serial",
+                                "batchSize": 1,
+                                "count": "[length(variables('firewallrules').batch.rules)]"
+                            },
+                            "dependsOn": [
+                                "[resourceId('Microsoft.DBforPostgreSQL/servers/', parameters('serverName'))]"
+                            ],
+                            "properties": {
+                                "startIpAddress": "[variables('firewallrules').batch.rules[copyIndex()].StartIpAddress]",
+                                "endIpAddress": "[variables('firewallrules').batch.rules[copyIndex()].EndIpAddress]"
+                            }
+                        },
+                        // privateEndpoint
+                        {
+                            "type": "Microsoft.Network/privateEndpoints",
+                            "apiVersion": "2020-06-01",
+                            "name": "[parameters('privateEndpointName')]",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[parameters('serverName')]"
+                            ],
+                            "properties": {
+                                "subnet": {
+                                    "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+                                },
+                                "privateLinkServiceConnections": [
+                                    {
+                                        "name": "[parameters('privateEndpointName')]",
+                                        "properties": {
+                                            "privateLinkServiceId": "[resourceId('Microsoft.DBforPostgreSQL/servers',parameters('serverName'))]",
+                                            "groupIds": [
+                                                "postgresqlServer"
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        // privateDnsZone
+                        {
+                            "type": "Microsoft.Network/privateDnsZones",
+                            "apiVersion": "2020-01-01",
+                            "name": "[parameters('privateDnsZoneName')]",
+                            "location": "global",
+                            "dependsOn": [
+                            ],
+                            "properties": ""
+                        },
+                        // link private DNS zone to virtual network
+                        {
+                            "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+                            "apiVersion": "2020-01-01",
+                            "name": "[concat(parameters('privateDnsZoneName'), '/', parameters('privateDnsZoneName'), '-link')]",
+                            "location": "global",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]"
+                            ],
+                            "properties": {
+                                "registrationEnabled": false,
+                                "virtualNetwork": {
+                                    "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+                                }
+                            }
+                        },
+                        /***
+                        The dns group configures the private endpoint to the private DNS zone.
+                        In portal, see private endpoint -> DNS Configuration
+                        ***/
+                        {
+                            "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+                            "apiVersion": "2020-06-01",
+                            "name": "[variables('pvtendpointdnsgroupname')]",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]",
+                                "[parameters('privateEndpointName')]"
+                            ],
+                            "properties": {
+                                "privateDnsZoneConfigs": [
+                                    {
+                                        "name": "config1",
+                                        "properties": {
+                                            "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "Microsoft.DBforPostgreSQL/servers/configurations",
+                            "apiVersion": "2017-12-01",
+                            "name": "[concat(parameters('serverName'), '/log_statement')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.DBforPostgreSQL/servers', parameters('serverName'))]"
+                            ],
+                            "properties": {
+                                "value": "ALL",
+                                "source": "user-override"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.DBforPostgreSQL/servers/configurations",
+                            "apiVersion": "2017-12-01",
+                            "name": "[concat(parameters('serverName'), '/log_min_duration_statement')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.DBforPostgreSQL/servers', parameters('serverName'))]"
+                            ],
+                            "properties": {
+                                "value": "0",
+                                "source": "user-override"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.DBforPostgreSQL/servers/configurations",
+                            "apiVersion": "2017-12-01",
+                            "name": "[concat(parameters('serverName'), '/log_min_error_statement')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.DBforPostgreSQL/servers', parameters('serverName'))]"
+                            ],
+                            "properties": {
+                                "value": "error",
+                                "source": "system-default"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.DBforPostgreSQL/servers/configurations",
+                            "apiVersion": "2017-12-01",
+                            "name": "[concat(parameters('serverName'), '/log_connections')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.DBforPostgreSQL/servers', parameters('serverName'))]"
+                            ],
+                            "properties": {
+                                "value": "on",
+                                "source": "system-default"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.DBforPostgreSQL/servers/configurations",
+                            "apiVersion": "2017-12-01",
+                            "name": "[concat(parameters('serverName'), '/log_disconnections')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.DBforPostgreSQL/servers', parameters('serverName'))]"
+                            ],
+                            "properties": {
+                                "value": "ON",
+                                "source": "user-override"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.DBforPostgreSQL/servers/configurations",
+                            "apiVersion": "2017-12-01",
+                            "name": "[concat(parameters('serverName'), '/log_duration')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.DBforPostgreSQL/servers', parameters('serverName'))]"
+                            ],
+                            "properties": {
+                                "value": "ON",
+                                "source": "user-override"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.DBforPostgreSQL/servers/configurations",
+                            "apiVersion": "2017-12-01",
+                            "name": "[concat(parameters('serverName'), '/logging_collector')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.DBforPostgreSQL/servers', parameters('serverName'))]"
+                            ],
+                            "properties": {
+                                "value": "OFF",
+                                "source": "user-override"
+                            }
+                        },
+                        {
+                            /* https://docs.microsoft.com/en-us/azure/azure-monitor/essentials/resource-manager-diagnostic-settings */
+                            "type": "Microsoft.DBforPostgreSQL/servers/providers/diagnosticSettings",
+                            "name": "[concat(parameters('serverName'), '/Microsoft.Insights/', parameters('diagnosticSettingName'))]",
+                            "apiVersion": "2021-05-01-preview",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.DBforPostgreSQL/servers', parameters('serverName'))]"
+                            ],
+                            "properties": {
+                                "eventHubAuthorizationRuleId": "[parameters('eventHubAuthorizationRuleId')]",
+                                "eventHubName": "[parameters('eventHubName')]",
+                                "workspaceId": "[parameters('workspaceId')]",
+                                "logs": [
+                                    {
+                                        "category": "PostgreSQLLogs",
+                                        "enabled": true
+                                    },
+                                    {
+                                        "category": "QueryStoreRuntimeStatistics",
+                                        "enabled": true
+                                    },
+                                    {
+                                        "category": "QueryStoreWaitStatistics",
+                                        "enabled": true
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "parameters": {
+                    "administratorLogin": {
+                        "value": "[parameters('administratorLogin')]"
+                    },
+                    "administratorLoginPassword": {
+                        "reference": {
+                            "keyVault": {
+                                "id": "[resourceId(parameters('vaultSubscription'), parameters('vaultResourceGroupName'), 'Microsoft.KeyVault/vaults', parameters('vaultName'))]"
+                            },
+                            "secretName": "[parameters('secretName')]"
+                        }
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "resourceTags": {
+                        "value": "[parameters('resourceTags')]"
+                    },
+                    "serverName": {
+                        "value": "[parameters('serverName')]"
+                    },
+                    "privateEndpointName": {
+                        "value": "[parameters('privateEndpointName')]"
+                    },
+                    "vnetName": {
+                        "value": "[parameters('vnetName')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('subnetName')]"
+                    },
+                    "privateDnsZoneName": {
+                        "value": "[parameters('privateDnsZoneName')]"
+                    },
+                    "diagnosticSettingName": {
+                        "value": "[parameters('diagnosticSettingName')]"
+                    },
+                    "eventHubAuthorizationRuleId": {
+                        "value": "[parameters('eventHubAuthorizationRuleId')]"
+                    },
+                    "eventHubName": {
+                        "value": "[parameters('eventHubName')]"
+                    },
+                    "workspaceId": {
+                        "value": "[parameters('workspaceId')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

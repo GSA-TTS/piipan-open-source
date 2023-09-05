@@ -1,0 +1,35 @@
+﻿body {
+}
+
+h5 {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 28px;
+    /* identical to box height, or 117% */
+    /* Text Body #1B1B1B */
+
+    color: #1B1B1B;
+    margin-bottom: 16px;
+}
+
+.InvalidMatchTrueReasoning {
+    margin-left: 32px;
+}
+
+.InvalidMatchReasoningTextArea {
+    max-width: 369px;
+}
+
+.ResolutionFieldsDropdownWidth {
+    max-width: 296px;
+}
+
+.usa-icon {
+    height: 20px;
+    width: 20px;
+}
+
+::deep .usa-tooltip__trigger {
+    vertical-align: top;
+}

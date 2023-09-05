@@ -1,0 +1,48 @@
+﻿@using Piipan.Components.Modals
+@inject IModalManager ModalManager
+
+@code {
+    [CascadingParameter] public ModalInfo ModalInfo { get; set; }
+    [Parameter] public Func<Task> SaveCallback { get; set; }
+
+    bool _saving = false;
+    private void Close()
+    {
+        ModalManager.Close(ModalInfo);
+    }
+    private async Task Continue()
+    {
+        if (SaveCallback != null)
+        {
+            _saving = true;
+            this.ModalInfo.ForceAction = true;
+            ModalManager.ModalsUpdated?.Invoke();
+            await SaveCallback();
+            ModalManager.Close(ModalInfo);
+        }
+    }
+}
+
+
+<h2 class="usa-modal__heading" id="CloseMatchModal-heading">
+    Close Match
+</h2>
+<div class="usa-prose">
+    <p id="CloseMatchModal-description">
+        Saving these changes will designate this match record as closed because both States have completed all required updates. Closed match records can no longer be edited.
+    </p>
+</div>
+<div class="usa-modal__footer">
+    <ul class="usa-button-group">
+        <li class="usa-button-group__item">
+            <button type="button" class="usa-button" @onclick="Continue" disabled="@_saving">
+                @(_saving ? "Closing..." : "Save & Close")
+            </button>
+        </li>
+        <li class="usa-button-group__item">
+            <button type="button" disabled="@_saving" class="usa-button usa-button--unstyled padding-105 text-center" @onclick="Close">
+                Cancel and return to form
+            </button>
+        </li>
+    </ul>
+</div>

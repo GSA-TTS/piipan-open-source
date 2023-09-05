@@ -1,0 +1,73 @@
+﻿@using System.Linq.Expressions
+@using Piipan.Dashboard.Client.Components.ParticipantUploads
+@using Piipan.Dashboard.Client.Components
+@using Piipan.Dashboard.Tests
+@using Piipan.Metrics.Api
+@using Xunit
+@using Bunit
+@inherits BaseComponentTest<ParticipantUploads>
+
+@code {
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public ParticipantUploadsTests() : base()
+    {
+        InitialValues = new ParticipantUploads()
+        {
+            Filter = new ParticipantUploadRequestFilter
+            {
+                Page = 1,
+                PerPage = 53
+            }
+        };
+    }
+    /// <summary>
+    /// Create a matches list component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        Component = Render<ParticipantUploads>(
+            @<ParticipantUploads Filter="InitialValues.Filter">
+            </ParticipantUploads>
+        );
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of the Participant Upload component
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldExist_AndHaveCorrectMarkup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div class="grid-container margin-bottom-6">
+                <a href="/" class="usa-button--unstyled usa-button back-button">
+                    <svg class="usa-icon" aria-hidden="true" focusable="false" role="img">
+                        <use xlink:href="/images/sprite.svg#chevron_left"></use>
+                    </svg>Back to NAC Metrics Dashboard
+                </a>
+                <h1>SNAP Participant Data Uploads by State</h1>
+                <section id="daily-upload-information" diff:ignoreChildren>
+                </section>
+    
+                <section id="historical-upload-info">
+                    <h2>Historical Upload Information</h2>
+                    <section id="participant-uploads-filter" diff:ignoreChildren></section>
+                    <div id="participant-upload-results" diff:ignoreChildren></div>
+                </section>
+            </div>
+        );
+
+        Assert.True(Component.HasComponent<ParticipantUploadsFilter>());
+        Assert.True(Component.HasComponent<ParticipantUploadsResults>());
+    }
+
+    #endregion
+}

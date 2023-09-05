@@ -1,0 +1,25 @@
+﻿@inherits LayoutComponentBase
+@using Piipan.Dashboard.Client.Components
+
+@code {
+    protected override void OnInitialized()
+    {
+        ClientAppData.CurrentPageUpdated += async () =>
+        {
+            await InvokeAsync(StateHasChanged);
+        };
+    }
+}
+
+<button type="button" class="usa-skipnav" onclick="document.getElementById('main-content')?.focus()">Skip to main content</button>
+<UsaBanner />
+<div class="usa-overlay"></div>
+<header class="usa-header usa-header--extended border-bottom-1px border-base-light">
+    <UsaNavBar />
+</header>
+<div class="container">
+    <main id="main-content" tabindex=-1>
+        @Body
+    </main>
+</div>
+<Piipan.Components.Modals.ModalContainer />

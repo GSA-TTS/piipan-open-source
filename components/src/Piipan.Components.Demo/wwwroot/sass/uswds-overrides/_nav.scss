@@ -1,0 +1,10 @@
+//
+// USWDS Overrides for usa-nav and related classes
+//
+
+.usa-nav {
+  // fixes user dropdown from hiding behind main content
+  @include at-media('desktop') {
+    position: static;
+  }
+}

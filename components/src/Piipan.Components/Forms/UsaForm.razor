@@ -1,0 +1,65 @@
+﻿@using Piipan.Components.Alerts
+@using static Shared.CommonConstants
+@using static Piipan.Shared.API.Validation.ValidationConstants
+@using static FormConstants
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public object Model { get; set; }
+    [Parameter] public Func<Task> OnSubmit { get; set; }
+    [Parameter] public List<(string Property, string Error)> SubmitErrors { get; set; }
+
+    [Parameter] public string WrapperClass { get; set; } 
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object> AdditionalAttributes { get; set; }
+
+    EditForm elementReference { get; set; }
+    // More code in code behind
+}
+
+<CascadingValue Value="this">
+    @if (showAlertBox && HasErrors)
+    {
+        <UsaAlertBox Header="Errors" id="@($"{Id}-alert")">
+            <ul>
+                @foreach (var errorPair in currentErrors)
+                {
+                    foreach (var error in errorPair.Errors)
+                    {
+                        var splitErrors = error.Split('\n');
+                        foreach (var splitError in splitErrors)
+                        {
+                            var linkPart = splitError.IndexOf(ValidationFieldPlaceholder);
+                            @if (linkPart >= 0 && errorPair.FormGroup != null)
+                            {
+                                <li>
+                                    @if (linkPart > 0)
+                                    {
+                                        @splitError.Substring(0, linkPart)
+                                    }
+                                    <button class="@ButtonClass @ButtonUnstyledClass"
+                                        @onclick="async () => { await FocusElement(errorPair.FormGroup.InputElementId); }">
+                                        @(errorPair.FormGroup.ErrorPlaceholderOverride ?? errorPair.FormGroup.Label)
+                                    </button>
+                                    @splitError.Substring(linkPart + 3)
+                                </li>
+                            }
+                            else
+                            {
+                                <li>@splitError</li>
+                            }
+                        }
+                    }
+                }
+            </ul>
+        </UsaAlertBox>
+    }
+    <div class="@FormClass @WrapperClass" style="@(readyToRender ? "" : "visibility: hidden;")">
+        <EditForm id="@Id" EditContext="editContext" @attributes="AdditionalAttributes" OnSubmit="SubmitForm" novalidate>
+            <DataAnnotationsValidator />
+            <fieldset class="@FieldsetClass">
+                @ChildContent
+            </fieldset>
+        </EditForm>
+    </div>
+</CascadingValue>

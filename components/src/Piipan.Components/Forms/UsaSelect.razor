@@ -1,0 +1,22 @@
+﻿@using static FormConstants
+@inherits UsaInputBase<string>
+@code {
+    [Parameter] public (string, string)[] DropdownOptions { get; set; }
+}
+
+   <select class="@InputSelect @InputClass @(FormGroup.Status != InputStatus.None ? $"{InputClass}--{FormGroup.Status.ToString().ToLower()}" : "")"
+    @ref="ElementReference"
+    @bind="CurrentValue" @onblur="BlurField"
+    required="@FormGroup.Required" 
+    id="@Id"
+    name="@Id.Replace("_", ".")"
+    aria-errormessage="@(FormGroup.Status == InputStatus.Error ? $"{Id}-message" : null)"
+    aria-invalid="@(FormGroup.Status == InputStatus.Error ? "true" : null)"
+    @attributes="AdditionalAttributes" style="@(Width != null ? $"width: {Width}px;" : "")">
+        <option value>- Select -</option>
+        @foreach (var option in DropdownOptions)
+        {
+            <option value="@option.Item1">@option.Item2</option>
+        }
+            
+        </select>

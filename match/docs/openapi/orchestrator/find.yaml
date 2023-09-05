@@ -1,0 +1,18 @@
+post:
+  operationId: "Find matches"
+  tags:
+    - "Match"
+  summary: "Search for all matching participant records using de-identified data"
+  description: "Searches all state databases for any participant records that are an exact match to the `lds_hash` of persons provided in the request. Does not search the database for the state initiating the request. Each state is allowed a maximum of 1,050 requests per minute."
+  parameters:
+    - $ref: '../schemas/match-query.yaml#/components/parameters/From'
+    - $ref: '../schemas/match-query.yaml#/components/parameters/InitiatingState'
+  requestBody:
+    $ref: '../schemas/match-query.yaml#/MatchRequest'
+  responses:
+    '200':
+      $ref: '../schemas/match-query.yaml#/components/responses/200'
+    '400':
+      $ref: '../schemas/match-query.yaml#/components/responses/400'
+    '429':
+      $ref: '../schemas/match-query.yaml#/components/responses/429'

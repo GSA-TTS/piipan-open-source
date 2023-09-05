@@ -1,0 +1,323 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "metadata": {
+        "comments": "This template is applied at the subscription level"
+    },
+    // Parameters named and organized to match Azure Portal
+    "parameters": {
+        "cloudName": {
+            "type": "string",
+            "defaultValue": "AzureCloud",
+            "allowedValues": [
+                "AzureCloud",
+                "AzureUSGovernment"
+            ],
+            "metadata": {
+                "description": "Specify Azure Cloud Environment - Commerical or Government"
+            }
+        },
+        "autoProvisionSetting": {
+            "type": "string",
+            "defaultValue": "On",
+            "allowedValues": [
+                "On",
+                "Off"
+            ],
+            "metadata": {
+                "description": "Specify whether Auto Provisoning is turned On or Off"
+            }
+        },
+        "virtualMachinesTier": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "Free"
+            ],
+            "metadata": {
+                "description": "Specify whether to enable Defender - Standard tier for Virtual Machines"
+            }
+        },
+        "appServicesTier": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "Free"
+            ],
+            "metadata": {
+                "description": "Specify whether to enable Defender - Standard tier for for Azure App Services"
+            }
+        },
+        "sqlServersTier": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "Free"
+            ],
+            "metadata": {
+                "description": "Specify whether to enable Defender - Standard tier for Azure SQL Databases"
+            }
+        },
+        "sqlServerVirtualMachinesTier": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "Free"
+            ],
+            "metadata": {
+                "description": "Specify whether to enable Defender - Standard tier for SQL Servers on Virtual Machines"
+            }
+        },
+        "openSourceRelationalDatabasesTier": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "Free"
+            ],
+            "metadata": {
+                "description": "Specify whether to enable Defender - Standard tier for Open-Source Relational Databases"
+            }
+        },
+        "storageAccountsTier": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "Free"
+            ],
+            "metadata": {
+                "description": "Specify whether to enable Defender - Standard tier for Storage Accounts"
+            }
+        },
+        "cosmosDbsTier": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "Free"
+            ],
+            "metadata": {
+                "description": "Specify whether to enable Defender - Standard tier for Azure Cosmos DB Accounts"
+            }
+        },
+        "containers": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "Free"
+            ],
+            "metadata": {
+                "description": "Specify whether to enable Defender - Standard tier for Containers"
+            }
+        },
+        "keyVaultsTier": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "Free"
+            ],
+            "metadata": {
+                "description": "Specify whether to enable Defender - Standard tier for Key Vaults"
+            }
+        },
+        "armTier": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "Free"
+            ],
+            "metadata": {
+                "description": "Specify whether to enable Defender - Standard tier for Azure Resource Manager"
+            }
+        },
+        "dnsTier": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "Free"
+            ],
+            "metadata": {
+                "description": "Specify whether to enable Defender - Standard tier for DNS"
+            }
+        },
+        "additionalEmailAddresses": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify additional email addresses (separated by semicolon) which will be sent notifications"
+            }
+        },
+        "minimalSeverity": {
+            "type": "string",
+            "metadata": {
+                "description": "Defines the minimal alert severity which will be sent as email notifications"
+            }
+        },
+        "notificationRoles": {
+            "type": "array",
+            "metadata": {
+                "description": "Specify the RBAC roles on the subscription (string array) for email notifications"
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Security/autoProvisioningSettings",
+            "apiVersion": "2017-08-01-preview",
+            "name": "default",
+            "properties": {
+                "autoProvision": "[parameters('autoProvisionSetting')]"
+            }
+        },
+        {
+            "type": "Microsoft.Security/pricings",
+            "apiVersion": "2018-06-01",
+            "name": "VirtualMachines",
+            "dependsOn": [
+                "[resourceId('Microsoft.Security/autoProvisioningSettings', 'default')]"
+            ],
+            "properties": {
+                "pricingTier": "[parameters('virtualMachinesTier')]"
+            }
+        },
+        {
+            "type": "Microsoft.Security/pricings",
+            "apiVersion": "2018-06-01",
+            "name": "SqlServers",
+            "dependsOn": [
+                "[resourceId('Microsoft.Security/pricings', 'VirtualMachines')]"
+            ],
+            "properties": {
+                "pricingTier": "[parameters('sqlServersTier')]"
+            }
+        },
+        {
+            "type": "Microsoft.Security/pricings",
+            "apiVersion": "2018-06-01",
+            "name": "SqlServerVirtualMachines",
+            "dependsOn": [
+                "[resourceId('Microsoft.Security/pricings', 'SqlServers')]"
+            ],
+            "properties": {
+                "pricingTier": "[parameters('sqlServerVirtualMachinesTier')]"
+            }
+        },
+        {
+            "type": "Microsoft.Security/pricings",
+            "apiVersion": "2018-06-01",
+            "name": "OpenSourceRelationalDatabases",
+            "dependsOn": [
+                "[resourceId('Microsoft.Security/pricings', 'SqlServerVirtualMachines')]"
+            ],
+            "properties": {
+                "pricingTier": "[parameters('openSourceRelationalDatabasesTier')]"
+            }
+        },
+        {
+            "type": "Microsoft.Security/pricings",
+            "apiVersion": "2018-06-01",
+            "name": "StorageAccounts",
+            "dependsOn": [
+                "[resourceId('Microsoft.Security/pricings', 'OpenSourceRelationalDatabases')]"
+            ],
+            "properties": {
+                "pricingTier": "[parameters('storageAccountsTier')]"
+            }
+        },
+        {
+            "type": "Microsoft.Security/pricings",
+            "apiVersion": "2018-06-01",
+            "name": "Containers",
+            "dependsOn": [
+                "[resourceId('Microsoft.Security/pricings', 'StorageAccounts')]"
+            ],
+            "properties": {
+                "pricingTier": "[parameters('containers')]"
+            }
+        },
+
+        {
+            "type": "Microsoft.Security/pricings",
+            "apiVersion": "2018-06-01",
+            "name": "Arm",
+            "dependsOn": [
+                "[resourceId('Microsoft.Security/pricings', 'Containers')]"
+            ],
+            "properties": {
+                "pricingTier": "[parameters('armTier')]"
+            }
+        },
+        {
+            "type": "Microsoft.Security/pricings",
+            "apiVersion": "2018-06-01",
+            "name": "Dns",
+            "dependsOn": [
+                "[resourceId('Microsoft.Security/pricings', 'Arm')]"
+            ],
+            "properties": {
+                "pricingTier": "[parameters('dnsTier')]"
+            }
+        },
+        {
+            "condition": "[equals(parameters('cloudName'), 'AzureCloud')]",
+            "type": "Microsoft.Security/pricings",
+            "apiVersion": "2018-06-01",
+            "name": "AppServices",
+            "dependsOn": [
+                "[resourceId('Microsoft.Security/pricings', 'Dns')]"
+            ],
+            "properties": {
+                "pricingTier": "[parameters('appServicesTier')]"
+            }
+        },
+        {
+            "condition": "[equals(parameters('cloudName'), 'AzureCloud')]",
+            "type": "Microsoft.Security/pricings",
+            "apiVersion": "2018-06-01",
+            "name": "CosmosDbs",
+            "dependsOn": [
+                "[resourceId('Microsoft.Security/pricings', 'AppServices')]"
+            ],
+            "properties": {
+                "pricingTier": "[parameters('cosmosDbsTier')]"
+            }
+        },
+        {
+            "condition": "[equals(parameters('cloudName'), 'AzureCloud')]",
+            "type": "Microsoft.Security/pricings",
+            "apiVersion": "2018-06-01",
+            "name": "KeyVaults",
+            "dependsOn": [
+                "[resourceId('Microsoft.Security/pricings', 'CosmosDbs')]"
+            ],
+            "properties": {
+                "pricingTier": "[parameters('keyVaultsTier')]"
+            }
+        },
+        {
+            "type": "Microsoft.Security/securityContacts",
+            "apiVersion": "2020-01-01-preview",
+            "name": "default",
+            "properties": {
+                "alertNotifications": {
+                    "minimalSeverity": "[parameters('minimalSeverity')]",
+                    "state": "On"
+                },
+                "emails": "[parameters('additionalEmailAddresses')]",
+                "notificationsByRole": {
+                    "roles": "[parameters('notificationRoles')]",
+                    "state": "On"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

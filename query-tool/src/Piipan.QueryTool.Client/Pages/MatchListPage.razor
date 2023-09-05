@@ -1,0 +1,13 @@
+﻿@page "/list"
+@using Piipan.QueryTool.Client.Components
+@code {
+    protected override void OnInitialized()
+    {
+        ClientAppData.CurrentPage = "list";
+    }
+}
+
+<PageTitle>NAC Matches List</PageTitle>
+<div class="grid-container" id="match-list-page-container">
+    <MatchesList />
+</div>

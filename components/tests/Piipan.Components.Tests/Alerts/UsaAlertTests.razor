@@ -1,0 +1,214 @@
+﻿@using Piipan.Components.Alerts
+@using Piipan.Components.Enums
+@using System.Linq.Expressions
+@using static Piipan.Components.Alerts.AlertConstants
+@inherits BaseTest<UsaAlertBox>
+
+@code {
+    private IElement? element;
+
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public UsaAlertTests() : base()
+    {
+        InitialValues = new UsaAlertBox()
+        {
+            AlertSeverity = AlertSeverity.Error,
+            Dismissable = false,
+            Header = "Alert Header",
+            ChildContent = @<p>Some test content for the alert box</p>,
+            Slim = false,
+            Dismissed = null
+        };
+    }
+
+    Dictionary<AlertSeverity, string> AlertSeverityClasses = new Dictionary<AlertSeverity, string>
+        {
+            { AlertSeverity.Error, AlertErrorClass },
+            { AlertSeverity.Warning, AlertWarningClass },
+            { AlertSeverity.Info, AlertInfoClass },
+            { AlertSeverity.Success, AlertSuccessClass }
+        };
+
+    /// <summary>
+    /// Create an alert box component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        Component = Render<UsaAlertBox>(
+            @<UsaAlertBox Slim="InitialValues.Slim" Header="@InitialValues.Header" AlertSeverity="InitialValues.AlertSeverity"
+                                    Dismissable="InitialValues.Dismissable" Dismissed="InitialValues.Dismissed">
+                @InitialValues.ChildContent
+            </UsaAlertBox>
+        );
+        element = Component.Find($".{AlertClass}");
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of an alert box
+    /// </summary>
+    [Fact]
+    public void Alert_Box_Should_Exist_And_Have_Correct_Markup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div class="@AlertClass @AlertErrorClass" role="alert">
+                <div class="@AlertBodyClass">
+                    <h2 class="@AlertHeadingClass">@InitialValues.Header</h2>
+                    <div class="@AlertTextClass">
+                        @InitialValues.ChildContent
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    /// <summary>
+    /// Verify the markup of an alert box when the alert box list dismissable
+    /// </summary>
+    [Fact]
+    public void Alert_Box_Should_Have_Correct_Markup_When_Dismissable()
+    {
+        // Arrange
+        InitialValues.Dismissable = true;
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div class="@AlertClass @AlertErrorClass @AlertDismissableClass" role="alert">
+                <div class="@AlertBodyClass">
+                    <h2 class="@AlertHeadingClass">@InitialValues.Header</h2>
+                    <div class="@AlertTextClass">
+                        @InitialValues.ChildContent
+                    </div>
+                </div>
+                <button class="usa-button @AlertCloseClass">
+                    <svg class="usa-icon" aria-hidden="true" focusable="false" role="img">
+                        <use xlink:href="/images/sprite.svg#close"></use>
+                    </svg>
+                </button>
+            </div>
+        );
+    }
+
+    /// <summary>
+    /// Verify the alert box can change severity on the fly
+    /// </summary>
+    [Theory]
+    [InlineData(AlertSeverity.Error, AlertSeverity.Warning)]
+    [InlineData(AlertSeverity.Warning, AlertSeverity.Info)]
+    [InlineData(AlertSeverity.Info, AlertSeverity.Success)]
+    [InlineData(AlertSeverity.Success, AlertSeverity.Error)]
+    public void Alert_Box_Should_Be_Able_To_Change_Severity_Before_And_After_Created(AlertSeverity startingSeverity, AlertSeverity endingSeverity)
+    {
+        // Arrange
+        InitialValues.AlertSeverity = startingSeverity;
+        CreateTestComponent();
+
+        // Assert Initial Values
+        Assert.True(element!.ClassList.Contains(AlertSeverityClasses[startingSeverity]));
+        Assert.False(element.ClassList.Contains(AlertSeverityClasses[endingSeverity]));
+
+        // Act
+        UpdateParameter(p => p.AlertSeverity, endingSeverity);
+
+        // Assert Updated Values
+        Assert.False(element.ClassList.Contains(AlertSeverityClasses[startingSeverity]));
+        Assert.True(element.ClassList.Contains(AlertSeverityClasses[endingSeverity]));
+    }
+
+    /// <summary>
+    /// Verify the alert box can change its header on the fly
+    /// </summary>
+    [Fact]
+    public void Alert_Box_Should_Be_Able_To_Change_Header_Before_And_After_Created()
+    {
+        // Arrange
+        string testBeforeValue = "Test Before Header";
+        string testAfterValue = "Test After Header";
+        InitialValues.Header = testBeforeValue;
+        CreateTestComponent();
+        var headerElement = element!.QuerySelector($".{AlertHeadingClass}");
+
+        // Assert Initial Values
+        headerElement!.MarkupMatches(@<h2 class="@AlertHeadingClass">@testBeforeValue</h2>);
+
+        // Act
+        UpdateParameter(p => p.Header, testAfterValue);
+
+        // Assert Updated Values
+        headerElement = element.QuerySelector($".{AlertHeadingClass}");
+        headerElement!.MarkupMatches(@<h2 class="@AlertHeadingClass">@testAfterValue</h2>);
+    }
+
+    /// <summary>
+    /// Verify the alert box can change its slim style on the fly
+    /// </summary>
+    [Fact]
+    public void Alert_Box_Should_Be_Able_To_Change_Slim_Style_Before_And_After_Created()
+    {
+        // Arrange
+        InitialValues.Slim = false;
+        CreateTestComponent();
+
+        // Assert Initial Values
+        Component!.MarkupMatches(@<div class="@AlertClass @AlertErrorClass" role="alert" diff:ignoreChildren></div>);
+
+        // Act
+        UpdateParameter(p => p.Slim, true);
+
+        // Assert Updated Values
+        Component!.MarkupMatches(@<div class="@AlertClass @AlertErrorClass @AlertSlimClass" role="alert" diff:ignoreChildren></div>);
+    }
+
+    /// <summary>
+    /// Verify the alert box can change its body content on the fly
+    /// </summary>
+    [Fact]
+    public void Alert_Box_Should_Be_Able_To_Change_Child_Content_Before_And_After_Created()
+    {
+        // Arrange
+        RenderFragment testBeforeValue = @<p>Test Paragraph Before Update</p>;
+        RenderFragment testAfterValue = @<ul><li>List with one item</li></ul>;
+        InitialValues.ChildContent = testBeforeValue;
+        CreateTestComponent();
+        var textElement = element!.QuerySelector($".{AlertTextClass}")!;
+
+        // Assert Initial Values
+        textElement.MarkupMatches(@<div class="@AlertTextClass">@testBeforeValue</div>);
+
+        // Act
+        UpdateParameter(p => p.ChildContent, testAfterValue);
+
+        // Assert Updated Values
+        textElement = element.QuerySelector($".{AlertTextClass}")!;
+        textElement.MarkupMatches(@<div class="@AlertTextClass">@testAfterValue</div>);
+    }
+
+    /// <summary>
+    /// Verify the alert box can fire an action when it is dismissed
+    /// </summary>
+    [Fact]
+    public void Alert_Box_Should_Be_Able_To_Be_Dismissed()
+    {
+        // Arrange
+        bool dismissed = false;
+        InitialValues.Dismissable = true;
+        InitialValues.Dismissed = () => dismissed = true;
+        CreateTestComponent();
+        var dismissedButton = element!.QuerySelector($".{AlertCloseClass}");
+
+        // Act
+        dismissedButton!.Click();
+
+        // Assert Updated Values
+        Assert.True(dismissed);
+    }
+    #endregion
+}

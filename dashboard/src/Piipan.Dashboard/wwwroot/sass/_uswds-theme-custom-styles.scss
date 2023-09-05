@@ -1,0 +1,51 @@
+/*
+* * * * * ==============================
+* * * * * ==============================
+* * * * * ==============================
+* * * * * ==============================
+========================================
+========================================
+========================================
+----------------------------------------
+USWDS THEME CUSTOM STYLES
+----------------------------------------
+!! Copy this file to your project's
+   sass root. Don't edit the version
+   in node_modules.
+----------------------------------------
+Custom project SASS goes here.
+
+i.e.
+@include u-padding-right('05');
+----------------------------------------
+*/
+.cui {
+  @include u-bg('cyan-5');
+}
+
+/*
+Keeps footer flush with screen bottom when main content is short,
+and pushes it down when main content is longer than screen height.
+*/
+.sticky-footer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.sticky-footer__fill {
+  flex: 1;
+}
+
+.usa-navbar {
+  display: flex !important;
+  overflow: visible !important;
+}
+
+.usa-nav {
+  border-top: 0px !important;
+
+  .usa-nav__submenu {
+    width: 10rem;
+  }
+}

@@ -1,0 +1,20 @@
+﻿@page "/table"
+@using Piipan.Components.Tables
+@inherits BaseComponent
+@code {
+    protected override string[] Files { get; set; } = { "components/TableComponent.razor", "models/DummyTableData.cs" };
+    private bool Striped { get; set; }
+}
+
+<h1>Table</h1>
+
+<UsaAccordion Multiselectable="true">
+    <UsaAccordionItem StartsExpanded="true">
+        <HeadingContent>Component Demo</HeadingContent>
+        <BodyContent>
+            <input type="checkbox" @bind-value="Striped" /> Striped
+            <TableComponent Striped="Striped" />
+        </BodyContent>
+    </UsaAccordionItem>
+    <CodeArea FileContents="fileContents" />
+</UsaAccordion>

@@ -1,0 +1,8 @@
+﻿.grid-container, .usa-header--extended .usa-nav__inner, .usa-banner__inner, .usa-header--extended .usa-navbar {
+    max-width: unset;
+
+    @media (min-width: 64em) {
+        padding-left: 70px;
+        padding-right: 70px;
+    }
+}

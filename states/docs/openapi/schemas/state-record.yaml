@@ -1,0 +1,48 @@
+StateRecord:
+  type: object
+  required:
+    - id
+    - state
+    - state_abbreviation
+    - email
+    - phone
+    - region
+  properties:
+    id:
+      type: string
+      description: "Internal Id for the state"
+    state:
+      type: string
+      description: "The state name"
+    state_abbreviation:
+      type: string
+      description: "The state abbreviation"
+    email:
+      type: string
+      description: "The state's desired email address to be used for State collaboration"
+    phone: 
+      type: string
+      description: "The state's desired phone number to be used for State collaboration"
+    region:
+      type: string
+      description: "The region the state belongs to"
+    email_cc:
+      type: string
+      description: "A string of comma seperated emails to be on the CC list"
+
+StateRecordExamples:
+  VA:
+    id: 1
+    state: "Echo Alpha"
+    state_abbreviation: "EA"
+    email: "no-reply@ea.example"
+    phone: "7035550100"
+    region: "Region1"
+  MD:
+    id: 2
+    state: "Echo Bravo"
+    state_abbreviation: "EB"
+    email: "no-reply@eb.example"
+    phone: "4105550199"
+    region: "Region1"
+    

@@ -1,0 +1,144 @@
+get:
+  operationId: "Get Upload Details"
+  tags:
+    - "Bulk Upload"
+  summary: "Get Upload Details"
+  description: "Get details regarding a bulk upload. Each state is allowed a maximum of 120 requests per minute."
+  parameters:
+    - in: header
+      name: From
+      schema:
+        type: string
+      description: "As in the HTTP/1.1 RFC, used for logging purposes as a means for identifying the source of invalid or unwanted requests. The interpretation of this field is that the request is being performed on behalf of the state government-affiliated person whose email address (or username) is specified here. It is not used for authentication or authorization."
+      required: true
+    - in: path
+      name: upload_identifier
+      schema:
+        type: string
+      description: "The Upload ID retrieved from a bulk upload"
+      required: true
+  responses:
+    '200':
+      description: "Success"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                description: "The response payload representing upload data."
+                required:
+                  - upload_identifier
+                  - created_at
+                  - status
+                properties:
+                  upload_identifier:
+                    type: string
+                    description: "The unique identifier for the upload"
+                    example: "0x8DA63770FEF1551"
+                  created_at:
+                    type: string
+                    format: date
+                    description: "The timestamp when the requested upload was performed."
+                    example: "2022-07-11T19:54:27.903811Z"
+                  participants_uploaded:
+                    type: integer
+                    description: "The number or participants uploaded into the NAC"
+                    example: 50
+                  error_message:
+                    type: string
+                    description: "Error details as to why an upload failed"
+                    example: "Exception of type 'CsvHelper.FieldValidationException' was thrown."
+                  completed_at:
+                    type: string
+                    format: date
+                    description: "The timestamp when the requested upload was completed."
+                    example: "2022-07-11T19:54:28.303961Z"
+                  status:
+                    type: string
+                    description: "COMPLETE - when successful\n FAILED - The upload was unsuccessful. The NAC will continue to match against records of active participants from your previous successful upload\n UPLOADING - The file is uploading to the NAC, or the file has uploaded but is still being validated"
+                    example: "COMPLETE"
+          examples:
+            Successul upload 200:
+              description: "200 Response to successful upload"
+              value:
+                data:
+                   status: "COMPLETE"
+                   upload_identifier: "0x8DA63770FEF1551"
+                   created_at: "2022-07-11T19:54:27.903811Z"
+                   participants_uploaded: "40"
+                   completed_at: "2022-07-11T19:54:28.303961Z"
+            Failed Upload '200':
+              description: "200 response on an upload that failed"
+              value:
+                data:
+                  status: "FAILED"
+                  upload_identifier: "0x8DA63770FEF1551"
+                  created_at: "2022-07-11T19:54:27.903811Z"
+                  error_message: "Exception of type 'CsvHelper.FieldValidationException' was thrown."
+                  completed_at: "2022-07-11T19:54:28.303961Z"
+            Not Found:
+              description: "404 Not found exception"
+              value:
+                errors:
+                  - status: "404"
+                    title: "NotFoundException"
+                    detail: "not found"
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                description: "The array of errors when getting the upload."
+                properties:
+                  status:
+                    type: string
+                    description: "Status of the upload"
+                    example: "404"
+                  title:
+                    type: string
+                    description: "The title of the error"
+                    example: "NotFoundException"
+                  detail:
+                    type: string
+                    description: "The detailed description of the error"
+                    example: "not found"
+    '401':
+      description: Access denied
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              statusCode:
+                type: string
+                description: "Status of the upload"
+                example: "401"
+              message:
+                type: string
+                description: "The message explaining the reason for access denied"
+                example: "Access denied due to invalid subscription key. Make sure to provide a valid key for an active subscription" 
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              statusCode:
+                type: string
+                description: "Status of the upload"
+                example: "400"
+              title:
+                type: string
+                description: "The title of the error"
+                example: "Bad Request Exception"
+              detail:
+                type: string
+                description: "The detailed description of the error"
+                example: "Request was not valid"

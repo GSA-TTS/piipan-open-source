@@ -1,0 +1,31 @@
+﻿@using Bunit;
+@using Microsoft.AspNetCore.Components.Web
+@using Moq
+@using Piipan.QueryTool.Client.Pages
+@using Piipan.Shared.Client.DTO
+@using Xunit;
+@inherits BaseComponentTest<MatchSearchPage>
+@code {
+    /// <summary>
+    /// Setup the component and register Javascript mocks
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        Component = Render<MatchSearchPage>(@<MatchSearchPage />);
+    }
+
+    [Fact]
+    public void MatchSearchPage_RendersCorrectly()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        var pageTitleComponent = Component.FindComponent<PageTitle>();
+        var renderedFragment = Render(pageTitleComponent.Instance.ChildContent);
+        renderedFragment.MarkupMatches(@<text>NAC Match Search</text>);
+        Assert.True(Component.HasComponent<MatchForm>());
+        Assert.Equal("match", Services.GetService<ClientAppDataDto>().CurrentPage);
+    }
+}

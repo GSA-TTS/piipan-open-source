@@ -1,0 +1,63 @@
+﻿@using Piipan.Components.Modals
+@using Piipan.Components.Routing
+@using Piipan.Components.Tables
+@using Piipan.Match.Api.Models
+@using Piipan.QueryTool.Client.Helpers
+@using Piipan.QueryTool.Client.Modals
+@using Piipan.QueryTool.Client.Models
+@inject IJSRuntime JSRuntime
+@inject IModalManager ModalManager
+@inject PiipanNavigationManager NavigationManager
+@code {
+    [Parameter] public OrchMatchResponseData QueryResult { get; set; }
+
+    private void ResultClicked(ParticipantMatch record)
+    {
+        void Navigate()
+        {
+            NavigationManager.NavigateTo($"/match/{record.MatchId}", false);
+        }
+        if (record.VulnerableIndividual == true)
+        {
+            ModalManager.Show<VulnerableIndividualModal>(
+                new VulnerableIndividualModal()
+                {
+                    ContinueCallback = Navigate
+                },
+                new ModalInfo
+                {
+                    ForceAction = true
+                }
+            );
+        }
+        else
+        {
+            Navigate();
+        }
+    }
+}
+
+<section class="border-top-1px border-base-light margin-top-6" id="query-results-area">
+    <h2>SNAP Participants Search Results</h2>
+    <p>This participant was found in another state. Select the Match ID for more information.</p>
+    @foreach (var result in QueryResult.Results)
+    {
+        <UsaTable Data="result.Matches">
+            <UsaTableColumn T="ParticipantMatch" Name="Match ID">
+                <Template Context="record">
+                    <a href="/match/@record.MatchId" @onclick="@(() => ResultClicked(record))" @onclick:preventDefault>@record.MatchId</a>
+                </Template>
+            </UsaTableColumn>
+            <UsaTableColumn T="ParticipantMatch" Name="Matching State">
+                <Template Context="record">
+                    @(StateHelper.GetStateName(record.State))
+                </Template>
+            </UsaTableColumn>
+            <UsaTableColumn T="ParticipantMatch" Name="Vulnerable Individual">
+                <Template Context="record">
+                    @(ValueToDisplayHelper.GetDisplayValue(record.VulnerableIndividual))
+                </Template>
+            </UsaTableColumn>
+        </UsaTable>
+    }
+</section>

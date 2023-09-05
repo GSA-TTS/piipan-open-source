@@ -1,0 +1,91 @@
+patch:
+  operationId: "Update a State's Disposition"
+  tags:
+    - "Resolution"
+  summary: "Update a state's Disposition"
+  description: "Update a state's disposition to resolve a match"
+  parameters:
+    - in: header
+      name: From
+      schema:
+        type: string
+      description: "As in the HTTP/1.1 RFC, used for logging purposes as a means for identifying the source of invalid or unwanted requests. The interpretation of this field is that the request is being performed on behalf of the state government-affiliated person whose email address (or username) is specified here. It is not used for authentication or authorization."
+      required: true
+    - in: header
+      name: X-Initiating-State
+      schema:
+        type: string
+      description: "Two-letter postal abbreviation for the caller's state role"
+      required: true
+    - in: path
+      name: match_id
+      schema:
+        type: string
+      description: "The Match ID retrieved from a match query"
+      required: true
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+              - data
+          properties:
+            data:
+              type: object
+              properties:
+                final_disposition:
+                  type: string
+                  description: "The final disposition for the match from the state"
+                initial_action_at:
+                  type: string
+                  format: date
+                  description: "The timestamp of the initial action taken by the state"
+                invalid:
+                  type: boolean
+                  description: "The state's determination of whether the match is invalid"
+                vulnerable_individual:
+                  type: boolean
+                  description: "Determines whether states should protect location of the individual when resolving matches"
+                initial_action_taken:
+                  type: string
+                  description: "The initial action that was taken towards resolving the match"
+                invalid_match_reason:
+                  type: string
+                  description: "The reason for marking the match as invalid"
+                other_reasoning_for_invalid_match:
+                  type: string
+                  description: "The reason for having 'OTHER' for invalid_match_reason"
+                final_disposition_date:
+                  type: string
+                  format: date
+                  description: "The timestamp of the final disposition taken by the state"
+                state:
+                  type: string
+                  description: "The state adding the event to the match"
+        examples:
+          InitialAction:
+            description: "Example of a state providing the date of their initial action taken"
+            value:
+              data:
+                initial_action_at: "2022-05-06"
+          InvalidMatch:
+            description: "Example of a state claiming the match is invalid"
+            value:
+              data:
+                invalid: true
+          FinalDisposition:
+            description: "Example of a state providing their final disposition"
+            value:
+              data:
+                final_disposition: "Transfer benefits to Iowa at the end of this month"
+  responses:
+    '200':
+      description: "Successfully updated"
+    '400':
+      description: "Bad request. Request body does not match the required format."
+    '401':
+      description: "Unauthorized"
+    '429':
+      description: "Too Many Requests. The status code indicates the user has sent too many requests in a given amount of time 'rate limiting'."

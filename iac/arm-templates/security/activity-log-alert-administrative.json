@@ -1,0 +1,356 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "emailAddress": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the email Address for the Action Group"
+            }
+        },
+        "eventHubName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the name of the specific Event Hub queue"
+            }
+        },
+        "eventHubNameSpace": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Event Hub namespace"
+            }
+        }
+    },
+    "variables": {
+        "actionGroupName": "Administrative",
+        "alertScope": "[format('/subscriptions/{0}', subscription().subscriptionId)]",
+        "groupShortName": "Admin"
+    },
+    "resources": [
+        {
+            "type": "microsoft.insights/actionGroups",
+            "apiVersion": "2019-06-01",
+            "name": "[variables('actionGroupName')]",
+            "location": "Global",
+            "tags": {
+                "Action Group": "[variables('actionGroupName')]"
+            },
+            "properties": {
+                "groupShortName": "[variables('groupShortName')]",
+                "enabled": true,
+                /* Disabling role receiver notifications, as they can be numerous
+                "armRoleReceivers": [
+                    {
+                        "name": "Contributor",
+                        "roleId": "Contributor",
+                        "useCommonAlertSchema": true
+                    },
+                    {
+                        "name": "Owner",
+                        "roleId": "Owner",
+                        "useCommonAlertSchema": true
+                    }
+                ],
+                */
+                "emailReceivers": [
+                    {
+                        "name": "[concat(variables('actionGroupName'), ' - Email')]",
+                        "emailAddress": "[parameters('emailAddress')]",
+                        "useCommonAlertSchema": true
+                    }
+                ],
+                "eventHubReceivers": [
+                    {
+                        "eventHubName": "[parameters('eventHubName')]",
+                        "eventHubNameSpace": "[parameters('eventHubNameSpace')]",
+                        "name": "[concat(variables('actionGroupName'), ' - Event Hub')]",
+                        "subscriptionId": "[variables('alertScope')]",
+                        "useCommonAlertSchema": true
+                    }
+                ],
+                "smsReceivers": [],
+                "webhookReceivers": []
+            }
+        },
+        {
+            "type": "microsoft.insights/activityLogAlerts",
+            "apiVersion": "2017-04-01",
+            "name": "Administrative Alert - write-sql-firewall-rule",
+            "location": "Global",
+            "properties": {
+                "scopes": [
+                    "[variables('alertScope')]"
+                ],
+                "condition": {
+                    "allOf": [
+                        {
+                            "field": "category",
+                            "equals": "[variables('actionGroupName')]"
+                        },
+                        {
+                            "field": "operationName",
+                            "equals": "Microsoft.Sql/servers/firewallRules/write"
+                        }
+                    ]
+                },
+                "actions": {
+                    "actionGroups": [
+                        {
+                            "actionGroupId": "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]",
+                            "webhookProperties": {}
+                        }
+                    ]
+                },
+                "enabled": true
+            },
+            "dependsOn": [
+                "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]"
+            ]
+        },
+        {
+            "type": "microsoft.insights/activityLogAlerts",
+            "apiVersion": "2017-04-01",
+            "name": "Administrative Alert - delete-sql-firewall-rule",
+            "location": "Global",
+            "properties": {
+                "scopes": [
+                    "[variables('alertScope')]"
+                ],
+                "condition": {
+                    "allOf": [
+                        {
+                            "field": "category",
+                            "equals": "[variables('actionGroupName')]"
+                        },
+                        {
+                            "field": "operationName",
+                            "equals": "Microsoft.Sql/servers/firewallRules/delete"
+                        }
+                    ]
+                },
+                "actions": {
+                    "actionGroups": [
+                        {
+                            "actionGroupId": "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]",
+                            "webhookProperties": {}
+                        }
+                    ]
+                },
+                "enabled": true
+            },
+            "dependsOn": [
+                "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]"
+            ]
+        },
+        {
+            "type": "microsoft.insights/activityLogAlerts",
+            "apiVersion": "2017-04-01",
+            "name": "Administrative Alert - write-nsg",
+            "location": "Global",
+            "properties": {
+                "scopes": [
+                    "[variables('alertScope')]"
+                ],
+                "condition": {
+                    "allOf": [
+                        {
+                            "field": "category",
+                            "equals": "[variables('actionGroupName')]"
+                        },
+                        {
+                            "field": "operationName",
+                            "equals": "Microsoft.Network/networkSecurityGroups/write"
+                        }
+                    ]
+                },
+                "actions": {
+                    "actionGroups": [
+                        {
+                            "actionGroupId": "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]",
+                            "webhookProperties": {}
+                        }
+                    ]
+                },
+                "enabled": true
+            },
+            "dependsOn": [
+                "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]"
+            ]
+        },
+        {
+            "type": "microsoft.insights/activityLogAlerts",
+            "apiVersion": "2017-04-01",
+            "name": "Administrative Alert - delete-nsg",
+            "location": "Global",
+            "properties": {
+                "scopes": [
+                    "[variables('alertScope')]"
+                ],
+                "condition": {
+                    "allOf": [
+                        {
+                            "field": "category",
+                            "equals": "[variables('actionGroupName')]"
+                        },
+                        {
+                            "field": "operationName",
+                            "equals": "Microsoft.Network/networkSecurityGroups/delete"
+                        }
+                    ]
+                },
+                "actions": {
+                    "actionGroups": [
+                        {
+                            "actionGroupId": "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]",
+                            "webhookProperties": {}
+                        }
+                    ]
+                },
+                "enabled": true
+            },
+            "dependsOn": [
+                "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]"
+            ]
+        },
+        {
+            "type": "microsoft.insights/activityLogAlerts",
+            "apiVersion": "2017-04-01",
+            "name": "Administrative Alert - write-nsg-rule",
+            "location": "Global",
+            "properties": {
+                "scopes": [
+                    "[variables('alertScope')]"
+                ],
+                "condition": {
+                    "allOf": [
+                        {
+                            "field": "category",
+                            "equals": "[variables('actionGroupName')]"
+                        },
+                        {
+                            "field": "operationName",
+                            "equals": "Microsoft.Network/networkSecurityGroups/securityRules/write"
+                        }
+                    ]
+                },
+                "actions": {
+                    "actionGroups": [
+                        {
+                            "actionGroupId": "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]",
+                            "webhookProperties": {}
+                        }
+                    ]
+                },
+                "enabled": true
+            },
+            "dependsOn": [
+                "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]"
+            ]
+        },
+        {
+            "type": "microsoft.insights/activityLogAlerts",
+            "apiVersion": "2017-04-01",
+            "name": "Administrative Alert - delete-nsg-rule",
+            "location": "Global",
+            "properties": {
+                "scopes": [
+                    "[variables('alertScope')]"
+                ],
+                "condition": {
+                    "allOf": [
+                        {
+                            "field": "category",
+                            "equals": "[variables('actionGroupName')]"
+                        },
+                        {
+                            "field": "operationName",
+                            "equals": "Microsoft.Network/networkSecurityGroups/securityRules/delete"
+                        }
+                    ]
+                },
+                "actions": {
+                    "actionGroups": [
+                        {
+                            "actionGroupId": "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]",
+                            "webhookProperties": {}
+                        }
+                    ]
+                },
+                "enabled": true
+            },
+            "dependsOn": [
+                "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]"
+            ]
+        },
+        {
+            "type": "microsoft.insights/activityLogAlerts",
+            "apiVersion": "2017-04-01",
+            "name": "Administrative Alert - write-policy-assignment",
+            "location": "Global",
+            "properties": {
+                "scopes": [
+                    "[variables('alertScope')]"
+                ],
+                "condition": {
+                    "allOf": [
+                        {
+                            "field": "category",
+                            "equals": "[variables('actionGroupName')]"
+                        },
+                        {
+                            "field": "operationName",
+                            "equals": "Microsoft.Authorization/policyAssignments/write"
+                        }
+                    ]
+                },
+                "actions": {
+                    "actionGroups": [
+                        {
+                            "actionGroupId": "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]",
+                            "webhookProperties": {}
+                        }
+                    ]
+                },
+                "enabled": true
+            },
+            "dependsOn": [
+                "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]"
+            ]
+        },
+        {
+            "type": "microsoft.insights/activityLogAlerts",
+            "apiVersion": "2017-04-01",
+            "name": "Administrative Alert - delete-policy-assignment",
+            "location": "Global",
+            "properties": {
+                "scopes": [
+                    "[variables('alertScope')]"
+                ],
+                "condition": {
+                    "allOf": [
+                        {
+                            "field": "category",
+                            "equals": "[variables('actionGroupName')]"
+                        },
+                        {
+                            "field": "operationName",
+                            "equals": "Microsoft.Authorization/policyAssignments/delete"
+                        }
+                    ]
+                },
+                "actions": {
+                    "actionGroups": [
+                        {
+                            "actionGroupId": "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]",
+                            "webhookProperties": {}
+                        }
+                    ]
+                },
+                "enabled": true
+            },
+            "dependsOn": [
+                "[resourceId('microsoft.insights/actionGroups', variables('actionGroupName'))]"
+            ]
+        }
+    ]
+}

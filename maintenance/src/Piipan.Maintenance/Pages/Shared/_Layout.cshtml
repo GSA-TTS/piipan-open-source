@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/styles.css" />
+    <script src="~/js/uswds-init.min.js" asp-append-version="true"></script>
+</head>
+<body>
+    <div id="inert-area">
+        <a class="usa-skipnav" href="#main-content">Skip to main content</a>
+        <div class="usa-overlay"></div>
+        <div class="sticky-footer">
+            <div class="sticky-footer__fill" style="display: flex; flex-direction: column;">
+                <partial name="_UsaBanner" />
+                <header class="usa-header usa-header--extended">
+                    <div class="usa-navbar">
+                        <div class="usa-logo" id="extended-logo">
+                            <a href="/" class="agency">
+                                <img class="usa-banner__header-flag" src="~/images/usda-symbol-color.svg" alt="United States Department of Agriculture">
+                                <div>
+                                    <div class="agency__text--top">
+                                        National Accuracy Clearinghouse
+                                    </div>
+                                    <div class="agency__text--bottom">
+                                        U.S. Department of Agriculture
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </header>
+                <div class="container margin-bottom-6 border-top-1px border-base-light" style="background: #E5E5E5; flex: 1; margin-bottom: 0;">
+                    <main id="main-content" tabindex=-1>
+                        @RenderBody()
+                    </main>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/js/uswds.min.js" asp-append-version="true"></script>
+</body>
+
+</html>

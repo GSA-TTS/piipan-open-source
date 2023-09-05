@@ -1,0 +1,22 @@
+﻿h5 {
+    margin: 0;
+}
+dl {
+    margin: 0;
+}
+dt {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.6875;
+    margin: 0;
+    margin-right: 5px;
+}
+dd {
+    display: inline-block;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6875;
+    vertical-align: top;
+    white-space: pre;
+}

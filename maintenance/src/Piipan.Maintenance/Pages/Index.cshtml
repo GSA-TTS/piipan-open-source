@@ -1,0 +1,61 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "System down for maintenance";
+}
+
+<style>
+    .grid-container {
+display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    grid-gap: 20px;
+    gap: 20px;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+h1, p {
+    margin-top: 0;
+    margin-bottom: 3rem;
+}
+
+p.large-text {
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.svg-area {
+    padding-top: 1rem;
+}
+
+@@media (max-width: 50rem) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+    .svg-area {
+        display: none;
+    }
+}
+</style>
+<div class="grid-container">
+    <div>
+        <h1>We're Making Improvements!</h1>
+        <p class="large-text">NAC is down for scheduled maintenance but we'll be back up and running soon.</p>
+    </div>
+    <div class="svg-area">
+        <svg width="420" height="418" viewBox="0 0 420 418" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M175.003 233.676H8.74512V329.923" stroke="#1B1B1B" stroke-width="5.5" stroke-linejoin="round" />
+            <path d="M8.74512 242.421V146.175H227.507" stroke="#1B1B1B" stroke-width="5.5" stroke-linejoin="round" />
+            <path d="M201.238 58.6733H8.74512V146.175H201.238V58.6733Z" stroke="#1B1B1B" stroke-width="5.5" stroke-linejoin="round" />
+            <path d="M78.7563 58.6733V146.175" stroke="#1B1B1B" stroke-width="5.5" stroke-linejoin="round" />
+            <path d="M148.75 146.175V233.676" stroke="#1B1B1B" stroke-width="5.5" stroke-linejoin="round" />
+            <path d="M78.7563 233.676V321.161" stroke="#1B1B1B" stroke-width="5.5" stroke-linejoin="round" />
+            <path d="M288.756 329.922V408.662" stroke="#1B1B1B" stroke-width="5.5" stroke-linejoin="round" />
+            <path d="M297.569 113.703C307.178 124.583 323.753 125.634 334.617 116.025L402.154 54.6737C407.391 50.0808 410.56 43.6068 410.984 36.6243C411.424 29.7096 409.069 22.8457 404.476 17.6428C394.883 6.77924 378.308 5.72848 367.445 15.3209L299.891 76.655C294.671 81.2648 291.502 87.7558 291.078 94.7044C290.637 101.636 292.976 108.5 297.569 113.703Z" stroke="#1B1B1B" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M297.773 113.906L353.836 178.511L288.197 236.405" stroke="#1B1B1B" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M245.556 178.901C250.725 159.377 274.995 155.869 289.299 170.156L350.548 231.405C364.97 245.845 361.462 270.199 341.803 275.148L184.307 336.397L245.556 178.901Z" stroke="#1B1B1B" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M324.025 321.161H411.255V408.662H8.74512V321.161H140.006H148.751V408.662" stroke="#1B1B1B" stroke-width="5.5" stroke-linejoin="round" />
+        </svg>
+
+    </div>
+</div>

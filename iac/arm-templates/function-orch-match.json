@@ -1,0 +1,289 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Specify the resource tags."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "The location where the resources will be deployed."
+            }
+        },
+        "functionAppName": {
+            "type": "string"
+        },
+        "appServicePlanName": {
+            "type": "string"
+        },
+        "storageAccountName": {
+            "type": "string"
+        },
+        "coreResourceGroup": {
+            "type": "String"
+        },
+        "participantsDatabaseConnectionString": {
+            "type": "String"
+        },
+        "collabDatabaseConnectionString": {
+            "type": "String"
+        },
+        "cloudName": {
+            "type": "String"
+        },
+        "states": {
+            "type": "String"
+        },
+        "statesToEnableMatches": {
+            "type": "String"
+        },
+        "diagnosticSettingName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Diagnostic Setting Name."
+            }
+        },
+        "eventHubAuthorizationRuleId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Event Hub Authorization Rule Id."
+            }
+        },
+        "eventHubName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Event Hub Name."
+            }
+        },
+        "sku": {
+            "type": "String",
+            "metadata": {
+                "description": "Specify the SKU type."
+            }
+        },
+        "subnet": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Virtual Network - Subnet."
+            }
+        },
+        "vnet": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Virtual Network."
+            }
+        },
+        "workspaceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Log Analytics Workspace Id."
+            }
+        }
+    },
+    "variables": {
+        "functionWorkerRuntime": "dotnet",
+        "systemTypeTag": {
+            "SysType": "OrchestratorApi"
+        },
+        "applicationInsightsTag": {
+            "[concat('hidden-link:', resourceId('Microsoft.Web/sites', parameters('functionAppName')))]": "Resource"
+        }
+    },
+    "resources": [
+        // Orchestrator function app resources
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2021-09-01",
+            "name": "[parameters('storageAccountName')]",
+            "tags": "[parameters('resourceTags')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('sku')]"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "allowBlobPublicAccess": false,
+                "minimumTlsVersion": "TLS1_2",
+                "networkAcls": {
+                    "virtualNetworkRules": [
+                        {
+                            "id": "[concat(parameters('vnet'),  '/subnets/', parameters('subnet'))]",
+                            "action": "Allow"
+                        }
+                    ]
+                },
+                "supportsHttpsTrafficOnly": true
+            }
+        },
+        {
+            /* https://docs.microsoft.com/en-us/azure/azure-monitor/essentials/resource-manager-diagnostic-settings#diagnostic-setting-for-azure-storage */
+            "apiVersion": "2021-05-01-preview",
+            "type": "Microsoft.Storage/storageAccounts/blobServices/providers/diagnosticSettings",
+            "name": "[concat(parameters('storageAccountName'), '/default/Microsoft.Insights/', parameters('diagnosticSettingName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+            ],
+            "properties": {
+                "eventHubAuthorizationRuleId": "[parameters('eventHubAuthorizationRuleId')]",
+                "eventHubName": "[parameters('eventHubName')]",
+                "workspaceId": "[parameters('workspaceId')]",
+                "logs": [
+                    {
+                        "category": "StorageRead",
+                        "enabled": true
+                    },
+                    {
+                        "category": "StorageWrite",
+                        "enabled": true
+                    },
+                    {
+                        "category": "StorageDelete",
+                        "enabled": true
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2020-06-01",
+            "name": "[parameters('functionAppName')]",
+            "tags": "[union(parameters('resourceTags'), variables('systemTypeTag'))]",
+            "location": "[parameters('location')]",
+            "kind": "functionapp",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Insights/components', parameters('functionAppName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+            ],
+            "properties": {
+                "serverFarmId": "[resourceId(parameters('coreResourceGroup'), 'Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+                "httpsOnly": true,
+                "siteConfig": {
+                    "alwaysOn": true,
+                    "ftpsState": "Disabled",
+                    "http20Enabled": true,
+                    "minTlsVersion": "1.2",
+                    "appSettings": [
+                        /*
+                            The following settings are required for Function apps per the MS documentation:
+                            - AzureWebJobsStorage
+                            - FUNCTIONS_WORKER_RUNTIME
+                            - FUNCTIONS_EXTENSION_VERSION
+
+                            See: https://docs.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code#function-app)
+                        */
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "[variables('functionWorkerRuntime')]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~4"
+                        },
+                        /*
+                            The `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` and `WEBSITE_CONTENTSHARE`
+                            settings are required for Windows function apps using a consumption plan,
+                            per the MS documentation.
+
+                            See: https://docs.microsoft.com/en-us/azure/azure-functions/functions-infrastructure-as-code#windows)
+                        */
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[toLower(parameters('functionAppName'))]"
+                        },
+                        // Required when using the zip deployment method (i.e., the method
+                        // used by `func azure functionapp publish`)
+                        {
+                            "name": "WEBSITE_RUN_FROM_PACKAGE",
+                            "value": "1"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('functionAppName'))).InstrumentationKey]"
+                        },
+                        {
+                            "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('functionAppName'))).ConnectionString]"
+                        },
+                        // Bind backing services
+                        {
+                            "name": "ParticipantsDatabaseConnectionString",
+                            "value": "[parameters('participantsDatabaseConnectionString')]"
+                        },
+                        {
+                            "name": "CollaborationDatabaseConnectionString",
+                            "value": "[parameters('collabDatabaseConnectionString')]"
+                        },
+                        {
+                            "name": "CloudName",
+                            "value": "[parameters('cloudName')]"
+                        },
+                        {
+                            "name": "States",
+                            "value": "[parameters('states')]"
+                        },
+                        {
+                            "name": "EnabledStates",
+                            "value": "[parameters('statesToEnableMatches')]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Insights/components",
+            "apiVersion": "2020-02-02",
+            "name": "[parameters('functionAppName')]",
+            "location": "[parameters('location')]",
+            "tags": "[variables('applicationInsightsTag')]",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web",
+                "Request_Source": "rest",
+                "WorkspaceResourceId": "[parameters('workspaceId')]"
+            }
+        },
+        {
+            /* https://docs.microsoft.com/en-us/azure/azure-monitor/essentials/resource-manager-diagnostic-settings */
+            "type": "Microsoft.Web/sites/providers/diagnosticSettings",
+            "name": "[concat(parameters('functionAppName'), '/Microsoft.Insights/', parameters('diagnosticSettingName'))]",
+            "apiVersion": "2021-05-01-preview",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
+            ],
+            "properties": {
+                "eventHubAuthorizationRuleId": "[parameters('eventHubAuthorizationRuleId')]",
+                "eventHubName": "[parameters('eventHubName')]",
+                "workspaceId": "[parameters('workspaceId')]",
+                "logs": [
+                    /* Category names from `az monitor diagnostic-settings categories list` */
+                    {
+                        "category": "FunctionAppLogs",
+                        "enabled": true
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {
+        "functionAppName": {
+            "type": "string",
+            "value": "[parameters('functionAppName')]"
+        }
+    }
+}

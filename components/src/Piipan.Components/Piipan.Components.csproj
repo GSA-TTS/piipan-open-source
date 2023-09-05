@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+	  <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Input\**" />
+    <Content Remove="Input\**" />
+    <EmbeddedResource Remove="Input\**" />
+    <None Remove="Input\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Alerts\UsaAlertBox.razor" />
+    <None Include="Tables\UsaTable.razor" />
+    <None Include="Tag\UsaTag.razor" />
+    <None Include="Tooltips\UsaTooltip.razor" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.13" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\shared\src\Piipan.Shared.API\Piipan.Shared.API.csproj" />
+  </ItemGroup>
+
+</Project>

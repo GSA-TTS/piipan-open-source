@@ -1,0 +1,39 @@
+﻿// Card Styles
+.usa-card-group {
+    display: grid;
+    --coln: 3;
+    grid-template-columns: repeat(var(--coln), 1fr);
+
+    @media (max-width: 40em) {
+        --coln: 2;
+    }
+
+    @media (max-width: 20em) {
+        --coln: 1;
+    }
+}
+
+// SSN Styles
+.usa-ssn-group {
+    display: grid;
+    grid-template-columns: 118px 1.5em;
+    grid-gap: .5rem;
+    gap: .5rem;
+    align-items: center;
+}
+
+.usa-ssn-group .usa-button--unstyled {
+    margin-top: .5rem;
+    height: 1.5em;
+}
+
+.usa-ssn-group .usa-button--unstyled .usa-icon {
+    width: 1.5em;
+    height: 1.5em;
+    color: black;
+}
+
+// Label Styles
+.usa-form .usa-label {
+    font-weight: 700;
+}

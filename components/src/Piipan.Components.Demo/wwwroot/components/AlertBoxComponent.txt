@@ -1,0 +1,32 @@
+﻿@using Piipan.Components.Alerts
+@using Piipan.Components.Enums
+@using static Piipan.Components.Shared.CommonConstants
+@code {
+    [Parameter] public AlertSeverity AlertSeverity { get; set; }
+    bool showAlertBox = true;
+}
+
+<UsaAlertBox AlertSeverity="AlertSeverity" Dismissable="false" Header="Static Alert">
+    <p>Static alert box with list items</p>
+    <ul>
+        <li>List item 1</li>
+        <li>List item 2</li>
+        <li>List item 3</li>
+    </ul>
+</UsaAlertBox>
+
+@if (showAlertBox)
+{
+    <UsaAlertBox AlertSeverity="AlertSeverity" Dismissed="() => { showAlertBox = false; StateHasChanged(); }" Dismissable="true" Header="Dismissable Alert">
+        <p>Dismissable alert box with list items</p>
+        <ul>
+            <li>List item 1</li>
+            <li>List item 2</li>
+            <li>List item 3</li>
+        </ul>
+    </UsaAlertBox>
+}
+else
+{
+    <button style="margin-top: 20px;" class="@ButtonClass" type="button" @onclick="() => showAlertBox = true">Show Dismissable Alert</button>
+}

@@ -1,0 +1,20 @@
+﻿@using static LayoutConstants
+@code {
+    [Parameter] public string Header { get; set; }
+    [Parameter] public RenderFragment BodyContent { get; set; }
+    [Parameter] public RenderFragment FooterContent { get; set; }
+}
+
+<li class="@CardClass">
+    <div class="@CardContainerClass">
+        <header class="@CardHeaderClass">
+            <h2 class="@CardHeadingClass">@Header</h2>
+        </header>
+        <div class="@CardBodyClass">
+            @BodyContent
+        </div>
+        <div class="@CardFooterClass">
+            @FooterContent
+        </div>
+    </div>
+</li>
