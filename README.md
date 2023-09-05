@@ -6,9 +6,8 @@
 *A privacy-preserving system for storing and matching de-identified Personal Identifiable Information (PII) records.*
 
 ## Quick links
-- [Quickstart Guide for States](https://github.com/18F/piipan/blob/dev/docs/quick-start-guide-states.md)
-- [High-level architecture diagram](https://raw.githubusercontent.com/18F/piipan/dev/docs/diagrams/piipan-architecture.png)
-- [Milestones](https://github.com/18F/piipan/milestones?direction=asc&sort=title&state=open)
+- [Quickstart Guide for States](./docs/quick-start-guide-states.md)
+- [High-level architecture diagram](./docs/diagrams/piipan-architecture.png)
 
 ## Overview
 
