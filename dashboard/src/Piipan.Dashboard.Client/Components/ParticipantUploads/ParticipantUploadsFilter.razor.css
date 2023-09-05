@@ -1,0 +1,47 @@
+﻿.top-filters {
+    display: inline-block;
+    background: #f0f0f0;
+    padding: 1.5rem;
+    width: 100%;
+}
+
+.top-filters h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.top-filter-grid {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    align-items: end;
+}
+
+h4 {
+    margin-bottom: 4px;
+}
+
+.usa-button {
+    margin-top: 0;
+}
+
+#upload-filter-btn {
+    margin-right: 1.5rem;
+    margin-top: 2rem;
+}
+
+::deep .usa-select {
+    min-width: 11.75rem;
+}
+
+.top-filter-grid .end-date {
+    margin-right: 3rem;
+}
+
+.top-filter-grid .date-separator {
+    margin: .5rem 1.25rem;
+}
+
+::deep .usa-form-group {
+    margin-top: 0;
+}

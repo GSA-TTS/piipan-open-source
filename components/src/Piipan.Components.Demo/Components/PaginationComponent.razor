@@ -1,0 +1,9 @@
+﻿@using Piipan.Components.Tables
+
+@code {
+    [Parameter] public int CurrentPage { get; set; }
+    [Parameter] public int NumberOfPages { get; set; }
+    [Parameter] public string LinkWithParams { get; set; }
+}
+
+<UsaPagination CurrentPage="@CurrentPage" NumberOfPages="@NumberOfPages" LinkWithParams="@LinkWithParams" />

@@ -1,0 +1,17 @@
+﻿@page "/input-number"
+@inherits BaseComponent
+@code {
+    private InputNumberModel NumberModel { get; set; } = new InputNumberModel();
+    protected override string[] Files { get; set; } = { "components/InputNumberComponent.razor", "models/InputNumberModel.cs" };
+}
+
+<h1>Input Number</h1>
+<UsaAccordion Multiselectable="true">
+    <UsaAccordionItem StartsExpanded="true">
+        <HeadingContent>Component Demo</HeadingContent>
+        <BodyContent>
+            <InputNumberComponent NumberModel="NumberModel" />
+        </BodyContent>
+    </UsaAccordionItem>
+    <CodeArea FileContents="fileContents" />
+</UsaAccordion>

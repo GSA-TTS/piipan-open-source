@@ -1,0 +1,142 @@
+get:
+  operationId: "Get Match Details"
+  tags:
+    - "Resolution"
+  summary: "Get Match Details"
+  description: "Get Match details for resolving matches between states"
+  parameters:
+    - in: header
+      name: From
+      schema:
+        type: string
+      description: "As in the HTTP/1.1 RFC, used for logging purposes as a means for identifying the source of invalid or unwanted requests. The interpretation of this field is that the request is being performed on behalf of the state government-affiliated person whose email address (or username) is specified here. It is not used for authentication or authorization."
+      required: true
+    - in: header
+      name: X-Request-Location
+      schema:
+        type: string
+      description: "The state or region abbreviation for the user making the request. If the user is a national office user, this should be *"
+      required: true
+    - in: path
+      name: match_id
+      schema:
+        type: string
+      description: "The Match ID retrieved from a match query"
+      required: true
+  responses:
+    '200':
+      description: "Success"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                description: "The response payload representing match data."
+                required:
+                  - initiator
+                  - match_id
+                  - states
+                  - status
+                  - participants
+                  - dispositions
+                properties:
+                  initiator:
+                    type: string
+                    description: "Two-letter postal abbreviation of the state that initiated the match"
+                    example: "IA"
+                  match_id:
+                    type: string
+                    description: "The Match ID"
+                    example: "EBOINR"
+                  states:
+                    type: array
+                    description: "Array of two-letter postal abbreviations of states involved in a match"
+                    minLength: 2
+                    maxLength: 2
+                    items:
+                      type: string
+                      description: "two-letter postal abbreviations of a state involved in a match"
+                      example: "MO"
+                  status:
+                    type: string
+                    description: "The Match's status"
+                    example: "open"
+                  participants:
+                    description: "the participant data from each state at the time a match was found"
+                    type: array
+                    required:
+                      - case_id
+                      - participant_id
+                      - participant_closing_date
+                      - recent_benefit_issuance_dates
+                    items:
+                      type: object
+                      properties:
+                        case_id:
+                          type: string
+                          description: "Case ID of matched participant in this state at the time the match was found"
+                        participant_closing_date:
+                          type: string
+                          format: date
+                          description: "Date when participant's case will close at the time a match was found. This will be the last date the participant is eligible to receive benefits."
+                        participant_id:
+                          type: string
+                          description: "Participant ID of matched participant in this state at the time the match was found"
+                        recent_benefit_issuance_dates:
+                          type: array
+                          description: "Collection of up to 3 date ranges that participant has been receiving benefits at the time the match was found."
+                          minLength: 0
+                          maxLength: 3
+                          items:
+                            type: object
+                            description: "A single date range"
+                            properties:
+                              start:
+                                type: string
+                                format: date
+                                pattern: '^\d{4}-\d{2}-\d{2}$'
+                                description: "start date for date range"
+                              end:
+                                type: string
+                                format: date
+                                pattern: '^\d{4}-\d{2}-\d{2}$'
+                                description: "end date for date range"
+                        state:
+                          type: string
+                          description: "Two-letter postal abbreviation for the state to which this data belongs"
+                  dispositions:
+                    type: array
+                    description: "Disposition data for each related state in a match. This data is updated by states in the resolution process."
+                    items:
+                      type: object
+                      properties:
+                        final_disposition:
+                          type: string
+                          description: "The final disposition from the state for the match"
+                        initial_action_at:
+                          type: string
+                          format: date
+                          description: "The timestamp of the initial action taken by the state"
+                        invalid:
+                          type: boolean
+                          description: "The state's determination of whether the match is invalid"
+                          nullable: true
+                          default: null
+                        vulnerable_individual:
+                          type: boolean
+                          description: "The state's determination of whether states should protect the location of the individual during match resolution"
+                          nullable: true
+                          default: null
+                        state:
+                          type: string
+                          description: "Two-letter postal abbreviation for the state to which this data belongs"
+    '400':
+      description: "Bad request. Request body does not match the required format."
+    '401':
+      description: "Unauthorized"
+    '404':
+      description: "Resource not found"
+    '429':
+      description: "Too Many Requests. The status code indicates the user has sent too many requests in a given amount of time 'rate limiting'."

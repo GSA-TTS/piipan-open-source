@@ -1,0 +1,74 @@
+﻿@inject IJSRuntime JSRuntime
+
+@code {
+    IJSObjectReference modalJavascriptReference;
+    private DotNetObjectReference<ModalContainer> objRef;
+
+    /// <summary>
+    /// Subscribe to the ModalManager's ModalsUpdated method, so we know to re-render ourself when they get changed.
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        ModalManager.ModalsUpdated += async () => await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
+    /// Whenever the modal container is re-rendered, reset Focus Traps to the top modal only if one exists
+    /// and subscribe to the escape keydown to close the last modal.
+    /// </summary>
+    /// <param name="firstRender"></param>
+    /// <returns></returns>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (modalJavascriptReference == null)
+        {
+            modalJavascriptReference = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Piipan.Components/Modals/ModalContainer.razor.js");    
+        }
+        if (objRef == null)
+        {
+            objRef = DotNetObjectReference.Create(this);
+        }
+        _ = modalJavascriptReference.InvokeVoidAsync("SetFocusTrapsAndEscapeListener", objRef);
+    }
+
+    /// <summary>
+    /// Called from ModalContainer.razor.js when a user hits the Escape key when modals are opened
+    /// Closes the last modal opened as long as it doesn't have an action required
+    /// </summary>
+    [JSInvokable]
+    public void CloseNearestModal()
+    {
+        if (ModalManager.OpenModals.Count > 0)
+        {
+            var modalToClose = ModalManager.OpenModals.Last();
+            if (!modalToClose.ForceAction)
+            {
+                ModalManager.Close(ModalManager.OpenModals.Last());                
+            }
+        }
+    }
+
+    /// <summary>
+    /// If the Modal Overlay is clicked, close the modal unless an action is required.
+    /// </summary>
+    /// <param name="modalInfo"></param>
+    private void ModalOverlayClicked(ModalInfo modalInfo)
+    {
+        if (!modalInfo.ForceAction)
+        {
+            ModalManager.Close(modalInfo);
+        }
+    }
+}
+
+@foreach (var modalInfo in ModalManager.OpenModals) 
+{
+    <div class="usa-modal-wrapper is-visible" role="dialog">
+        <div class="usa-modal-overlay" data-force-action="@(modalInfo.ForceAction ? "true" : null)" aria-controls="@modalInfo.ModalId" @onclick="() => ModalOverlayClicked(modalInfo)" @onclick:stopPropagation="true" @onclick:preventDefault="true">
+            <CascadingValue Value="modalInfo">
+                <UsaModal>@modalInfo.RenderFragment</UsaModal>
+            </CascadingValue>
+        </div>
+    </div>
+}

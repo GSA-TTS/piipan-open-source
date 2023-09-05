@@ -1,0 +1,35 @@
+﻿@using Piipan.Components.Layout
+@using static Piipan.Components.Shared.CommonConstants
+@code {
+    List<int> CardIds = new List<int>()
+    {
+        1, 2
+    };
+
+    private void DeleteCard(int id)
+    {
+        CardIds.Remove(id);
+    }
+    private void AddCard()
+    {
+        int idToAdd = 1;
+        if (CardIds.Count > 0)
+        {
+            idToAdd = CardIds.Max() + 1;
+        }
+        CardIds.Add(idToAdd);
+    }
+}
+
+<button type="button" @onclick="AddCard" class="@ButtonClass">Add Card</button>
+<UsaCardGroup style="margin-top: 2em;">
+    @foreach (var id in CardIds)
+    {
+        <UsaCard Header="@($"Card {id}")" @key="id">
+            <BodyContent><p>Card @id Content</p></BodyContent>
+            <FooterContent>
+                <button type="button" @onclick="@(() => DeleteCard(id))" class="@ButtonClass">Delete Card</button>
+            </FooterContent>
+        </UsaCard>
+    }
+</UsaCardGroup>

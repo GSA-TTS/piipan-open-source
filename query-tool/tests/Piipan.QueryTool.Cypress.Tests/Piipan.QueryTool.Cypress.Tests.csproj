@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+      <DefaultItemExcludes>mock_user.json;$(DefaultItemExcludes)</DefaultItemExcludes>
+      <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+      <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</RestoreLockedMode>
+
+  </PropertyGroup>
+    <!--
+    Because our static analysis tool, CodeQL, autobuilds C# with the UseSharedCompilation flag, we check this flag to avoid running npm tasks for these types of builds.
+  -->
+    <Target Name="NpmInstall" BeforeTargets="BeforeBuild" Inputs="package.json" Outputs="node_modules/.install-stamp" Condition="'$(UseSharedCompilation)' != 'false'">
+        <!--
+        Use npm install or npm ci depending on ContinuousIntegrationBuild value
+     -->
+        <Exec Command="npm ci" Condition="$(ContinuousIntegrationBuild) == 'true'" />
+        <Exec Command="npm install" Condition="$(ContinuousIntegrationBuild) != 'true'" />
+
+        <!-- Write the stamp file, so incremental builds work -->
+        <Touch Files="node_modules/.install-stamp" AlwaysCreate="true" />
+    </Target>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\match\tests\Piipan.Match.Func.Api.IntegrationTests\Piipan.Match.Func.Api.IntegrationTests.csproj" />
+    <ProjectReference Include="..\..\..\match\tests\Piipan.Match.Func.ResolutionApi.IntegrationTests\Piipan.Match.Func.ResolutionApi.IntegrationTests.csproj" />
+    <ProjectReference Include="..\..\..\shared\tests\Piipan.Shared.Tests\Piipan.Shared.Tests.csproj" />
+    <ProjectReference Include="..\..\..\states\tests\Piipan.States.Func.Api.IntegrationTests\Piipan.States.Func.Api.IntegrationTests.csproj" />
+    <ProjectReference Include="..\..\src\Piipan.QueryTool\Piipan.QueryTool.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\..\iac\databases\collaboration\migrations\2022-Q4\05_30_create-hash_type.sql" Link="create-hash_type.sql" CopyToOutputDirectory="PreserveNewest" />    
+    <Content Include="..\..\..\iac\databases\collaboration\migrations\2022-Q4\05_30_match-record.sql" Link="match-record.sql" CopyToOutputDirectory="PreserveNewest" />    
+    <Content Include="..\..\..\iac\databases\collaboration\migrations\2022-Q4\07_18_state-info.sql" Link="state-info.sql" CopyToOutputDirectory="PreserveNewest" />    
+    <Content Include="..\..\..\iac\databases\collaboration\migrations\2022-Q4\07_18_insert-state-info.sql" Link="insert-state-info.sql" CopyToOutputDirectory="PreserveNewest" />    
+    <Content Include="..\..\..\iac\databases\metrics\migrations\2022-Q4\05_30_metrics.sql" Link="metrics.sql" CopyToOutputDirectory="PreserveNewest" />    
+    <Content Include="..\..\..\iac\databases\participants\migrations\2022-Q4\05_30_per-state.sql" Link="per-state.sql" CopyToOutputDirectory="PreserveNewest" />  
+  </ItemGroup>
+</Project>

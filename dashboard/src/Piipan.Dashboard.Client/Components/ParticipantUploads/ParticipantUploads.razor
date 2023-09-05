@@ -1,0 +1,26 @@
+﻿@using Piipan.Components.Tables
+@using Piipan.Metrics.Api
+@using static Piipan.Components.Shared.CommonConstants
+@code {
+    [Parameter] public ParticipantUploadRequestFilter Filter { get; set; } = new();
+}
+
+<div class="grid-container margin-bottom-6">
+    <a href="/" class="usa-button--unstyled usa-button back-button">
+        <svg class="@IconClass" aria-hidden="true" focusable="false" role="img">
+            <use xlink:href="/images/sprite.svg#chevron_left"></use>
+        </svg>Back to Piipan Metrics Dashboard
+    </a>
+    <h1>SNAP Participant Data Uploads by State</h1>
+
+    <section id="daily-upload-information">
+        <ParticipantUploadsStatistics />
+    </section>
+    
+    <section id="historical-upload-info">
+        <h2>Historical Upload Information</h2>
+        <ParticipantUploadsFilter UploadRequest="Filter" />
+
+        <ParticipantUploadsResults Filter="Filter" />
+    </section>
+</div>

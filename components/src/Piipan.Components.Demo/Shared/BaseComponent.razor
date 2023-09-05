@@ -1,0 +1,13 @@
+﻿@inject HttpClient httpClient
+@code {
+    protected virtual string[] Files { get; set; } = new string[0];
+    protected Dictionary<string, string> fileContents = new Dictionary<string, string>();
+    protected override async Task OnInitializedAsync()
+    {
+        foreach (string file in Files)
+        {
+            string renamedFile = file.Replace(".razor", ".txt").Replace(".cs", ".txt");
+            fileContents.Add(file, await httpClient.GetStringAsync("/" + renamedFile));
+        }
+    }
+}

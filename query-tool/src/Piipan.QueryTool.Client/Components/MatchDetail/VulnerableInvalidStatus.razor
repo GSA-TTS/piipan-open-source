@@ -1,0 +1,73 @@
+﻿@using Piipan.Match.Api.Models.Resolution
+
+
+@code {
+    [Parameter] public DispositionModel DispositionData { get; set; }
+    private (string,string)[] DropdownOptions = new (string,string)[] {("Incorrect Client Information", "Incorrect Client Information"), ("System Error", "System Error"), ("Potential Identity Theft", "Potential Identity Theft"), ("Other", "Other")};
+    
+}
+<div>
+    <h5>Vulnerable & Invalid Status</h5>
+    <!--Vulnerable Individual Radio Button-->
+    <UsaRadioGroup @bind-Value="DispositionData.VulnerableIndividual">
+        <ChildContent>
+            <UsaRadio Value=true>Yes</UsaRadio>
+            <UsaRadio Value=false>No</UsaRadio>
+        </ChildContent>
+        <LabelOverride>
+            Does this match involve a vulnerable individual?
+            <Piipan.Components.Tooltips.UsaTooltip TooltipText="A vulnerable individual is a participant that should have their location protected. Indicating that this participant is a vulnerable individual will inform any states involved with this match that this participant's location is not to be revealed in any communications.">
+                <svg class="usa-icon text-blue">
+                    <use xlink:href="/images/sprite.svg#help"></use>
+                </svg>
+            </Piipan.Components.Tooltips.UsaTooltip>
+        </LabelOverride>
+    
+</UsaRadioGroup>
+    <!--Invalid Match Radio Button-->
+
+    <UsaRadioGroup @bind-Value="DispositionData.InvalidMatch">
+        <ChildContent>
+            <UsaRadio Value=true>Yes</UsaRadio>
+            @if (DispositionData.InvalidMatch??false)
+            {
+                <div class="InvalidMatchTrueReasoning ResolutionFieldsDropdownWidth">
+                    <UsaFormGroup Required=true>
+                        <UsaSelect DropdownOptions="@DropdownOptions" @bind-Value="DispositionData.InvalidMatchReason" />
+                    </UsaFormGroup>
+                </div>
+            }
+            else
+            {
+                DispositionData.InvalidMatchReason = null;
+            }
+            @if (DispositionData.InvalidMatchReason == "Other" && DispositionData.InvalidMatch == true)
+            {
+                <div class="InvalidMatchTrueReasoning InvalidMatchReasoningTextArea">
+                    <UsaFormGroup Required=true>
+                        <HintContent>Do not enter in any PII into the description</HintContent>
+                        <ChildContent>
+                            <UsaInputTextArea maxlength="250" DropdownOptions="@DropdownOptions" @bind-Value="DispositionData.OtherReasoningForInvalidMatch" />
+                        </ChildContent>
+                    </UsaFormGroup>
+                </div>
+
+            }
+            else
+            {
+                DispositionData.OtherReasoningForInvalidMatch = null;
+            }
+            <UsaRadio Value=false>No</UsaRadio>
+        </ChildContent>
+        <LabelOverride>
+            Is this an invalid match?
+            <Piipan.Components.Tooltips.UsaTooltip TooltipText="Invalid matches involve participants who are NOT receiving or applying for benefits in more than one state and may occur if there has been a typo in the information submitted to the Piipan or in cases of identity theft. An explanation will be required if this match is indicated as invalid.">
+                <svg class="usa-icon text-blue">
+                    <use xlink:href="/images/sprite.svg#help"></use>
+                </svg>
+            </Piipan.Components.Tooltips.UsaTooltip>                
+        </LabelOverride>
+    
+    </UsaRadioGroup>
+       
+</div>

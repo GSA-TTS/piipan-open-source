@@ -1,0 +1,56 @@
+﻿@typeparam T
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter] public bool Striped { get; set; } = false;
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object> AdditionalAttributes { get; set; }
+
+    [Parameter] public IEnumerable<T> Data { get; set; }
+    List<UsaTableColumn<T>> Columns { get; set; } = new List<UsaTableColumn<T>>();
+
+    public void AddColumn(UsaTableColumn<T> column)
+    {
+        Columns.Add(column);
+        StateHasChanged();
+    }
+    public void RemoveColumn(UsaTableColumn<T> column)
+    {
+        Columns.Remove(column);
+        StateHasChanged();
+    }
+}
+
+<CascadingValue Value="this">
+    <table class="usa-table @(Striped ? "usa-table--striped" : "")" @attributes="AdditionalAttributes">
+        <thead>
+            <tr>
+                @ChildContent
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Data)
+            {
+                <tr @key="item">
+                    @for (int j = 0; j < Columns.Count; j++)
+                    {
+                        var column = Columns[j];
+                        <td>
+                            @if (column.Template == null)
+                            {
+                                @column.Field.Compile().Invoke(item)
+                            }
+                            else
+                            {
+                                @column.Template(item)
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</CascadingValue>

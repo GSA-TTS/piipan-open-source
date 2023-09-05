@@ -1,0 +1,94 @@
+﻿@inject IJSRuntime JSRuntime
+@code {
+    [Parameter] public int CurrentPage { get; set; }
+    [Parameter] public string LinkWithParams { get; set; }
+    [Parameter] public int NumberOfPages { get; set; }
+    [Parameter] public string TableId { get; set; }
+
+    List<int> PagesNeeded { get; set; } = new();
+
+    protected override void OnParametersSet()
+    {
+        PagesNeeded = new();
+        // Add the first page
+        PagesNeeded.Add(1);
+
+        if (NumberOfPages < 7)
+        {
+            for (int i = 2; i <= NumberOfPages; i++)
+            {
+                PagesNeeded.Add(i);
+            }
+        }
+        else
+        {
+            if (CurrentPage > 1)
+            {
+                PagesNeeded.Add(CurrentPage - 1);
+            }
+            PagesNeeded.Add(CurrentPage);
+            if (CurrentPage < NumberOfPages)
+            {
+                PagesNeeded.Add(CurrentPage + 1);
+            }
+            PagesNeeded.Add(NumberOfPages);
+            PagesNeeded = PagesNeeded.Distinct().OrderBy(n => n).ToList();
+            for (int i = 0; i < PagesNeeded.Count - 1; i++)
+            {
+                if (PagesNeeded[i] + 2 == PagesNeeded[i + 1])
+                {
+                    PagesNeeded.Insert(i + 1, PagesNeeded[i] + 1);
+                }
+            }
+        }
+    }
+
+    // When any link is clicked and the navigation changes, it auto-scrolls to the top of the page. We don't want that to happen here.
+    // We want the UploadsResults table to control the next scroll.
+    private async Task PageClicked() {
+        await JSRuntime.InvokeVoidAsync("piipan.utilities.preventNextScroll");
+    }
+}
+
+<nav aria-label="Pagination" class="usa-pagination">
+    <ul class="usa-pagination__list">
+        @if (CurrentPage > 1)
+        {
+            <li class="usa-pagination__item usa-pagination__arrow">
+                <a href="@LinkWithParams&page=@(CurrentPage - 1)" class="usa-pagination__link usa-pagination__previous-page" aria-label="Previous page">
+                    <svg class="usa-icon" aria-hidden="true" role="img">
+                        <use xlink:href="/images/sprite.svg#navigate_before"></use>
+                    </svg>
+                    <span class="usa-pagination__link-text">Previous</span>
+                </a>
+            </li>
+
+        }
+        @{
+            long previousPage = 0;
+        }
+        @foreach (var page in PagesNeeded)
+        {
+            if (page - 1 != previousPage)
+            {
+                <li class="usa-pagination__item usa-pagination__overflow" role="presentation"><span>...</span></li>
+            }
+            previousPage = page;
+            <li class="usa-pagination__item usa-pagination__page-no">
+                <a @onclick="PageClicked" href="@LinkWithParams&page=@(page)" class="usa-pagination__button @(page == CurrentPage ? "usa-current" : "")" aria-label="Page @(page)">@(page)</a>
+            </li>
+
+        }
+        @if (CurrentPage < NumberOfPages)
+        {
+            <li class="usa-pagination__item usa-pagination__arrow">
+                <a href="@LinkWithParams&page=@(CurrentPage + 1)" class="usa-pagination__link usa-pagination__next-page" aria-label="Next page">
+                    <span class="usa-pagination__link-text">Next</span>
+                    <svg class="usa-icon" aria-hidden="true" role="img">
+                        <use xlink:href="/images/sprite.svg#navigate_next"></use>
+                    </svg>
+                </a>
+            </li>
+        }
+    </ul>
+</nav>

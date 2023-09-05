@@ -1,0 +1,24 @@
+# Match Resolution API base spec
+openapi: 3.0.0
+info:
+  title: "Match Resolution API"
+  version: 0.1.0
+  description: "API for resolving matches between states"
+tags:
+  - name: "Resolution"
+servers:
+  - url: "/v0"
+paths:
+  /matches:
+    $ref: './get_matches.yaml'
+  /matches/{match_id}:
+    $ref: './match_show.yaml'
+  /matches/{match_id}/disposition:
+    $ref: './disposition_update.yaml'
+security:
+  - BearerAuth: []
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

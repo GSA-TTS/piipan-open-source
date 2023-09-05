@@ -1,0 +1,83 @@
+﻿@using Piipan.Components.Modals
+@using Piipan.Components.Routing
+@inject PiipanNavigationManager NavigationManager
+@inject IModalManager ModalManager
+@inject IJSRuntime JSRuntime
+
+@implements IDisposable
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [CascadingParameter] public UsaForm RelatedForm { get; set; }
+    private IJSObjectReference modalJavascriptReference;
+
+    /// <summary>
+    /// Subscribe to the NavigationBlocked event to show the modal.
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        NavigationManager.NavigationBlocked += ShowModal;
+    }
+
+    /// <summary>
+    /// After this is rendered (and thus the Web Assembly & Javascript runtime is available), import the ConfirmModalWrapper javascript.
+    /// This javascript includes a call to checking beforeunload, which is called when a user tries to navigation away from our app
+    /// or close the window entirely.
+    /// </summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (modalJavascriptReference == null)
+        {
+            modalJavascriptReference = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./Modals/ConfirmModalWrapper.razor.js");    
+        }
+    }
+
+    /// <summary>
+    /// When the page first loads, the form is null until the page renders. So this will get called twice. 
+    /// The second time, when the form exists, subscribe to its IsDirtyChanged method to update whether or not the Navigation should
+    /// be blocked.
+    /// </summary>
+    protected override void OnParametersSet()
+    {
+        if (RelatedForm != null && !(RelatedForm.IsDirtyChanged?.GetInvocationList().Contains(UpdateBlockNavigation) ?? false))
+        {
+            RelatedForm.IsDirtyChanged += UpdateBlockNavigation;
+        }
+    }
+
+    /// <summary>
+    /// When the form changes whether it's dirty or not, update the navigation blocker and the window's beforeunload listener.
+    /// </summary>
+    private async Task UpdateBlockNavigation(bool isDirty)
+    {
+        NavigationManager.BlockNavigation = isDirty;
+        await modalJavascriptReference.InvokeVoidAsync("SetUnloadListener", isDirty);
+    }
+
+    /// <summary>
+    /// When this wrapper is disposed, stop checking for an event to free up resources
+    /// </summary>
+    public void Dispose()
+    {
+        NavigationManager.NavigationBlocked -= ShowModal;
+        RelatedForm.IsDirtyChanged -= UpdateBlockNavigation;
+    }
+
+    /// <summary>
+    /// This is called when navigation is blocked by the Blazor router if the form is dirty. Show the confirmation modal.
+    /// </summary>
+    private void ShowModal(object sender, LocationChangedEventArgs e)
+    {
+        ModalManager.Show<ConfirmModal>(new ConfirmModal()
+        {
+            // If continue is clicked, unblock the navigation intercepter and then navigate to the page you were attempting to go to.
+            ContinueCallback = async () => {
+                await UpdateBlockNavigation(false);
+                NavigationManager.NavigateTo(e.Location, false);
+            }
+        });
+    }
+}
+
+@ChildContent

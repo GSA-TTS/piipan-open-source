@@ -1,0 +1,39 @@
+[
+	{
+		"id_token": "token",
+		"user_claims": [
+			{
+				"typ": "exp",
+				"val": "1627405784"
+			},
+			{
+				"typ": "nbf",
+				"val": "1627405484"
+			},
+			{
+				"typ": "ver",
+				"val": "1.0"
+			},
+			{
+				"typ": "aud",
+				"val": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+			},
+			{
+				"typ": "email",
+				"val": "johndoe@test.test"
+			},
+			{
+				"typ": "name",
+				"val": "John Doe"
+			},
+			{
+				"typ": "role",
+				"val": "Location-National"
+			},
+			{
+				"typ": "role",
+				"val": "Role-Worker"
+			}
+		]
+	}
+]

@@ -1,0 +1,10 @@
+﻿@using static FormConstants
+@inherits UsaInputBase<string>
+
+<textarea class="@InputTextAreaClass @(FormGroup.Status != InputStatus.None ? $"{InputClass}--{FormGroup.Status.ToString().ToLower()}" : "")"
+    @ref="ElementReference"
+    @bind="CurrentValue" @onblur="BlurField"
+    required="@FormGroup.Required" 
+    id="@Id"
+    name="@Id.Replace("_", ".")"
+    @attributes="AdditionalAttributes" style="@(Width != null ? $"width: {Width}px;" : "")"></textarea>

@@ -1,0 +1,11 @@
+﻿@using static LayoutConstants
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object> AdditionalAttributes { get; set; }
+}
+
+<ul class="@CardGroupClass" @attributes="AdditionalAttributes">
+    @ChildContent
+</ul>

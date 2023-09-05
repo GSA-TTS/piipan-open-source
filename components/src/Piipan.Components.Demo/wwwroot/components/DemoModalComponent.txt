@@ -1,0 +1,43 @@
+﻿@using Piipan.Components.Modals
+@inject IModalManager ModalManager
+
+@code {
+    [CascadingParameter] public ModalInfo ModalInfo { get; set; }
+    [Parameter] public Action ContinueCallback { get; set; }
+    private void Close()
+    {
+        ModalManager.Close(ModalInfo);
+    }
+    private void Continue()
+    {
+        ModalManager.Close(ModalInfo);
+        if (ContinueCallback != null)
+        {
+            ContinueCallback?.Invoke();    
+        }
+    }
+}
+
+
+<h2 class="usa-modal__heading" id="DemoModalComponent-heading">
+    Continue Without Saving?
+</h2>
+<div class="usa-prose">
+    <p id="DemoModalComponent-description">
+    Any unsaved changes will be lost.
+    </p>
+</div>
+<div class="usa-modal__footer">
+    <ul class="usa-button-group">
+        <li class="usa-button-group__item">
+            <button type="button" class="usa-button" @onclick="Continue">
+            Continue
+            </button>
+        </li>
+        <li class="usa-button-group__item">
+            <button type="button" class="usa-button usa-button--unstyled padding-105 text-center" @onclick="Close">
+            Cancel and return to form
+            </button>
+        </li>
+    </ul>
+</div>

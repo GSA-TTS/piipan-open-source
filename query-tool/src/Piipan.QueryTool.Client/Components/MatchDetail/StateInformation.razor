@@ -1,0 +1,43 @@
+﻿@using Piipan.Match.Api.Models.Resolution
+@using static Piipan.QueryTool.Client.Helpers.ValueToDisplayHelper
+@using Piipan.QueryTool.Client.Helpers
+@code {
+    [Parameter] public List<DisplayInfo> StateInfo { get; set; }
+    [Parameter] public RenderFragment Header { get; set; }
+    [Parameter] public bool isMatchInformationComponent { get; set; }
+
+    private bool hasFinalDispositionDate = false;
+}
+
+<div>
+    @Header
+    <dl>
+        @foreach (var info in StateInfo)
+        {
+            var displayValue = GetDisplayValue(info.Value, info.DisplayType);
+            RenderFragment format = @<text>@displayValue</text>;
+
+            if (info.Value != null && info.DisplayType == DisplayInfoType.Email)
+            {
+                format = @<a href="mailto:@(displayValue)" aria-label="Email @displayValue">@displayValue</a>
+        ;
+            }
+            if (info.Label.Contains("Date") && !info.Label.Contains("Initial Action"))
+            {
+                hasFinalDispositionDate = true;
+            }
+
+            <div>
+                <dt>@(info.Label):</dt>
+                <dd>@format</dd>
+            </div>
+        }
+        @if (!hasFinalDispositionDate && isMatchInformationComponent)
+        {
+            <div>
+                <dt> </dt>
+                <dd> </dd>
+            </div>
+        }
+    </dl>
+</div>

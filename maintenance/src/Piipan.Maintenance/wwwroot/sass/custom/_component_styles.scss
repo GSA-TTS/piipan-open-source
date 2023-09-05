@@ -1,0 +1,68 @@
+﻿// Card Styles
+.card-group-component
+.usa-card-group {
+    display: grid;
+    --coln: 3;
+    grid-template-columns: repeat(var(--coln), 1fr);
+
+    @media (max-width: 40em) {
+        --coln: 2;
+    }
+
+    @media (max-width: 20em) {
+        --coln: 1;
+    }
+}
+
+// Accordion Styles
+.accordion-component {
+    .usa-accordion__heading {
+        font-size: 1rem;
+    }
+
+    .usa-accordion__button {
+        background-image: url(/images/usa-icons-bg/remove--white.svg), linear-gradient(transparent,transparent);
+        background-repeat: no-repeat;
+        background-color: #045881;
+        color: #fff;
+    }
+
+    .usa-accordion__button[aria-expanded=false] {
+        background-image: url(/images/usa-icons-bg/add--white.svg),linear-gradient(transparent,transparent);
+        background-repeat: no-repeat;
+    }
+
+    .usa-accordion__button:hover {
+        background-color: #034b6e;
+        color: #fff;
+    }
+}
+
+// SSN Styles
+.usa-ssn-group {
+    display: grid;
+    grid-template-columns: 118px 1.5em;
+    grid-gap: .5rem;
+    gap: .5rem;
+    align-items: center;
+}
+
+.usa-ssn-group .usa-button--unstyled {
+    margin-top: .5rem;
+    height: 1.5em;
+}
+
+.usa-ssn-group .usa-button--unstyled .usa-icon {
+    width: 1.5em;
+    height: 1.5em;
+    color: black;
+}
+
+// Label Styles
+.usa-label {
+    font-weight: 700;
+}
+
+.disabled-area {
+    opacity: 0.3;
+}

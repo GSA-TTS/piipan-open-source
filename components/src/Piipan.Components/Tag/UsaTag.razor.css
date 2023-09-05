@@ -1,0 +1,49 @@
+﻿.usa-tag {
+    height: 32px;
+    border-radius: 100px;
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
+    font-weight: 700;
+    line-height: 1.5;
+    font-size: 1rem;
+    padding: 3px 8px;
+    margin: 0;
+}
+
+.usa-tag.usa-tag--green {
+    background: #ECF3EC;
+    color: #005440;
+    border-color: #005440;
+}
+
+.usa-tag.usa-tag--gray {
+    background: #CDCDCD;
+    color: #1B1B1B;
+    border-color: #1B1B1B;
+}
+
+.usa-tag.usa-tag--purple {
+    background: #EBE3F9;
+    color: #7A00A9;
+    border-color: #7A00A9;
+}
+
+.usa-tag.usa-tag--orange {
+    background: #F4E3DB;
+    color: #BA3A08;
+    border-color: #BA3A08;
+}
+
+.usa-tag.usa-tag--round {
+    border-radius: 100px;
+    padding: 3px 12px;
+}
+
+.usa-tag.usa-tag--square {
+    border-radius: 0;
+}
+
+.usa-tag.usa-tag--roundedsquare {
+    border-radius: 3px;
+}

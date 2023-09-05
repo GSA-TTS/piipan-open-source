@@ -1,0 +1,26 @@
+openapi: 3.0.0
+info:
+  title: Bulk upload API
+  version: 2.0.0
+  description: API for uploading bulk participant data
+tags:
+  - name: "Upload"
+servers:
+  - url: /bulk/{stateAbbr}/v2
+    variables:
+      stateAbbr:
+        default: ea
+        description: Lowercase two-letter postal code abbreviation
+paths:
+  '/upload_all_participants/{filename}':
+    $ref: './uploadAllParticipants.yaml'
+  '/uploads/{upload_identifier}':
+    $ref: './getUploadById.yaml'
+security:
+  - ApiKeyAuth: []
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Ocp-Apim-Subscription-Key

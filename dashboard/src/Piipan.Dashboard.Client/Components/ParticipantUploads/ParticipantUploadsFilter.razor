@@ -1,0 +1,88 @@
+﻿@using Piipan.Components.Forms
+@using Piipan.Metrics.Api
+@using System.Collections.ObjectModel
+@inject IJSRuntime JSRuntime
+
+@code {
+    [Parameter] public ParticipantUploadRequestFilter UploadRequest { get; set; } = new();
+
+    private (string, string)[] dropdownOptions = null;
+    protected override void OnInitialized()
+    {
+        dropdownOptions = ClientAppData.StateInfo.Results.Select(n => (n.StateAbbreviation, $"{n.State} ({n.StateAbbreviation})")).ToArray();
+    }
+
+    private void ToggleStatus(string status)
+    {
+        if (UploadRequest.Status == status)
+        {
+            UploadRequest.Status = null;
+        }
+        else
+        {
+            UploadRequest.Status = status;            
+        }
+    }
+    private async Task SubmitForm()
+    {
+        bool valid = await FilterForm.ValidateForm();
+        if (valid)
+        {
+            ReadOnlyDictionary<string, object> queryParameters = new ReadOnlyDictionary<string, object>(new Dictionary<string, object>() {
+                { nameof(UploadRequest.StartDate), UploadRequest.StartDate },
+                { nameof(UploadRequest.EndDate), UploadRequest.EndDate },
+                { nameof(UploadRequest.Status), UploadRequest.Status },
+                { nameof(UploadRequest.State), UploadRequest.State },
+                { nameof(UploadRequest.Page), null },
+                { nameof(UploadRequest.PerPage), null }
+
+            });
+            await JSRuntime.InvokeVoidAsync("piipan.utilities.preventNextScroll");
+            NavigationManager.NavigateTo(NavigationManager.GetUriWithQueryParameters(queryParameters), replace: true);
+        }
+        
+        StateHasChanged();
+    }
+    private async Task ClearFilter()
+    {
+        UploadRequest.StartDate = null;
+        UploadRequest.EndDate = null;
+        UploadRequest.State = null;
+        UploadRequest.Status = null;
+        await JSRuntime.InvokeVoidAsync("piipan.utilities.clearValue", "UploadRequest_StartDate");
+        await JSRuntime.InvokeVoidAsync("piipan.utilities.clearValue", "UploadRequest_EndDate");
+    }
+    UsaForm FilterForm;
+}
+
+<section id="participant-uploads-filter">
+    <UsaForm @ref="FilterForm" Id="upload-filter-form" Model="UploadRequest" OnSubmit="SubmitForm">
+        <div class="top-filters">
+            <h2>Filters</h2>
+            <div class="top-filter-grid">
+        <UsaFormGroup>
+            <UsaInputDate Width="140" @bind-Value="UploadRequest.StartDate" name="StartDate" />
+        </UsaFormGroup>
+        <span class="date-separator">to</span>
+        <div class="end-date">
+            <UsaFormGroup>
+                <UsaInputDate Width="140" @bind-Value="UploadRequest.EndDate" name="EndDate" />
+            </UsaFormGroup>
+        </div>
+        <UsaFormGroup>
+            <ChildContent>
+                <UsaSelect @bind-Value="UploadRequest.State" DropdownOptions="dropdownOptions" name="State" />
+            </ChildContent>
+        </UsaFormGroup>
+        </div>
+        <button class="usa-button" type="submit" id="upload-filter-btn">Apply Filter</button>
+        <button id="upload-clear-filter" type="submit" @onclick="ClearFilter" class="usa-button usa-button--unstyled">Clear Filters</button>
+        </div>
+        <div>
+            <h4>Quick Filters</h4>
+            <button type="submit" id="quick-filters-status-failed" class="usa-button @(UploadRequest.Status == "Failed" ? "" : "usa-button--outline")" @onclick="@(() => ToggleStatus("Failed"))">Status: Failed</button>
+            <button type="submit" id="quick-filters-status-complete" class="usa-button @(UploadRequest.Status == "Complete" ? "" : "usa-button--outline")" @onclick="@(() => ToggleStatus("Complete"))">Status: Complete</button>
+        </div>
+
+    </UsaForm>
+</section>

@@ -1,0 +1,345 @@
+﻿@using Newtonsoft.Json
+@using Piipan.Components.Modals
+@using Piipan.Components.Routing
+@using Piipan.Match.Api.Models
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Components.UnauthorizedBanners
+@using Piipan.QueryTool.Client.Helpers
+@using Piipan.QueryTool.Client.Modals
+@using Piipan.Shared.API.Constants
+@using Piipan.Shared.Client.Api
+@using Piipan.States.Api.Models
+@using Piipan.QueryTool.Client.Models
+@using Piipan.Components.Layout
+@using Piipan.Components.Tag
+@using static Piipan.Components.Shared.CommonConstants
+@inject IModalManager ModalManager
+@inject PiipanNavigationManager NavManager
+
+@code {
+    [Parameter] public MatchResApiResponse InitialMatch { get; set; }
+    private MatchResApiResponse _match;
+    private DispositionModel model = new();
+    private UsaForm _form;
+
+    private bool saving = false;
+    private bool CanEditFields => ClientAppData.AppRolesByArea[RoleConstants.EditMatchArea].Contains(ClientAppData.Role);
+    List<(string Property, string Error)> serverErrorList = new();
+    private bool MatchIsOpen => _match.Data.Status.ToLower() == "open";
+    private MatchDetailReferralPage Referrer = MatchDetailReferralPage.Other;
+    private string _daysSinceMatch = "";
+
+    protected override void OnInitialized()
+    {
+        _match = InitialMatch;
+        model = new DispositionModel(IsUserInInitiatingState() ? InitiatingStateDisposition :   MatchingStateDisposition);
+        model.MatchDate = _match.Data.CreatedAt;
+        _daysSinceMatch = DaysSinceMatch(_match.Data.CreatedAt);
+        string url = NavManager.ReferralPage?.ToLower().Trim();
+        if (Uri.TryCreate(url, UriKind.Absolute, out Uri uri)) {
+            Referrer = uri?.AbsolutePath.TrimEnd('/') switch
+            {
+                "" => MatchDetailReferralPage.Query,
+                "/match" => MatchDetailReferralPage.MatchSearch,
+                "/list" => MatchDetailReferralPage.List,
+                _ => MatchDetailReferralPage.Other
+            };
+            ClientAppData.CurrentPage = Referrer switch
+            {
+                MatchDetailReferralPage.Query => "",
+                MatchDetailReferralPage.MatchSearch => "match",
+                MatchDetailReferralPage.List => "list",
+                _ => null
+            };
+        }
+        model.MatchDate = _match.Data.CreatedAt;
+    }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        // Show the Vulnerable Individual modal when referral page is other and this wasn't a save.
+        if (firstRender && Referrer == MatchDetailReferralPage.Other)
+        {
+            if (_match.Data.Dispositions.Any(n => n.VulnerableIndividual == true))
+            {
+                ModalManager.Show<VulnerableIndividualModal>(
+                    new VulnerableIndividualModal()
+                    {
+                    },
+                    new ModalInfo
+                    {
+                        ForceAction = true
+                    }
+                );
+            }
+        }
+    }
+
+    private TagTheme StatusTheme()
+    {
+        return _match.Data.Status.ToLower() switch
+        {
+            "open" => TagTheme.Green,
+            _ => TagTheme.Gray
+        };
+    }
+    private bool IsMatchVulnerable()
+    {
+        return _match.Data.Dispositions.Any(n => n.VulnerableIndividual == true);
+    }
+    private bool IsMatchInvalid()
+    {
+
+        for (int i = 0; i < _match.Data.Dispositions.Count(); i++)
+        {
+            if (_match.Data.Dispositions[i].InvalidMatch == true)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    private bool TagNeeded()
+    {
+        return IsMatchInvalid() || IsMatchVulnerable();
+    }
+    private bool CheckMatchClosure(string finalDisposition, DateTime? finalDispositionDate, bool? invalidMatch)
+    {
+        return (!string.IsNullOrEmpty(finalDisposition) && finalDispositionDate != null)
+            || invalidMatch == true;
+    }
+    private async Task FinishSubmission() 
+    {
+        saving = true;
+        StateHasChanged();
+        var response = await PiipanApi.SaveMatchUpdate(_match.Data.MatchId, model);
+        serverErrorList.Clear();
+        serverErrorList.AddRange(response.Errors.Select(n => (n.Property, n.Error)).ToList());
+        alerts.Clear();
+        if (response.Value?.SavedMatch != null) 
+        {
+            _match = response.Value.SavedMatch;
+
+            // Save was successful. Reset the "Is Changed" flag.
+            _form.IsDirty = false;
+        }
+        if (response.Value?.Alerts?.Count > 0)
+        {
+            alerts.AddRange(response.Value.Alerts);
+        }
+
+        saving = false;
+        StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("scrollTo", 0, 0);
+    }
+    private async Task SubmitForm()
+    {
+        bool valid = await _form.ValidateForm();
+        if (valid)
+        {
+            var otherState = IsUserInInitiatingState() ? MatchingStateDisposition : InitiatingStateDisposition;
+            if (CheckMatchClosure(otherState.FinalDisposition, otherState.FinalDispositionDate, otherState.InvalidMatch)
+                && CheckMatchClosure(model.FinalDisposition, model.FinalDispositionDate, model.InvalidMatch))
+            {
+                ModalManager.Show<CloseMatchModal>(new CloseMatchModal()
+                {
+                    SaveCallback = async () =>
+                    {
+                        await FinishSubmission();
+                    }
+                });
+            }
+            else
+            {
+                await FinishSubmission();
+            }
+        }
+        else
+        {
+            alerts.Clear();
+            StateHasChanged();
+        }
+    }
+
+    private string DaysSinceMatch(DateTime? matchDate)
+    {
+        DateTime currentDate = DateTime.Today;
+        if (matchDate != null)
+        {
+            return (currentDate - matchDate.Value.ToLocalTime().Date).TotalDays.ToString();
+        }
+        else
+        {
+            return "";
+        }
+
+    }    
+
+    private bool IsUserInInitiatingState ()
+    {
+        return ClientAppData.LoggedInUsersState?.State == InitiatingStateContactInfo.State;
+    }
+
+    private string MatchingStateAbbreviation => 
+        _match.Data.States.FirstOrDefault(s => string.Compare(s, _match.Data.Initiator, StringComparison.CurrentCultureIgnoreCase) != 0);
+
+    private Disposition InitiatingStateDisposition =>
+        _match.Data.Dispositions.FirstOrDefault(n => string.Compare(n.State, _match.Data.Initiator, StringComparison.CurrentCultureIgnoreCase) == 0);
+
+    private Disposition MatchingStateDisposition =>
+        _match.Data.Dispositions.FirstOrDefault(n => string.Compare(n.State, MatchingStateAbbreviation, StringComparison.CurrentCultureIgnoreCase) == 0);
+
+    private Participant InitiatingStateParticipant =>
+        _match.Data.Participants.FirstOrDefault(n => string.Compare(n.State, _match.Data.Initiator, StringComparison.CurrentCultureIgnoreCase) == 0);
+
+    private Participant MatchingStateParticipant =>
+        _match.Data.Participants.FirstOrDefault(n => string.Compare(n.State, MatchingStateAbbreviation, StringComparison.CurrentCultureIgnoreCase) == 0);
+
+    private StateInfoDto InitiatingStateContactInfo =>
+        ClientAppData.StateInfo.Results.FirstOrDefault(n => string.Compare(n.StateAbbreviation, _match.Data.Initiator, StringComparison.CurrentCultureIgnoreCase) == 0);
+
+    private StateInfoDto MatchingStateContactInfo =>
+        ClientAppData.StateInfo.Results.FirstOrDefault(n => string.Compare(n.StateAbbreviation, MatchingStateAbbreviation, StringComparison.CurrentCultureIgnoreCase) == 0);
+
+    private List<Alert> alerts = new List<Alert>();
+}
+
+<div id="match-detail-area" style="padding-top: 24px;">
+    @foreach (var alert in alerts)
+    {
+        <div class="post-save-alert">
+            <UsaAlertBox Slim="true" AlertSeverity="@alert.AlertSeverity" Dismissable="true" Dismissed="() => { alerts.Remove(alert); StateHasChanged(); }">
+                <p>@((MarkupString)alert.Html)</p>
+            </UsaAlertBox>
+        </div>
+    }
+    @* TODO: On hold for now, but this logic will be necessary in the near future.
+    @if (IsMatchInvalid())
+    {
+        <UsaAlertBox AlertSeverity="AlertSeverity.Info" Header="Bulk Match Notifications Paused">Notifications for bulk matches are paused until mm/dd/yyyy as a result of this match being marked as Invalid.</UsaAlertBox>
+    }*@
+    @{
+        (string link, string linkText) = Referrer switch
+        {
+            MatchDetailReferralPage.Query => ("/", "Back to Search for SNAP Participants"),
+            MatchDetailReferralPage.MatchSearch => ("/match", "Back to Find a Match Record"),
+            MatchDetailReferralPage.List => ("/list", "Back to List of Piipan Matches"),
+            _ => (null, null)
+        };
+        
+        if (link != null)
+        {
+            <a href="@link" class="usa-button--unstyled usa-button back-button">
+            <svg class="@IconClass" aria-hidden="true" focusable="false" role="img">
+                <use xlink:href="/images/sprite.svg#chevron_left"></use>
+            </svg>@linkText</a>    
+        }
+    }
+
+    <!-- Match header -->
+    <h1><UsaTag Theme="StatusTheme()">@_match.Data.Status</UsaTag><span>Match ID: @_match.Data.MatchId</span></h1>
+
+    @if (TagNeeded())
+    {
+        <div style="margin-bottom: 24px">
+            @if(IsMatchVulnerable())
+            {
+                
+                <UsaTag style="margin-right: 17px" Theme="TagTheme.Purple" BorderType="BorderType.RoundedSquare">Vulnerable Individual</UsaTag>
+                
+            }
+            @if (IsMatchInvalid())
+            {
+                <UsaTag Theme="TagTheme.Orange" BorderType="BorderType.RoundedSquare">Invalid Match</UsaTag>
+            }
+
+        </div>
+        
+    }
+    <UsaForm @ref="_form" Id="snap-resolution-fields-form" SubmitErrors="serverErrorList" Model="model" OnSubmit="SubmitForm">
+        <Piipan.QueryTool.Client.Modals.ConfirmModalWrapper>
+    <div class="grid-row matchInfoDiv">
+        <dl>
+            <div>
+                <dt>Match Record Created:</dt>
+                <dd>@_match.Data.CreatedAt?.ToLocalTime().ToString(ValueToDisplayHelper.DateFormat) <span style="color:#6E6E6E">(@_daysSinceMatch day@(_daysSinceMatch != "1" ? "s" : "") since match)</span></dd>
+            </div>
+            <div>
+                <dt>Match Query By:</dt>
+                <dd>@InitiatingStateContactInfo.State (@_match.Data.Initiator.ToUpper())</dd>
+            </div>
+            <div>
+                <dd>All Piipan matches are based on an exact match of Last Name, Date of Birth, and Social Security Number.</dd>
+            </div>
+        </dl>
+    </div>
+    <!-- \match header -->
+    <div class="match-detail-grid @((CanEditFields && MatchIsOpen)  ? "" : "one-col")">
+        @if (CanEditFields && MatchIsOpen)
+        {
+            <div>
+                <ResolutionFields State="@ClientAppData.LoggedInUsersState?.State" InitiatingState="IsUserInInitiatingState()" DispositionData="@model" />
+                <button class="usa-button ResolutionFieldsSave" disabled="@saving">@(saving ? "Saving Changes..." : "Save Changes")</button>
+            </div>
+        }
+        <div>
+            <UsaAccordion>
+                <UsaAccordionItem StartsExpanded="true">
+                    <HeadingContent>SNAP Participant Information</HeadingContent>
+                    <BodyContent>
+                        <div class="two-state-grid">
+                            @if (InitiatingStateParticipant != null)
+                            {
+                                <StateParticipantInformation Participant="@InitiatingStateParticipant" InitiatingState="true" />
+                            }
+                            @if (MatchingStateParticipant != null)
+                            {
+                                <StateParticipantInformation Participant="@MatchingStateParticipant" InitiatingState="false" />
+                            }
+                        </div>
+                    </BodyContent>
+                </UsaAccordionItem>
+            </UsaAccordion>
+            <UsaAccordion>
+                <UsaAccordionItem StartsExpanded="true">
+                    <HeadingContent>Match Information</HeadingContent>
+                    <BodyContent>
+                        <p>Each state's most recent updates are displayed below.</p>
+                        <div class="two-state-grid">
+                            @if (InitiatingStateDisposition != null)
+                            {
+                                <StateDispositionInformation Disposition="@InitiatingStateDisposition" InitiatingState="true" />
+                            }
+                            @if (MatchingStateDisposition != null)
+                            {
+                                <StateDispositionInformation Disposition="@MatchingStateDisposition" InitiatingState="false" />
+                            }
+                        </div>
+                    </BodyContent>
+                </UsaAccordionItem>
+            </UsaAccordion>
+            <UsaAccordion>
+                <UsaAccordionItem StartsExpanded="true">
+                    <HeadingContent>State Agency Contact Information</HeadingContent>
+                    <BodyContent>
+                        <ul>
+                            <li>Use this information if you need to contact the other state in regards to this match</li>
+                            <li>Do not exchange PII about the participant by email; use their state’s Participant ID</li>
+                        </ul>
+                        <div class="two-state-grid">
+                            @if (InitiatingStateContactInfo != null)
+                            {
+                                <StateContactInformation StateInfo="InitiatingStateContactInfo" InitiatingState="true" />    
+                            }
+                            @if (MatchingStateContactInfo != null)
+                            {
+                                <StateContactInformation StateInfo="MatchingStateContactInfo" InitiatingState="false" />    
+                            }
+                        </div>
+                    </BodyContent>
+                </UsaAccordionItem>
+            </UsaAccordion>
+        </div>
+    </div>
+    </Piipan.QueryTool.Client.Modals.ConfirmModalWrapper>
+    </UsaForm>
+</div>

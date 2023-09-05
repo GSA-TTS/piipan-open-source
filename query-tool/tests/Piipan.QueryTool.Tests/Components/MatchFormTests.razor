@@ -1,0 +1,285 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text.RegularExpressions;
+@using System.Threading.Tasks;
+@using AngleSharp.Dom;
+@using Bunit;
+@using Microsoft.AspNetCore.Components.Web
+@using Moq
+@using Piipan.Components.Alerts;
+@using Piipan.Components.Forms;
+@using Piipan.Components.Modals;
+@using Piipan.Match.Api.Models;
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Components;
+@using Piipan.QueryTool.Client.Components.UnauthorizedBanners;
+@using Piipan.QueryTool.Client.Models;
+@using Piipan.Shared.Client.Api
+@using Xunit;
+@using static Piipan.Components.Forms.FormConstants;
+@using static Piipan.Shared.API.Validation.ValidationConstants;
+@inherits BaseComponentTest<MatchForm>
+@code {
+    #region Tests
+
+    public MatchFormTests() : base()
+    {
+        MockApiService.Setup(n => n.GetMatchDetailById(It.IsAny<string>()))
+            .ReturnsAsync(DefaultMatch());
+    }
+
+    /// <summary>
+    /// Verify that when the value changes, the backend model is updated
+    /// </summary>
+    [Fact]
+    public void Form_Should_Bind_Value_On_Change()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        FillOutDummyFormData();
+
+        // Assert
+        Assert.Equal("M123456", Component.Instance.Query.MatchId);
+    }
+
+    /// <summary>
+    /// Verify that when there are no results found, an informational box pops up
+    /// </summary>
+    [Fact]
+    public async Task Verify_No_Results_Alert_Box_No_Results()
+    {
+        // Arrange
+        MockApiService.Setup(n => n.GetMatchDetailById(It.IsAny<string>()))
+            .ReturnsAsync(new ApiResponse<MatchResApiResponse> { IsUnauthorized = true });
+        CreateTestComponent();
+
+        // Add a result with no matches
+        FillOutDummyFormData();
+        await SearchButton.ClickAsync(new MouseEventArgs());
+
+        // Assert
+        Assert.True(Component.HasComponent<MatchUnauthorizedBanner>());
+        Assert.False(Component.HasComponent<MatchResults>());
+    }
+
+    /// <summary>
+    /// Verify that when searching a valid form that the button text changes to "Finding Match Record..."
+    /// </summary>
+    [Fact]
+    public async Task SearchButton_Updates_DuringAPICall()
+    {
+        // Arrange
+        MockApiService.Setup(n => n.GetMatchDetailById(It.IsAny<string>()))
+            .Returns(async () =>
+            {
+                await Task.Delay(1000); // put a delay in there so we can check the status of the button
+                return DefaultMatch();
+            });
+        CreateTestComponent();
+
+        // Assert
+        Assert.Equal("Find Match Record", SearchButton.TextContent);
+        Assert.False(SearchButton.HasAttribute("disabled"));
+
+        // Act
+        FillOutDummyFormData();
+        var task = SearchButton.ClickAsync(new MouseEventArgs());
+        Component.WaitForAssertion(() => Assert.True(SearchButton.HasAttribute("disabled")));
+        Assert.Equal("Finding Match Record...", SearchButton.TextContent);
+        await task;
+
+        // Assert
+        MockApiService.Verify(n => n.GetMatchDetailById(It.IsAny<string>()), Times.Once());
+        Assert.Equal("Find Match Record", SearchButton.TextContent);
+        Assert.False(SearchButton.HasAttribute("disabled"));
+    }
+
+    /// <summary>
+    /// Verify that when searching an invalid form that the API call is never called
+    /// </summary>
+    [Fact]
+    public async Task MatchSearch_NotCalled_WhileSearchingInvalidForm()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Assert.Equal("Find Match Record", SearchButton.TextContent);
+        Assert.False(SearchButton.HasAttribute("disabled"));
+
+        // Act
+        await SearchButton.ClickAsync(new MouseEventArgs());
+
+        // Assert
+        MockApiService.Verify(n => n.GetMatchDetailById(It.IsAny<string>()), Times.Never());
+        Assert.Equal("Find Match Record", SearchButton.TextContent);
+        Assert.False(SearchButton.HasAttribute("disabled"));
+    }
+
+    /// <summary>
+    /// Verify that when there are results from the query, the results area is shown
+    /// </summary>
+    [Fact]
+    public async Task Verify_Results_Shown()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Add a result with no matches
+        FillOutDummyFormData();
+        await SearchButton.ClickAsync(new MouseEventArgs());
+
+        // Assert
+        Assert.False(Component.HasComponent<MatchUnauthorizedBanner>());
+        Assert.False(Component.HasComponent<UsaAlertBox>());
+        Assert.True(Component.HasComponent<MatchResults>());
+    }
+
+    /// <summary>
+    /// Verify that if we have results that has a vulnerable individual, clicking it shows the vulnerable match modal
+    /// </summary>
+    [Fact]
+    public async Task Verify_VulnerableModal_ShownWhenClicked_VulnerableMatch()
+    {
+        // Arrange a match where one of the dispositions is a vulnerable individual
+        var match = DefaultMatch();
+        match.Value.Data.Dispositions[0].VulnerableIndividual = true;
+        MockApiService.Setup(n => n.GetMatchDetailById(It.IsAny<string>()))
+            .ReturnsAsync(match);
+        CreateTestComponent();
+
+        // Act - Submit form and click first result
+        // Add a result with no matches
+        FillOutDummyFormData();
+        await SearchButton.ClickAsync(new MouseEventArgs());
+        var queryResults = Component.FindComponent<MatchResults>();
+        queryResults.Find("a").Click();
+
+        // Assert
+        var modalManager = Services.GetService<IModalManager>();
+        Assert.True(modalManager.OpenModals.First().ForceAction);
+        Assert.Equal(1, modalManager.OpenModals.Count);
+    }
+
+    /// <summary>
+    /// Verify that if we have results that has do not have a vulnerable individual, clicking it does NOT show the vulnerable match modal
+    /// </summary>
+    [Fact]
+    public async Task Verify_VulnerableModal_NotShownWhenClicked_NotVulnerableMatch()
+    {
+        // Arrange - By default the match is not vulnerable
+        CreateTestComponent();
+
+        // Act - Submit form and click first result
+        // Add a result with no matches
+        FillOutDummyFormData();
+        await SearchButton.ClickAsync(new MouseEventArgs());
+        var queryResults = Component.FindComponent<MatchResults>();
+        queryResults.Find("a").Click();
+
+        // Assert
+        var modalManager = Services.GetService<IModalManager>();
+        Assert.Empty(modalManager.OpenModals);
+    }
+
+    /// <summary>
+    /// Verify that when there are required field errors on the screen that they are all shown in the alert box
+    /// and above the field
+    /// </summary>
+    [Fact]
+    public async Task Form_Should_Show_Required_Errors()
+    {
+        // Arrange
+        CreateTestComponent();
+        var form = Component.FindComponent<UsaForm>();
+
+        // Act
+        await SearchButton.ClickAsync(new MouseEventArgs());
+
+        var alertBox = Component.FindComponent<UsaAlertBox>();
+        var alertBoxErrors = alertBox.FindAll("li");
+        var inputErrorMessages = form.FindAll($".{InputErrorMessageClass}");
+
+        // Assert
+        Assert.Equal(1, alertBoxErrors.Count);
+        Assert.Equal(1, inputErrorMessages.Count);
+
+        List<string> errors = new List<string>
+        {
+            "Match ID is required"
+        };
+
+        for (int i = 0; i < alertBoxErrors.Count; i++)
+        {
+            string error = alertBoxErrors[i].TextContent.Replace("\n", "");
+            error = Regex.Replace(error, @"\s+", " ");
+            Assert.Contains(errors[i], error);
+        }
+
+        for (int i = 0; i < inputErrorMessages.Count; i++)
+        {
+            string error = inputErrorMessages[i].TextContent.Replace("\n", "");
+            error = Regex.Replace(error, @"\s+", " ");
+            Assert.Contains(errors[i], error);
+        }
+    }
+
+    #endregion Tests
+    #region Helper Function
+
+    /// <summary>
+    /// Setup the component and register Javascript mocks
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        JSInterop.SetupVoid("piipan.utilities.registerFormValidation", _ => true).SetVoidResult();
+        JSInterop.Setup<int>("piipan.utilities.getCursorPosition", _ => true).SetResult(1);
+        JSInterop.SetupVoid("piipan.utilities.setCursorPosition", _ => true).SetVoidResult();
+        JSInterop.SetupVoid("piipan.utilities.scrollToElement", _ => true).SetVoidResult();
+
+
+        Component = Render<MatchForm>(@<MatchForm />);
+    }
+
+    private ApiResponse<MatchResApiResponse> DefaultMatch() {
+        return new ApiResponse<MatchResApiResponse>
+        {
+            Value = new MatchResApiResponse
+            {
+                Data = new MatchDetailsDto
+                {
+                    Initiator = "EA",
+                    States = new string[] { "EA", "EB" },
+                    Status = "open",
+                    Dispositions = new[]
+                    {
+                        new Disposition
+                        {
+                            State = "ea",
+                            VulnerableIndividual = false
+                        },
+                        new Disposition
+                        {
+                            State = "eb",
+                            VulnerableIndividual = false
+                        }
+                    },
+                    MatchId = "M123456"
+                }
+            }
+        };
+    }
+
+    private IElement SearchButton => Component.Find("#match-form-search-btn");
+
+    private void FillOutDummyFormData()
+    {
+        Component.Find("#Query_MatchId").Change("M123456");
+    }
+
+    #endregion Helper Functions
+}

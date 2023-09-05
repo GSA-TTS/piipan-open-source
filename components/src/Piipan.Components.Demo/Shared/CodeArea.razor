@@ -1,0 +1,23 @@
+﻿
+@code {
+    [Parameter] public Dictionary<string, string> FileContents { get; set; } = new Dictionary<string, string>();
+}
+
+<div class="demo-code-area">
+    <UsaAccordionItem>
+        <HeadingContent>Code</HeadingContent>
+        <BodyContent>
+            <UsaAccordion Multiselectable="true">
+            @foreach (var fileContent in FileContents)
+            {
+                <UsaAccordionItem>
+                    <HeadingContent>@fileContent.Key</HeadingContent>
+                    <BodyContent>
+                        <code>@fileContent.Value</code>
+                    </BodyContent>
+                </UsaAccordionItem>
+            }
+            </UsaAccordion>
+        </BodyContent>
+    </UsaAccordionItem>
+</div>

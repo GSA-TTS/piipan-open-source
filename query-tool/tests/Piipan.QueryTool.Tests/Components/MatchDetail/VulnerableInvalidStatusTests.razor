@@ -1,0 +1,279 @@
+﻿@using Piipan.Components.Forms
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Components.MatchDetail
+@using Piipan.QueryTool.Client.Models
+@inherits BaseComponentTest<ResolutionFields>
+
+@code {
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public VulnerableInvalidStatusTests() : base()
+    {
+        InitialValues = new ResolutionFields
+        {
+            DispositionData = new DispositionModel
+            {
+                InitialActionAt = null,
+                InitialActionTaken = "",
+                InvalidMatch = false,
+                InvalidMatchReason = "",
+                OtherReasoningForInvalidMatch = "",
+                FinalDisposition = "",
+                FinalDispositionDate = null,
+                VulnerableIndividual = null,
+                State = "EA"
+            },
+            State = "Echo Bravo",
+            InitiatingState = true
+        };
+    }
+
+
+    /// <summary>
+    /// Create a ResolutionFields component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        JSInterop.SetupVoid("piipan.utilities.registerFormValidation", _ => true).SetVoidResult();
+        JSInterop.Setup<int>("piipan.utilities.getCursorPosition", _ => true).SetResult(1);
+        JSInterop.SetupVoid("piipan.utilities.setCursorPosition", _ => true).SetVoidResult();
+        JSInterop.SetupVoid("piipan.utilities.scrollToElement", _ => true).SetVoidResult();
+        
+        Component = Render<ResolutionFields>(
+            @<Piipan.Components.Forms.UsaForm Model="InitialValues.DispositionData">
+                <ResolutionFields State="@InitialValues.State" InitiatingState=InitialValues.InitiatingState DispositionData="@InitialValues.DispositionData">
+                </ResolutionFields>
+            </Piipan.Components.Forms.UsaForm>
+        );
+    }
+
+
+    /// <summary>
+    /// Verify the default markup of the state contact information
+    /// </summary>
+    [Fact]
+    public void Vulnerable_Invalid_status_markup_with_InvalidStatusTrue()
+    {
+        // Arrange
+        InitialValues.DispositionData.InvalidMatch = true;
+        InitialValues.DispositionData.InvalidMatchReason = "Other";
+        InitialValues.DispositionData.OtherReasoningForInvalidMatch = "Testing";
+
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<text ><h3 >Update information about this match for Echo Bravo</h3>
+    <p class="infoSavedText" >After the information is saved, it will appear in the
+      <b >Match Information</b>
+      panel.</p>
+    <div >
+      <h5 >Vulnerable &amp; Invalid Status</h5>
+      <div class="usa-form-group ">
+        <fieldset class="usa-fieldset" style=";">
+          <legend class="usa-label usa-legend" for="DispositionData_VulnerableIndividual">
+            Does this match involve a vulnerable individual?
+            <span class="usa-tooltip" >
+              <button tabindex="0"      type="button" class="usa-tooltip__trigger usa-button usa-button--unstyled" style="margin-top: 0;" data-position="top" aria-labelledby:ignore >
+                <svg class="usa-icon text-blue" >
+                  <use xlink:href="/images/sprite.svg#help" ></use>
+                </svg>
+              </button>
+              <span id:ignore class="usa-tooltip__body usa-tooltip__body--top " role="tooltip" aria-hidden="true" style="--translateXPercent: 0%"  >A vulnerable individual is a participant that should have their location protected. Indicating that this participant is a vulnerable individual will inform any states involved with this match that this participant's location is not to be revealed in any communications.</span>
+            </span>
+          </legend>
+          <div class="usa-radio">
+            <input id:ignore  class="usa-radio__input valid" type="radio" name="DispositionData.VulnerableIndividual" value="True" >
+            <label for:ignore class="usa-radio__label">Yes</label>
+          </div>
+          <div class="usa-radio">
+            <input id:ignore  class="usa-radio__input valid" type="radio" name="DispositionData.VulnerableIndividual" value="False" >
+            <label for:ignore class="usa-radio__label">No</label>
+          </div>
+        </fieldset>
+      </div>
+      <div class="usa-form-group ">
+        <fieldset class="usa-fieldset" style=";">
+          <legend class="usa-label usa-legend" for="DispositionData_InvalidMatch">
+            Is this an invalid match?
+            <span class="usa-tooltip" >
+                            <button tabindex="0" type="button" class="usa-tooltip__trigger usa-button usa-button--unstyled" style="margin-top: 0;" data-position="top" aria-labelledby:ignore>
+                <svg class="usa-icon text-blue" >
+                  <use xlink:href="/images/sprite.svg#help" ></use>
+                </svg>
+              </button>
+              <span id:ignore class="usa-tooltip__body usa-tooltip__body--top " role="tooltip" aria-hidden="true" style="--translateXPercent: 0%"  >Invalid matches involve participants who are NOT receiving or applying for benefits in more than one state and may occur if there has been a typo in the information submitted to the PIIPAN or in cases of identity theft. An explanation will be required if this match is indicated as invalid.</span>
+            </span>
+          </legend>
+          <div class="usa-radio">
+            <input id:ignore  class="usa-radio__input valid" type="radio" name="DispositionData.InvalidMatch" value="True" checked="" >
+            <label for:ignore class="usa-radio__label">Yes</label>
+          </div>
+          <div class="InvalidMatchTrueReasoning ResolutionFieldsDropdownWidth" >
+            <div class="usa-form-group " >
+              <label class="usa-label" for="DispositionData_InvalidMatchReason">Invalid Match Reason<span class="usa-required">*</span>
+              </label>
+              <select class="usa-select usa-input "  required="" id="DispositionData_InvalidMatchReason" name="DispositionData.InvalidMatchReason" style="" value="Other"  >
+                <option value="">- Select -</option>
+                <option value="Incorrect Client Information">Incorrect Client Information</option>
+                <option value="System Error">System Error</option>
+                <option value="Potential Identity Theft">Potential Identity Theft</option>
+                <option value="Other" selected="">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="InvalidMatchTrueReasoning InvalidMatchReasoningTextArea" >
+            <div class="usa-form-group " >
+              <label class="usa-label" for="DispositionData_OtherReasoningForInvalidMatch">Reason for Other	
+                <span class="usa-required">*</span>
+              </label>
+              <span class="usa-hint" >Do not enter in any PII into the description</span>
+              <textarea class="usa-textarea "  required="" id="DispositionData_OtherReasoningForInvalidMatch" name="DispositionData.OtherReasoningForInvalidMatch" maxlength="250" dropdownoptions="System.ValueTuple`2[System.String,System.String][]" style="" value="Testing"  ></textarea>
+            </div>
+          </div>
+          <div class="usa-radio">
+            <input id:ignore  class="usa-radio__input valid" type="radio" name="DispositionData.InvalidMatch" value="False" >
+            <label for:ignore class="usa-radio__label">No</label>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+    <div diff:ignore> //ignore this initial action componenet
+    </div>
+    <div diff:ignore> //ignore this final disp component
+    </div>
+                </text>
+        );
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of the state contact information
+    /// </summary>
+    [Fact]
+    public void Vulnerable_Invalid_status_markup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<text >
+      <h3 >Update information about this match for Echo Bravo</h3>
+      <p class="infoSavedText" >After the information is saved, it will appear in the
+        <b >Match Information</b>
+        panel.</p>
+            <div >
+              <h5 >Vulnerable &amp; Invalid Status</h5>
+              <div class="usa-form-group ">
+                <fieldset class="usa-fieldset" style=";">
+                  <legend class="usa-label usa-legend" for="DispositionData_VulnerableIndividual">
+                    Does this match involve a vulnerable individual?
+                    <span class="usa-tooltip">
+                        <button tabindex="0" type="button" class="usa-tooltip__trigger usa-button usa-button--unstyled" style="margin-top: 0;" data-position="top" aria-labelledby:ignore>
+                            <svg class="usa-icon text-blue"><use xlink:href="/images/sprite.svg#help"></use></svg>
+                        </button>
+                        <span id:ignore class="usa-tooltip__body usa-tooltip__body--top" role="tooltip" aria-hidden="true" style="--translateXPercent: 0%">A vulnerable individual is a participant that should have their location protected. Indicating that this participant is a vulnerable individual will inform any states involved with this match that this participant's location is not to be revealed in any communications.</span>
+                    </span>
+                  </legend>
+                  <div class="usa-radio">
+                    <input id:ignore  class="usa-radio__input valid" type="radio" name="DispositionData.VulnerableIndividual" value="True" >
+                    <label for:ignore class="usa-radio__label">Yes</label>
+                  </div>
+                  <div class="usa-radio">
+                    <input id:ignore  class="usa-radio__input valid" type="radio" name="DispositionData.VulnerableIndividual" value="False" >
+                    <label for:ignore class="usa-radio__label">No</label>
+                  </div>
+                </fieldset>
+              </div>
+              <div class="usa-form-group ">
+                <fieldset class="usa-fieldset" style=";">
+                  <legend class="usa-label usa-legend" for="DispositionData_InvalidMatch">
+                    Is this an invalid match?
+                    <span class="usa-tooltip">
+                            <button tabindex="0" type="button" class="usa-tooltip__trigger usa-button usa-button--unstyled" style="margin-top: 0;" data-position="top" aria-labelledby:ignore>
+                            <svg class="usa-icon text-blue"><use xlink:href="/images/sprite.svg#help"></use></svg>
+                        </button>
+                        <span id:ignore class="usa-tooltip__body usa-tooltip__body--top" role="tooltip" aria-hidden="true" style="--translateXPercent: 0%">Invalid matches involve participants who are NOT receiving or applying for benefits in more than one state and may occur if there has been a typo in the information submitted to the PIIPAN or in cases of identity theft. An explanation will be required if this match is indicated as invalid.</span>
+                    </span>
+                  </legend>
+                  <div class="usa-radio">
+                    <input id:ignore  class="usa-radio__input valid" type="radio" name="DispositionData.InvalidMatch" value="True" >
+                    <label for:ignore class="usa-radio__label">Yes</label>
+                  </div>
+                  <div class="usa-radio">
+                    <input id:ignore  class="usa-radio__input valid" type="radio" name="DispositionData.InvalidMatch" value="False" checked="" >
+                    <label for:ignore class="usa-radio__label">No</label>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+            <div diff:ignore> //Ignoring Initial Action Component
+            </div>
+            <div diff:ignore> //Ignoring Final Disposition Component
+            </div>
+        </text>
+    );
+    }
+
+    [Fact]
+    public void SettingInvalidFromYesToNo_ClearsInvalidReasonValues()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act - Set Invalid to yes, set a reason to Other and an other reason
+        var invalidRadio = Component.Find("[name=\"DispositionData.InvalidMatch\"]");
+        invalidRadio.Change("True");
+
+        Component.Find("select[name=\"DispositionData.InvalidMatchReason\"]").Change("Other");
+        Component.Find("textarea[name=\"DispositionData.OtherReasoningForInvalidMatch\"]").Change("Some reason for other");
+
+        // Assert that all values got set correctly
+        Assert.True(Component.Instance.DispositionData.InvalidMatch);
+        Assert.Equal("Other", Component.Instance.DispositionData.InvalidMatchReason);
+        Assert.Equal("Some reason for other", Component.Instance.DispositionData.OtherReasoningForInvalidMatch);
+
+        // Act - Flip the Invalid radio buttons back and forth
+        invalidRadio.Change("False");
+        invalidRadio.Change("True");
+
+        // Assert that all values got reset correctly
+        Assert.True(Component.Instance.DispositionData.InvalidMatch);
+        Assert.Null(Component.Instance.DispositionData.InvalidMatchReason);
+        Assert.Null(Component.Instance.DispositionData.OtherReasoningForInvalidMatch);
+    }
+
+    [Fact]
+    public void SettingInvalidReasonFromOther_ClearsInvalidReasonForOtherValues()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act - Set Invalid to yes, set a reason to Other and an other reason
+        var invalidRadio = Component.Find("[name=\"DispositionData.InvalidMatch\"]");
+        invalidRadio.Change("True");
+
+        var invalidMatchReason = Component.Find("select[name=\"DispositionData.InvalidMatchReason\"]");
+        invalidMatchReason.Change("Other");
+        Component.Find("textarea[name=\"DispositionData.OtherReasoningForInvalidMatch\"]").Change("Some reason for other");
+
+        // Assert that all values got set correctly
+        Assert.True(Component.Instance.DispositionData.InvalidMatch);
+        Assert.Equal("Other", Component.Instance.DispositionData.InvalidMatchReason);
+        Assert.Equal("Some reason for other", Component.Instance.DispositionData.OtherReasoningForInvalidMatch);
+
+        // Act - Flip the Invalid reason select off Other and then back
+        invalidMatchReason.Change("Incorrect Client Information");
+        invalidMatchReason.Change("Other");
+
+        // Assert that reason for other got reset correctly
+        Assert.True(Component.Instance.DispositionData.InvalidMatch);
+        Assert.Equal("Other", Component.Instance.DispositionData.InvalidMatchReason);
+        Assert.Null(Component.Instance.DispositionData.OtherReasoningForInvalidMatch);
+    }
+    #endregion
+}

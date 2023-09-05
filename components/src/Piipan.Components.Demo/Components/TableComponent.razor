@@ -1,0 +1,15 @@
+﻿@using Piipan.Components.Tables
+
+@code {
+    [Parameter] public bool Striped { get; set; }
+    IEnumerable<DummyTableData> Data = Enumerable.Range(0, 10).Select((d) => new DummyTableData { Col1 = $"Test {d}", Col2 = d });
+}
+
+<UsaTable Data="Data" Striped=Striped>
+    <UsaTableColumn T="DummyTableData" Name="Column 1">
+        <Template Context="record">
+            @record.Col1 Data
+        </Template>
+    </UsaTableColumn>
+    <UsaTableColumn T="DummyTableData" Field="((t) => t.Col2)" Name="Column 2" />
+</UsaTable>

@@ -1,0 +1,22 @@
+# State Metadata API base spec
+openapi: 3.0.0
+info:
+  title: "States Metadata API"
+  version: 0.1.0
+  description: "API for managing State metadata"
+tags:
+  - name: "States"
+servers:
+  - url: "/v1"
+paths:
+  /states:
+    $ref: './get_states.yaml'
+  /upsert_state:
+    $ref: './upsert_state.yaml'
+security:
+  - BearerAuth: []
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

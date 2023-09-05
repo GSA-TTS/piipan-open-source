@@ -1,0 +1,143 @@
+﻿@using Piipan.Components.Alerts
+@using Piipan.Components.Enums
+@using System.Linq.Expressions
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Components
+@using Piipan.QueryTool.Client.Components.UnauthorizedBanners
+@using Piipan.QueryTool.Client.Models
+@using static Piipan.Components.Alerts.AlertConstants
+@using Bunit
+@using Xunit
+@inherits BaseComponentTest<MatchResults>
+
+@code {
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public MatchResultsTests() : base()
+    {
+        InitialValues = new MatchResults()
+            {
+                QueryResult = new List<MatchResApiResponse>()
+                {
+                    new MatchResApiResponse()
+                    {
+                        Data = new MatchDetailsDto()
+                        {
+                            Dispositions = new Disposition[]
+                            {
+                                new Disposition()
+                                {
+                                    VulnerableIndividual = true,
+                                    State = "ea"
+                                },
+                                new Disposition()
+                                {
+                                    VulnerableIndividual = false,
+                                    State = "eb"
+                                }
+                            },
+                            States = new string[]
+                            {
+                                "ea",
+                                "eb"
+                            }
+                        }
+                    }
+                }
+            };
+    }
+
+    /// <summary>
+    /// Create a matches list component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        
+        base.CreateTestComponent();
+        Component = Render<MatchResults>(
+            @<MatchResults QueryResult="@InitialValues.QueryResult">
+        </MatchResults>
+    );
+    }
+
+    #region Tests
+
+
+    /// <summary>
+    /// Verify the default markup of the match results table
+    /// </summary>
+    [Fact]
+    public void MatchResultsRegionalUser()
+    {
+        // Arrange
+        AppData.States = new string[] { "ea", "eb" }; // Give this test multiple states, simulating a regional user
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<section class="border-top-1px border-base-light margin-top-6" id="match-results-area">
+      <h2>Find a Match Record Search Results</h2>
+      <p>This participant was found in another state. Select the Match ID for more information.</p>
+      <table class="usa-table">
+        <thead>
+          <tr>
+            <th scope="col">Match ID</th>
+            <th scope="col">States Involved</th>
+            <th scope="col">Vulnerable Individual</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <a href="/match/"  ></a>
+            </td>
+            <td>Echo Alpha, Echo Bravo</td>
+            <td>Yes,No</td>
+          </tr>
+        </tbody>
+      </table>
+        </section>
+    );
+    }
+
+    /// <summary>
+    /// Verify the default markup of the match results table
+    /// </summary>
+    [Fact]
+    public void MatchResultsStateUser()
+    {
+        AppData.States = new string[] { "ea" };
+        AppData.Location = "ea";
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<section class="border-top-1px border-base-light margin-top-6" id="match-results-area">
+      <h2>Find a Match Record Search Results</h2>
+      <p>This participant was found in another state. Select the Match ID for more information.</p>
+      <table class="usa-table">
+        <thead>
+          <tr>
+            <th scope="col">Match ID</th>
+            <th scope="col">Matching State</th>
+            <th scope="col">Vulnerable Individual</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <a href="/match/"  ></a>
+            </td>
+            <td>Echo Bravo</td>
+            <td>No</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+        );
+    }
+
+    #endregion
+}

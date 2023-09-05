@@ -1,0 +1,22 @@
+﻿@using static Piipan.QueryTool.Client.Helpers.ValueToDisplayHelper
+@using Piipan.QueryTool.Client.Helpers
+@using Piipan.States.Api.Models
+@code {
+    [Parameter] public StateInfoDto StateInfo { get; set; }
+    [Parameter] public bool InitiatingState { get; set; }
+
+    RenderFragment header =>
+        @<h5>@StateInfo.State <span>(@(InitiatingState ? "Initiating" : "Matching") State)</span></h5>
+    ;
+
+    List<DisplayInfo> StateValues { get; set; } = new();
+
+    protected override void OnParametersSet()
+    {
+        StateValues = new();
+        StateValues.Add(new("Email Address", StateInfo.Email, DisplayInfoType.Email));
+        StateValues.Add(new("Phone Number", StateInfo.Phone, DisplayInfoType.Phone));
+    }
+}
+
+<StateInformation StateInfo="StateValues" Header="header" />

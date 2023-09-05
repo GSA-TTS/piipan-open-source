@@ -1,0 +1,28 @@
+﻿.usa-accordion__heading {
+    font-size: 1rem;
+}
+
+.usa-accordion__button {
+    background-image: url(/images/usa-icons-bg/remove--white.svg), linear-gradient(transparent,transparent);
+    background-repeat: no-repeat;
+    background-color: #045881;
+    color: #fff;
+}
+
+.usa-accordion__button[aria-expanded=false] {
+    background-image: url(/images/usa-icons-bg/add--white.svg),linear-gradient(transparent,transparent);
+    background-repeat: no-repeat;
+}
+
+.usa-accordion__button:hover {
+    background-color: #034b6e;
+    color: #fff;
+}
+
+.usa-accordion__content {
+    border: 2px solid #045881;
+}
+
+.usa-accordion__content {
+    padding: 1.5rem 1.1875rem;
+}

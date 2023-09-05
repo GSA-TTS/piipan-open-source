@@ -1,0 +1,34 @@
+﻿@page "/pagination"
+@using Piipan.Components.Demo.Shared
+@using Piipan.Components.Tables
+@using System.ComponentModel.DataAnnotations
+@inherits BaseComponent
+@code {
+    protected override string[] Files { get; set; } = { "components/PaginationComponent.razor" };
+
+    [Display(Name = "Current Page")]
+    protected int CurrentPage { get; set; } = 1;
+
+    [Display(Name = "Number of Pages")]
+    protected int NumberOfPages { get; set; } = 1;
+}
+
+<h1>Pagination</h1>
+
+<UsaAccordion Multiselectable="true">
+    <UsaAccordionItem StartsExpanded="true">
+        <HeadingContent>Component Demo</HeadingContent>
+        <BodyContent>
+            <UsaForm Model="CurrentPage">
+                <UsaFormGroup>
+                    <UsaInputNumber @bind-Value="NumberOfPages" />
+                </UsaFormGroup>
+                <UsaFormGroup>
+                    <UsaInputNumber @bind-Value="CurrentPage" />
+                </UsaFormGroup>
+            </UsaForm>
+            <PaginationComponent NumberOfPages="NumberOfPages" CurrentPage="CurrentPage" LinkWithParams="/pagination?" />
+        </BodyContent>
+    </UsaAccordionItem>
+    <CodeArea FileContents="fileContents" />
+</UsaAccordion>

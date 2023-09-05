@@ -1,0 +1,35 @@
+﻿@using static Shared.CommonConstants
+@using static FormConstants
+@inherits UsaInputBase<string>
+
+@code {
+    public string MaskedValue { get; set; }
+    private bool unmasked = false;
+    
+    // More code in code behind file
+}
+
+<div class="usa-ssn-group">
+    <input @ref="ElementReference" class="@InputClass @(FormGroup.Status != InputStatus.None ? $"{InputClass}--{FormGroup.Status.ToString().ToLower()}" : "")"
+        value="@(unmasked ? CurrentValue : MaskedValue)"
+        @onblur="BlurField"
+        required="@FormGroup.Required" 
+        id="@Id"
+        @attributes="AdditionalAttributes"
+        @oninput="Input" maxlength="11"
+        />
+    <input type="hidden" name="@Id.Replace("_", ".")" value="@CurrentValue" />
+    <button class="@ButtonClass @ButtonUnstyledClass" type="button" aria-label="@(unmasked ? "Hide" : "Show") Social Security Number"
+        @onclick="() => unmasked = !unmasked">
+        <svg class="@IconClass" aria-hidden="true" focusable="false" role="img">
+        @if (unmasked)
+        {
+            <use xlink:href="/images/sprite.svg#visibility"></use>
+        }
+        else
+        {
+            <use xlink:href="/images/sprite.svg#visibility_off"></use>
+        }
+        </svg>
+    </button>
+</div>

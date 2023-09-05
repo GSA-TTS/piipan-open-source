@@ -1,0 +1,28 @@
+﻿@using Piipan.Match.Api.Models.Resolution
+@using static Piipan.QueryTool.Client.Helpers.ValueToDisplayHelper
+@using Piipan.QueryTool.Client.Helpers
+@code {
+    [Parameter] public Participant Participant { get; set; }
+    [Parameter] public bool InitiatingState { get; set; }
+
+    RenderFragment header =>
+        @<h5>@StateHelper.GetStateName(Participant.State) <span>(@(InitiatingState ? "Initiating" : "Matching") State)</span></h5>
+    ;
+
+    List<DisplayInfo> StateValues { get; set; } = new();
+
+    protected override void OnParametersSet()
+    {
+        StateValues = new();
+        StateValues.Add(new("Case Number", Participant.CaseId));
+        StateValues.Add(new("Participant ID", Participant.ParticipantId));
+
+        // If we are the intiating state Participant Closing Date does not make sense to attempt to display. Show N/A
+        // so that the user knows it's a value not applicable to the initiating state.
+        StateValues.Add(new("Participant Closing Date", InitiatingState ? "N/A" : Participant.ParticipantClosingDate));
+
+        StateValues.Add(new("Recent Benefits Issuance Dates", Participant.RecentBenefitIssuanceDates));
+    }
+}
+
+<StateInformation StateInfo="StateValues" Header="header" />

@@ -1,0 +1,35 @@
+original name, normalized name
+Foobar Junior,foobar
+Foobar Jnr,foobar
+Foobar Jr.,foobar
+Foobar Jr,foobar
+Foo Bar Junior,foo bar
+Foo-Bar Junior,foo bar
+Junior,junior
+Foobar Senior,foobar
+Foobar Snr,foobar
+Foobar Sr.,foobar
+Foo Bar Senior,foo bar
+Foo-Bar Senior,foo bar
+Senior,senior
+Foobar iii,foobar
+Foobar III,foobar
+Foobar iv,foobar
+Foobar IV,foobar
+Foobar v,foobar
+Foobar V,foobar
+Foobar vi,foobar
+Foobar VI,foobar
+Foobar vii,foobar
+Foobar VII,foobar
+Foobar viii,foobar
+Foobar VIII,foobar
+Foobar ix,foobar
+Foobar IX,foobar
+Foo-Bar-Baz,foo bar baz
+Foo   Bar,foo bar
+ Foobar ,foobar
+O'foobar,ofoobar
+foo`bar,foobar
+f^oobar,foobar
+F,f

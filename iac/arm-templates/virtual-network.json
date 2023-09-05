@@ -1,0 +1,764 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "The location where the resources will be deployed."
+            }
+        },
+        "resourceTags": {
+            "type": "object",
+            "metadata": {
+                "description": "Specify the resource tags."
+            }
+        },
+        "vnetName": {
+            "type": "string"
+        },
+        "peParticipantsSubnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the subnet the first database will use."
+            }
+        },
+        "peCoreSubnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the subnet the second database will use."
+            }
+        },
+        "funcAppServicePlanSubnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the subnet function apps will use."
+            }
+        },
+        "funcAppServicePlanNsgName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the network security group associated with the function apps subnet."
+            }
+        },
+        "webAppServicePlanSubnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the subnet web apps will use."
+            }
+        },
+        "webAppServicePlanNsgName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the network security group associated with the web apps subnet."
+            }
+        },
+        "emailSubnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the subnet email resources will use."
+            }
+        },
+        "emailAppServicePlanNsgName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the network security group associated with the email app subnet."
+            }
+        },
+        "idpOidcIpRanges": {
+            "type": "string",
+            "metadata": {
+                "description": "Comma-separated list of IP addresses / CIDR ranges to be allowed for OIDC egress traffic."
+            }
+        },
+        "diagnosticSettingName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Diagnostic Setting Name."
+            }
+        },
+        "eventHubAuthorizationRuleId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Event Hub Authorization Rule Id."
+            }
+        },
+        "eventHubName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Event Hub Name."
+            }
+        },
+        "workspaceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the Log Analytics Workspace Id."
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "vnetdeployment",
+            "properties": {
+                "mode": "Incremental",
+                "expressionEvaluationOptions": {
+                    "scope": "inner"
+                },
+                "template": {
+
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "location": {
+                            "type": "string"
+                        },
+                        "resourceTags": {
+                            "type": "object"
+                        },
+                        "peParticipantsSubnetPrefix": {
+                            "type": "string",
+                            "defaultValue": "10.0.0.0/24",
+                            "metadata": {
+                                "description": "The address space for the first database subnet."
+                            }
+                        },
+                        "funcAppServicePlanSubnetPrefix": {
+                            "type": "string",
+                            "defaultValue": "10.0.1.0/24",
+                            "metadata": {
+                                "description": "The address space for the function app subnet."
+                            }
+                        },
+                        "webAppServicePlanSubnetPrefix": {
+                            "type": "string",
+                            "defaultValue": "10.0.3.0/24",
+                            "metadata": {
+                                "description": "The address space for the web app subnet."
+                            }
+                        },
+                        "peCoreSubnetPrefix": {
+                            "type": "string",
+                            "defaultValue": "10.0.2.0/24",
+                            "metadata": {
+                                "description": "The address space for the second database subnet."
+                            }
+                        },
+                        "emailSubnetPrefix": {
+                            "type": "string",
+                            "defaultValue": "10.0.4.0/24",
+                            "metadata": {
+                                "description": "The address space for the email subnet."
+                            }
+                        },
+                        "vnetAddressPrefix": {
+                            "type": "string",
+                            "defaultValue": "10.0.0.0/16",
+                            "metadata": {
+                                "description": "The address space reserved for this virtual network in CIDR notation."
+                            }
+                        },
+                        "vnetName": {
+                            "type": "string"
+                        },
+                        "peParticipantsSubnetName": {
+                            "type": "string"
+                        },
+                        "peCoreSubnetName": {
+                            "type": "string"
+                        },
+                        "funcAppServicePlanSubnetName": {
+                            "type": "string"
+                        },
+                        "funcAppServicePlanNsgName": {
+                            "type": "string"
+                        },
+                        "webAppServicePlanSubnetName": {
+                            "type": "string"
+                        },
+                        "webAppServicePlanNsgName": {
+                            "type": "string"
+                        },
+                        "emailSubnetName": {
+                            "type": "string"
+                        },
+                        "emailAppServicePlanNsgName": {
+                            "type": "string"
+                        },
+                        "idpOidcIpRanges": {
+                            "type": "string"
+                        },
+                        "diagnosticSettingName": {
+                            "type": "string"
+                        },
+                        "eventHubAuthorizationRuleId": {
+                            "type": "string"
+                        },
+                        "eventHubName": {
+                            "type": "string"
+                        },
+                        "workspaceId": {
+                            "type": "string"
+                        }
+                    },
+                    "variables": {},
+                    "resources": [
+                        // virtualNetwork
+                        {
+                            "type": "Microsoft.Network/virtualNetworks",
+                            "apiVersion": "2020-06-01",
+                            "tags": "[parameters('resourceTags')]",
+                            "name": "[parameters('vnetName')]",
+                            "location": "[parameters('location')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('funcAppServicePlanNsgName'))]",
+                                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('webAppServicePlanNsgName'))]",
+                                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('emailAppServicePlanNsgName'))]"
+                            ],
+                            "properties": {
+                                "addressSpace": {
+                                    "addressPrefixes": [
+                                        "[parameters('vnetAddressPrefix')]"
+                                    ]
+                                },
+                                "subnets": [
+                                    {
+                                        "name": "[parameters('peParticipantsSubnetName')]",
+                                        "properties": {
+                                            "addressPrefix": "[parameters('peParticipantsSubnetPrefix')]",
+                                            "privateEndpointNetworkPolicies": "Disabled"
+                                        }
+                                    },
+                                    {
+                                        "name": "[parameters('peCoreSubnetName')]",
+                                        "properties": {
+                                            "addressPrefix": "[parameters('peCoreSubnetPrefix')]",
+                                            "privateEndpointNetworkPolicies": "Disabled"
+                                        }
+                                    },
+                                    {
+                                        "name": "[parameters('funcAppServicePlanSubnetName')]",
+                                        "properties": {
+                                            "addressPrefix": "[parameters('funcAppServicePlanSubnetPrefix')]",
+                                            "privateEndpointNetworkPolicies": "Disabled",
+                                            "delegations": [
+                                                {
+                                                    "name": "serverfarms",
+                                                    "properties": {
+                                                        "serviceName": "Microsoft.Web/serverfarms"
+                                                    }
+                                                }
+                                            ],
+                                            "networkSecurityGroup": {
+                                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('funcAppServicePlanNsgName'))]"
+                                            },
+                                            "serviceEndpoints": [
+                                                {
+                                                    "service": "Microsoft.Storage"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "[parameters('webAppServicePlanSubnetName')]",
+                                        "properties": {
+                                            "addressPrefix": "[parameters('webAppServicePlanSubnetPrefix')]",
+                                            "privateEndpointNetworkPolicies": "Disabled",
+                                            "delegations": [
+                                                {
+                                                    "name": "serverfarms",
+                                                    "properties": {
+                                                        "serviceName": "Microsoft.Web/serverfarms"
+                                                    }
+                                                }
+                                            ],
+                                            "networkSecurityGroup": {
+                                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('webAppServicePlanNsgName'))]"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "[parameters('emailSubnetName')]",
+                                        "properties": {
+                                            "addressPrefix": "[parameters('emailSubnetPrefix')]",
+                                            "privateEndpointNetworkPolicies": "Disabled",
+                                            "delegations": [
+                                                {
+                                                    "name": "serverfarms",
+                                                    "properties": {
+                                                        "serviceName": "Microsoft.Web/serverfarms"
+                                                    }
+                                                }
+                                            ],
+                                            "networkSecurityGroup": {
+                                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('emailAppServicePlanNsgName'))]"
+                                            },
+                                            "serviceEndpoints": [
+                                                {
+                                                    "service": "Microsoft.Storage"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        // Network security groups
+                        {
+                            "type": "Microsoft.Network/networkSecurityGroups",
+                            "apiVersion": "2020-11-01",
+                            "name": "[parameters('funcAppServicePlanNsgName')]",
+                            "location": "[parameters('location')]",
+                            "tags": "[parameters('resourceTags')]",
+                            "properties": {
+                                "securityRules": [
+                                    {
+                                        "name": "AllowAAD",
+                                        "properties": {
+                                            "protocol": "*",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "*",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "AzureActiveDirectory",
+                                            "access": "Allow",
+                                            "priority": 100,
+                                            "direction": "Outbound",
+                                            "sourcePortRanges": [],
+                                            "destinationPortRanges": [],
+                                            "sourceAddressPrefixes": [],
+                                            "destinationAddressPrefixes": []
+                                        }
+                                    },
+                                    {
+                                        "name": "AllowStorage",
+                                        "properties": {
+                                            "protocol": "*",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "*",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "Storage",
+                                            "access": "Allow",
+                                            "priority": 110,
+                                            "direction": "Outbound",
+                                            "sourcePortRanges": [],
+                                            "destinationPortRanges": [],
+                                            "sourceAddressPrefixes": [],
+                                            "destinationAddressPrefixes": []
+                                        }
+                                    },
+                                    {
+                                        "name": "AllowAppService",
+                                        "properties": {
+                                            "protocol": "*",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "*",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "AppService",
+                                            "access": "Allow",
+                                            "priority": 120,
+                                            "direction": "Outbound",
+                                            "sourcePortRanges": [],
+                                            "destinationPortRanges": [],
+                                            "sourceAddressPrefixes": [],
+                                            "destinationAddressPrefixes": []
+                                        }
+                                    },
+                                    {
+                                        "name": "AllowAzureEventGrid",
+                                        "properties": {
+                                            "protocol": "*",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "*",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "AzureEventGrid",
+                                            "access": "Allow",
+                                            "priority": 130,
+                                            "direction": "Outbound",
+                                            "sourcePortRanges": [],
+                                            "destinationPortRanges": [],
+                                            "sourceAddressPrefixes": [],
+                                            "destinationAddressPrefixes": []
+                                        }
+                                    },
+                                    {
+                                        "name": "AllowAzureMonitor",
+                                        "properties": {
+                                            "protocol": "*",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "*",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "AzureMonitor",
+                                            "access": "Allow",
+                                            "priority": 140,
+                                            "direction": "Outbound",
+                                            "sourcePortRanges": [],
+                                            "destinationPortRanges": [],
+                                            "sourceAddressPrefixes": [],
+                                            "destinationAddressPrefixes": []
+                                        }
+                                    },
+                                    {
+                                        "name": "DenyInternet",
+                                        "properties": {
+                                            "protocol": "*",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "*",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "Internet",
+                                            "access": "Deny",
+                                            "priority": 160,
+                                            "direction": "Outbound",
+                                            "sourcePortRanges": [],
+                                            "destinationPortRanges": [],
+                                            "sourceAddressPrefixes": [],
+                                            "destinationAddressPrefixes": []
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Network/networkSecurityGroups",
+                            "apiVersion": "2020-11-01",
+                            "name": "[parameters('emailAppServicePlanNsgName')]",
+                            "location": "[parameters('location')]",
+                            "tags": "[parameters('resourceTags')]",
+                            "properties": {
+                                "securityRules": [
+                                    {
+                                        "name": "AllowAAD",
+                                        "properties": {
+                                            "protocol": "*",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "*",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "AzureActiveDirectory",
+                                            "access": "Allow",
+                                            "priority": 100,
+                                            "direction": "Outbound",
+                                            "sourcePortRanges": [],
+                                            "destinationPortRanges": [],
+                                            "sourceAddressPrefixes": [],
+                                            "destinationAddressPrefixes": []
+                                        }
+                                    },
+                                    {
+                                        "name": "AllowAppService",
+                                        "properties": {
+                                            "protocol": "*",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "*",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "AppService",
+                                            "access": "Allow",
+                                            "priority": 110,
+                                            "direction": "Outbound",
+                                            "sourcePortRanges": [],
+                                            "destinationPortRanges": [],
+                                            "sourceAddressPrefixes": [],
+                                            "destinationAddressPrefixes": []
+                                        }
+                                    },
+                                    {
+                                        "name": "AllowStorage",
+                                        "properties": {
+                                            "protocol": "*",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "*",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "Storage",
+                                            "access": "Allow",
+                                            "priority": 120,
+                                            "direction": "Outbound",
+                                            "sourcePortRanges": [],
+                                            "destinationPortRanges": [],
+                                            "sourceAddressPrefixes": [],
+                                            "destinationAddressPrefixes": []
+                                        }
+                                    },
+                                    {
+                                        "name": "AllowAzureMonitor",
+                                        "properties": {
+                                            "protocol": "*",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "*",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "AzureMonitor",
+                                            "access": "Allow",
+                                            "priority": 130,
+                                            "direction": "Outbound",
+                                            "sourcePortRanges": [],
+                                            "destinationPortRanges": [],
+                                            "sourceAddressPrefixes": [],
+                                            "destinationAddressPrefixes": []
+                                        }
+                                    },
+                                    {
+                                        "name": "AllowPort587ForEmail",
+                                        "properties": {
+                                            "protocol": "*",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "587",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "*",
+                                            "access": "Allow",
+                                            "priority": 140,
+                                            "direction": "Outbound",
+                                            "sourcePortRanges": [],
+                                            "destinationPortRanges": [],
+                                            "sourceAddressPrefixes": [],
+                                            "destinationAddressPrefixes": []
+                                        }
+                                    },
+                                    {
+                                        "name": "DenyInternet",
+                                        "properties": {
+                                            "protocol": "*",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "*",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "Internet",
+                                            "access": "Deny",
+                                            "priority": 150,
+                                            "direction": "Outbound",
+                                            "sourcePortRanges": [],
+                                            "destinationPortRanges": [],
+                                            "sourceAddressPrefixes": [],
+                                            "destinationAddressPrefixes": []
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Network/networkSecurityGroups",
+                            "apiVersion": "2020-11-01",
+                            "name": "[parameters('webAppServicePlanNsgName')]",
+                            "location": "[parameters('location')]",
+                            "tags": "[parameters('resourceTags')]",
+                            "properties": {
+                                "securityRules": [
+                                    {
+                                        "name": "AllowAAD",
+                                        "properties": {
+                                            "protocol": "*",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "*",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "AzureActiveDirectory",
+                                            "access": "Allow",
+                                            "priority": 100,
+                                            "direction": "Outbound",
+                                            "sourcePortRanges": [],
+                                            "destinationPortRanges": [],
+                                            "sourceAddressPrefixes": [],
+                                            "destinationAddressPrefixes": []
+                                        }
+                                    },
+                                    {
+                                        "name": "AllowAppService",
+                                        "properties": {
+                                            "protocol": "*",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "*",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "AppService",
+                                            "access": "Allow",
+                                            "priority": 110,
+                                            "direction": "Outbound",
+                                            "sourcePortRanges": [],
+                                            "destinationPortRanges": [],
+                                            "sourceAddressPrefixes": [],
+                                            "destinationAddressPrefixes": []
+                                        }
+                                    },
+                                    {
+                                        "name": "AllowAzureMonitor",
+                                        "properties": {
+                                            "protocol": "*",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "*",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "AzureMonitor",
+                                            "access": "Allow",
+                                            "priority": 130,
+                                            "direction": "Outbound",
+                                            "sourcePortRanges": [],
+                                            "destinationPortRanges": [],
+                                            "sourceAddressPrefixes": [],
+                                            "destinationAddressPrefixes": []
+                                        }
+                                    },
+                                    {
+                                        "name": "DenyInternet",
+                                        "properties": {
+                                            "protocol": "*",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "*",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "Internet",
+                                            "access": "Deny",
+                                            "priority": 140,
+                                            "direction": "Outbound",
+                                            "sourcePortRanges": [],
+                                            "destinationPortRanges": [],
+                                            "sourceAddressPrefixes": [],
+                                            "destinationAddressPrefixes": []
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        // Conditionally deploy a discrete security rule to support
+                        // environments without OIDC-specific egress requirements
+                        {
+                            "condition": "[not(empty(parameters('idpOidcIpRanges')))]",
+
+                            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+                            "apiVersion": "2020-11-01",
+                            "name": "[concat(parameters('webAppServicePlanNsgName'), '/AllowOIDC')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('webAppServicePlanNsgName'))]"
+                            ],
+                            "properties": {
+                                "protocol": "*",
+                                "sourcePortRange": "*",
+                                "destinationPortRange": "*",
+                                "sourceAddressPrefix": "*",
+                                "access": "Allow",
+                                "priority": 120,
+                                "direction": "Outbound",
+                                "sourcePortRanges": [],
+                                "destinationPortRanges": [],
+                                "sourceAddressPrefixes": [],
+                                "destinationAddressPrefixes": "[split(parameters('idpOidcIpRanges'), ',')]"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Network/networkSecurityGroups/providers/diagnosticSettings",
+                            "name": "[concat(parameters('funcAppServicePlanNsgName'), '/Microsoft.Insights/', parameters('diagnosticSettingName'))]",
+                            "apiVersion": "2021-05-01-preview",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('funcAppServicePlanNsgName'))]"
+                            ],
+                            "properties": {
+                                "eventHubAuthorizationRuleId": "[parameters('eventHubAuthorizationRuleId')]",
+                                "eventHubName": "[parameters('eventHubName')]",
+                                "workspaceId": "[parameters('workspaceId')]",
+                                "logs": [
+                                    {
+                                        "category": "NetworkSecurityGroupEvent",
+                                        "enabled": true
+                                    },
+                                    {
+                                        "category": "NetworkSecurityGroupRuleCounter",
+                                        "enabled": true
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Network/networkSecurityGroups/providers/diagnosticSettings",
+                            "name": "[concat(parameters('emailAppServicePlanNsgName'), '/Microsoft.Insights/', parameters('diagnosticSettingName'))]",
+                            "apiVersion": "2021-05-01-preview",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('emailAppServicePlanNsgName'))]"
+                            ],
+                            "properties": {
+                                "eventHubAuthorizationRuleId": "[parameters('eventHubAuthorizationRuleId')]",
+                                "eventHubName": "[parameters('eventHubName')]",
+                                "workspaceId": "[parameters('workspaceId')]",
+                                "logs": [
+                                    {
+                                        "category": "NetworkSecurityGroupEvent",
+                                        "enabled": true
+                                    },
+                                    {
+                                        "category": "NetworkSecurityGroupRuleCounter",
+                                        "enabled": true
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Network/networkSecurityGroups/providers/diagnosticSettings",
+                            "name": "[concat(parameters('webAppServicePlanNsgName'), '/Microsoft.Insights/', parameters('diagnosticSettingName'))]",
+                            "apiVersion": "2021-05-01-preview",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('webAppServicePlanNsgName'))]"
+                            ],
+                            "properties": {
+                                "eventHubAuthorizationRuleId": "[parameters('eventHubAuthorizationRuleId')]",
+                                "eventHubName": "[parameters('eventHubName')]",
+                                "workspaceId": "[parameters('workspaceId')]",
+                                "logs": [
+                                    {
+                                        "category": "NetworkSecurityGroupEvent",
+                                        "enabled": true
+                                    },
+                                    {
+                                        "category": "NetworkSecurityGroupRuleCounter",
+                                        "enabled": true
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "resourceTags": {
+                        "value": "[parameters('resourceTags')]"
+                    },
+                    "vnetName": {
+                        "value": "[parameters('vnetName')]"
+                    },
+                    "peParticipantsSubnetName": {
+                        "value": "[parameters('peParticipantsSubnetName')]"
+                    },
+                    "peCoreSubnetName": {
+                        "value": "[parameters('peCoreSubnetName')]"
+                    },
+                    "funcAppServicePlanSubnetName": {
+                        "value": "[parameters('funcAppServicePlanSubnetName')]"
+                    },
+                    "funcAppServicePlanNsgName": {
+                        "value": "[parameters('funcAppServicePlanNsgName')]"
+                    },
+                    "webAppServicePlanSubnetName": {
+                        "value": "[parameters('webAppServicePlanSubnetName')]"
+                    },
+                    "webAppServicePlanNsgName": {
+                        "value": "[parameters('webAppServicePlanNsgName')]"
+                    },
+                    "emailSubnetName": {
+                        "value": "[parameters('emailSubnetName')]"
+                    },
+                    "emailAppServicePlanNsgName": {
+                        "value": "[parameters('emailAppServicePlanNsgName')]"
+                    },
+                    "idpOidcIpRanges": {
+                        "value": "[trim(parameters('idpOidcIpRanges'))]"
+                    },
+                    "diagnosticSettingName": {
+                        "value": "[trim(parameters('diagnosticSettingName'))]"
+                    },
+                    "eventHubAuthorizationRuleId": {
+                        "value": "[trim(parameters('eventHubAuthorizationRuleId'))]"
+                    },
+                    "eventHubName": {
+                        "value": "[trim(parameters('eventHubName'))]"
+                    },
+                    "workspaceId": {
+                        "value": "[trim(parameters('workspaceId'))]"
+                    }
+                }
+            }
+        }
+    ]
+}

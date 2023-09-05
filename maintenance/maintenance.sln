@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Piipan.Maintenance", "src\Piipan.Maintenance\Piipan.Maintenance.csproj", "{6C94A335-E229-4284-8124-412B3B9D2FA0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Piipan.Maintenance.Tests", "tests\Piipan.Maintenance.Tests\Piipan.Maintenance.Tests.csproj", "{D4B6D8C7-2DDB-4DC5-9A4E-56E991D1C7CC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6C94A335-E229-4284-8124-412B3B9D2FA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C94A335-E229-4284-8124-412B3B9D2FA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C94A335-E229-4284-8124-412B3B9D2FA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C94A335-E229-4284-8124-412B3B9D2FA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4B6D8C7-2DDB-4DC5-9A4E-56E991D1C7CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4B6D8C7-2DDB-4DC5-9A4E-56E991D1C7CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4B6D8C7-2DDB-4DC5-9A4E-56E991D1C7CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4B6D8C7-2DDB-4DC5-9A4E-56E991D1C7CC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {894CD59E-6F87-42CD-B077-F37BBA6470C0}
+	EndGlobalSection
+EndGlobal

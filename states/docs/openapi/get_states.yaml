@@ -1,0 +1,11 @@
+get:
+  operationId: "Get States"
+  tags:
+    - "States"
+  summary: "Retrieve metadata for all States"
+  description: "Retrieves metadata records for every State in the Collaboration database"
+  responses:
+    '200':
+      $ref: './schemas/states.yaml#/components/responses/200_Get_States'
+    '401':
+      $ref: './schemas/states.yaml#/components/responses/401'

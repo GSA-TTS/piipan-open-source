@@ -1,0 +1,83 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "metadata": {
+        "comments": "Configures Azure Policy exemptions, currenlty configured only for CIS Microsoft Azure Foundations Benchmark v1.3.0"
+    },
+    "parameters": {
+        "policyName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specify the name of the Azure Policy"
+            }
+        }
+    },
+    "variables": {
+        "policyAssignmentId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/microsoft.authorization/policyassignments/', parameters('policyName'))]",
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Authorization/policyExemptions",
+            "apiVersion": "2020-07-01-preview",
+            "name":  "[concat(parameters('policyName'), '1')]",
+            "properties": {
+                "description": "Control: Enable multi-factor authentication for all user credentials who have access to Azure resources. \n\nExemption: MFA is enforced by eAuth, but is not recognized by Azure.",
+                "displayName": "Ensure that multi-factor authentication is enabled",
+                "exemptionCategory": "Waiver",
+                "metadata": {
+                    "requestedBy": "Piipan",
+                    "approvedBy": "ISD",
+                    "approvedOn": "2022-10-19T00:00:00.0000000Z",
+                    "ticketRef": "Jira: Piipan-15, Piipan-18"
+                },
+                "policyAssignmentId": "[variables('policyAssignmentId')]",
+                "policyDefinitionReferenceIds": [
+                    "aa633080-8b72-40c4-a2d7-d00c03e80bed",
+                    "9297c21d-2ed6-4474-b48f-163f75654ce3",
+                    "e3576e28-8b17-4677-84c3-db2990658d64"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/policyExemptions",
+            "apiVersion": "2020-07-01-preview",
+            "name": "[concat(parameters('policyName'), '2')]",
+            "properties": {
+                "description": "Control: Enable sensitive data encryption at rest using Customer Managed Keys rather than Microsoft Managed keys. \n\nExemption: Per ISD, Platform Managed Keys over Customer Managed Keys (CMKs) does not pose a significant issue especially considering the Piipan Mitigating Factors. Implementing CMKs incurs additional overhead of managing keys internally and thus potentially another attack vector with those keys getting lost or compromised.",
+                "displayName": "Storage accounts should use customer-managed key for encryption",
+                "exemptionCategory": "Waiver",
+                "metadata": {
+                    "requestedBy": "Piipan",
+                    "approvedBy": "ISD",
+                    "approvedOn": "2022-10-19T00:00:00.0000000Z",
+                    "ticketRef": "Jira: Piipan-27"
+                },
+                "policyAssignmentId": "[variables('policyAssignmentId')]",
+                "policyDefinitionReferenceIds": [
+                    "6fac406b-40ca-413b-bf8e-0bf964659c25"
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/policyExemptions",
+            "apiVersion": "2020-07-01-preview",
+            "name": "[concat(parameters('policyName'), '3')]",
+            "properties": {
+                "description": "Control: Client certificates allow for the app to request a certificate for incoming requests. Only clients that have a valid certificate will be able to reach the app. \n\nExemption: Azure Front Door doesn't support client/mutual authentication. Azure Functions are not accessed directly, only internally from other Azure resources or through APIM.",
+                "displayName": "Ensure the web app has 'Client Certificates (Incoming client certificates)' set to 'On'",
+                "exemptionCategory": "Waiver",
+                "metadata": {
+                    "requestedBy": "Piipan",
+                    "approvedBy": "ISD",
+                    "approvedOn": "2022-10-19T00:00:00.0000000Z",
+                    "ticketRef": "Jira: Piipan-17"
+                },
+                "policyAssignmentId": "[variables('policyAssignmentId')]",
+                "policyDefinitionReferenceIds": [
+                    "eaebaea7-8013-4ceb-9d14-7eb32271373c",
+                    "5bb220d9-2698-4ee4-8404-b9c30c9df609"
+                ]
+            }
+        }
+    ]
+}

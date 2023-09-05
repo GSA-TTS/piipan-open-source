@@ -1,0 +1,19 @@
+<!-- Generated via IaC -->
+
+<policies>
+    <inbound>
+        <base />
+        <authentication-managed-identity resource="{single_state_app_id}" />
+        <set-backend-service base-url="{getUploadByIdUrl}" />   
+        <rate-limit calls="120" renewal-period="60" remaining-calls-variable-name="remainingCallsPerSubscription"/>     
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

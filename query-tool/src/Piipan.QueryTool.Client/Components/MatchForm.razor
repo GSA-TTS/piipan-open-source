@@ -1,0 +1,82 @@
+﻿@using Piipan.Match.Api.Models
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Components.UnauthorizedBanners
+@code {
+    public MatchSearchRequest Query { get; set; } = new MatchSearchRequest();
+
+    private bool searching = false;
+    private bool isUnauthorized = false;
+    List<(string Property, string Error)> serverErrorList = new();
+    UsaForm Form;
+    private List<MatchResApiResponse> matches = new List<MatchResApiResponse>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+    private async Task SubmitForm()
+    {
+        bool valid = await Form.ValidateForm();
+        if (valid)
+        {
+            searching = true;
+            StateHasChanged();
+            var response = await PiipanApi.GetMatchDetailById(Query.MatchId);
+            serverErrorList.Clear();
+            serverErrorList.AddRange(response.Errors.Select(n => (n.Property, n.Error)).ToList());
+            if ((serverErrorList.Count == 0 && response.Value == null) || response.IsUnauthorized)
+            {
+                isUnauthorized = true;
+            }
+            else {
+                isUnauthorized = false;
+            }
+            matches = new List<MatchResApiResponse>();
+            if (response.Value != null)
+            {
+                matches.Add(response.Value);
+            }
+            searching = false;
+            StateHasChanged();
+            if (isUnauthorized)
+            {
+                await JSRuntime.InvokeVoidAsync("scrollTo", 0, 0);
+            }
+            else if (matches.Count > 0)
+            {
+                await JSRuntime.InvokeVoidAsync("piipan.utilities.scrollToElement", "match-results-area");
+            }
+        }
+        else
+        {
+            isUnauthorized = false;
+        }
+    }
+}
+
+<h1>Find a Match Record</h1>
+<p style="margin-bottom: 0;"><span class="usa-required">*</span> indicates a required field</p>
+@if (isUnauthorized)
+{
+    <MatchUnauthorizedBanner />
+}
+@if (Query != null)
+{
+    <UsaForm @ref="Form" Id="match-form" Model="Query" SubmitErrors="serverErrorList" OnSubmit="SubmitForm">
+        <legend class="usa-sr-only">match search criteria</legend>
+        <UsaFormGroup>
+            <LabelOverride>Match ID</LabelOverride>
+            <ChildContent>
+                <UsaInputText @bind-Value="Query.MatchId" maxlength="7" Width="118"  />
+            </ChildContent>
+        </UsaFormGroup>
+        <button class="usa-button" type="submit" id="match-form-search-btn" disabled="@searching">@(searching ? "Finding Match Record..." : "Find Match Record")</button>
+    </UsaForm>
+}
+@if (matches.Count > 0)
+{
+    <MatchResults QueryResult="matches" />
+}
+else {
+    <section class="border-top-1px border-base-light margin-top-6"></section>
+}

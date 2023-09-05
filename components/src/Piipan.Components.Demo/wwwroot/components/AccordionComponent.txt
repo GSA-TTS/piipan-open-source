@@ -1,0 +1,14 @@
+﻿@using Piipan.Components.Layout
+@code {
+    [Parameter] public bool Multiselect { get; set; }
+}
+<UsaAccordion Multiselectable="@Multiselect">
+    <UsaAccordionItem StartsExpanded="true">
+        <HeadingContent>Accodion Item 1 Header</HeadingContent>
+        <BodyContent><p>Accordion item 1 Content</p></BodyContent>
+    </UsaAccordionItem>
+    <UsaAccordionItem StartsExpanded="false">
+        <HeadingContent>Accodion Item 2 Header</HeadingContent>
+        <BodyContent><p>Accordion item 2 Content</p></BodyContent>
+    </UsaAccordionItem>
+</UsaAccordion>

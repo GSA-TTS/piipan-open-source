@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</RestoreLockedMode>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="dapper" Version="2.0.123" />
+    <PackageReference Include="npgsql" Version="7.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\..\iac\databases\collaboration\migrations\2022-Q4\05_30_create-hash_type.sql" Link="create-hash_type.sql" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\..\iac\databases\collaboration\migrations\2022-Q4\05_30_match-record.sql" Link="match-record.sql" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\..\iac\databases\collaboration\migrations\2022-Q4\07_18_state-info.sql" Link="state-info.sql" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\..\iac\databases\collaboration\migrations\2022-Q4\07_18_insert-state-info.sql" Link="insert-state-info.sql" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\..\iac\databases\metrics\migrations\2022-Q4\05_30_metrics.sql" Link="metrics.sql" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\..\iac\databases\participants\migrations\2022-Q4\05_30_per-state.sql" Link="per-state.sql" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\participants\src\Piipan.Participants\Piipan.Participants.Core\Piipan.Participants.Core.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <SsdtUnitTestVersion>3.1</SsdtUnitTestVersion>
+  </PropertyGroup>
+</Project>

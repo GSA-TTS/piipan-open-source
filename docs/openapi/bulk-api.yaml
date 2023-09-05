@@ -1,0 +1,28 @@
+openapi: 3.0.0
+info:
+  title: "Bulk API"
+  version: 2.0.0
+  description: "The API for performing bulk uploads.\nFile Preparation.\nThis API requires a file to be submitted with the appropriate schema. The details of that file's schema can be found at <a href='../../../../etl/docs/csv/import-schema.json'>File schema</a>\n"
+  
+tags:
+  - name: "UploadAllParticipants"
+servers:
+  - url: /bulk/{stateAbbr}/v2
+    variables:
+      stateAbbr:
+        default: none
+        description: Lowercase two-letter postal code abbreviation
+paths:
+  '/upload_all_participants/{filename}':
+    $ref: './../../etl/docs/openapi/uploadAllParticipants.yaml'
+  '/uploads/{upload_identifier}':
+    $ref: './../../etl/docs/openapi/getUploadById.yaml'
+security:
+  - ApiKeyAuth: []
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Ocp-Apim-Subscription-Key
+    
