@@ -1,0 +1,118 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Piipan.Components.Forms
+@using Piipan.Components.Enums
+@using Piipan.Components
+@using System.Net.Http
+@using Piipan.Components.Alerts
+@using Piipan.Match.Api.Models
+@using Piipan.QueryTool.Client.Api
+@using Piipan.QueryTool.Client.Components.UnauthorizedBanners
+@using Piipan.QueryTool.Client.Models
+@using Piipan.Shared.API.Enums
+@using static Piipan.Components.Forms.FormConstants
+@inject NavigationManager NavigationManager
+
+@code {
+    public DuplicateParticipantQuery QueryFormData { get; set; } = new();
+
+    private bool NoResults => _queryResult != null &&
+        (_queryResult.Results.Count == 0 || _queryResult.Results[0].Matches.Count() == 0);
+    private bool showNoResultsAlert = true;
+    private bool _isAuthorizedToSearch = true;
+    private bool searching = false;
+    List<(string Property, string Error)> serverErrorList = new();
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        QueryFormData ??= new();
+        _isAuthorizedToSearch = ClientAppData.States?.Length == 1 && ClientAppData.Location?.Length == 2;
+    }
+    OrchMatchResponseData _queryResult = null;
+    UsaForm _form;
+    private async Task SubmitForm()
+    {
+        bool valid = await _form.ValidateForm();
+        if (valid)
+        {
+            searching = true;
+            await InvokeAsync(StateHasChanged);
+            //StateHasChanged();
+            var response = await PiipanApi.SubmitDuplicateParticipantSearchRequest(QueryFormData);
+            serverErrorList.Clear();
+            serverErrorList.AddRange(response.Errors.Select(n => (n.Property, n.Error)).ToList());
+
+            _queryResult = response.Value;
+            searching = false;
+            await InvokeAsync(StateHasChanged);
+            if (NoResults) {
+                await JSRuntime.InvokeVoidAsync("scrollTo", 0, 0);
+            }
+            else if (_queryResult?.Results?.Count > 0 && _queryResult.Results[0].Matches?.Count() > 0) {
+                await JSRuntime.InvokeVoidAsync("piipan.utilities.scrollToElement", "query-results-area");
+            }
+        }
+        else
+        {
+            showNoResultsAlert = false;
+            StateHasChanged();
+        }
+    }
+}
+<section class="grid-container">
+    <h1>Search for SNAP Participants</h1>
+    @if (!_isAuthorizedToSearch)
+    {
+        <GenericUnauthorizedBanner style="margin-bottom: 2rem;" />    
+    }
+    <div id="snap-participants-query-form-wrapper" class="@(_isAuthorizedToSearch ? "" : "disabled-area")" inert="@(!_isAuthorizedToSearch)" aria-disabled="@(_isAuthorizedToSearch ? "false" : "true")">
+        <p style="margin-bottom: 0;"><span class="usa-required">*</span> indicates a required field</p>
+        @if (NoResults && showNoResultsAlert)
+        {
+            <UsaAlertBox Slim="true" AlertSeverity="AlertSeverity.Info">
+                <p>This participant does not have a matching record in any other states.</p>
+            </UsaAlertBox>
+        }
+        @if (QueryFormData != null)
+        {
+            <UsaForm @ref="_form" Id="snap-participants-query-form" SubmitErrors="serverErrorList" Model="QueryFormData" OnSubmit="SubmitForm">
+                <legend class="usa-sr-only">participant information</legend>
+                <UsaFormGroup>
+                    <UsaInputText @bind-Value="QueryFormData.LastName" />
+                </UsaFormGroup>
+                <UsaFormGroup>
+                    <UsaInputDate @bind-Value="QueryFormData.DateOfBirth" />
+                </UsaFormGroup>
+                <UsaFormGroup>
+                    <HintContent>###-##-####</HintContent>
+                    <ChildContent>
+                        <UsaInputSSN @bind-Value="QueryFormData.SocialSecurityNum" />
+                    </ChildContent>
+                </UsaFormGroup>
+                <UsaFormGroup>
+                    <UsaInputText @bind-Value="QueryFormData.ParticipantId" Width="118" maxlength="20" />
+                </UsaFormGroup>
+                <UsaFormGroup>
+                    <UsaInputText @bind-Value="QueryFormData.CaseId" Width="143"  maxlength="20" />
+                </UsaFormGroup>
+                <UsaRadioGroup @bind-Value="QueryFormData.SearchReason">
+                    <ChildContent>
+                        @{
+                            foreach (ValidSearchReasons val in  Enum.GetValues(typeof(ValidSearchReasons)))
+                            {
+                                    <UsaRadio Value="val.ToString()">@EnumHelper.GetDisplayName(val)</UsaRadio>
+                            }
+                    }
+                    </ChildContent>
+                </UsaRadioGroup>
+                <button class="usa-button" type="submit" id="query-form-search-btn" disabled="@(searching)">@(searching ? "Searching..." : "Search")</button>
+            </UsaForm>
+        }
+        @if (_queryResult?.Results?.Count > 0 && _queryResult.Results[0].Matches?.Count() > 0)
+        {
+            <QueryResults QueryResult="_queryResult" />
+        }
+        else {
+            <section class="border-top-1px border-base-light margin-top-6"></section>
+        }
+    </div>
+</section>

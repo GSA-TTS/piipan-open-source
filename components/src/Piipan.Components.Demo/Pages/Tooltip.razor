@@ -1,0 +1,25 @@
+﻿@page "/tooltip"
+@inherits BaseComponent
+@code {
+    protected override string[] Files { get; set; } = { "components/TooltipComponent.razor" };
+
+    private string TooltipText { get; set; } = "Some Text";
+}
+
+<h1>Tooltip</h1>
+
+<UsaAccordion Multiselectable="true">
+    <UsaAccordionItem StartsExpanded="true">
+        <HeadingContent>Component Demo</HeadingContent>
+        <BodyContent>
+            <UsaForm Model="TooltipText">
+                <UsaFormGroup>
+                    <UsaInputText @bind-Value="TooltipText" />
+                </UsaFormGroup>
+            </UsaForm>
+            <div style="margin-top: 20px"></div>
+            <TooltipComponent TooltipText="@TooltipText" />
+        </BodyContent>
+    </UsaAccordionItem>
+    <CodeArea FileContents="fileContents" />
+</UsaAccordion>

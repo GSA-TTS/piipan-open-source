@@ -1,0 +1,33 @@
+﻿@using static AlertConstants
+@using static Shared.CommonConstants
+@code {
+    [Parameter] public AlertSeverity AlertSeverity { get; set; } = AlertSeverity.Error;
+    [Parameter] public string Header { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public bool Dismissable { get; set; }
+    [Parameter] public Action Dismissed { get; set; }
+    [Parameter] public bool Slim { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object> AdditionalAttributes { get; set; }
+}
+
+<div class="@AlertClass @(Slim ? AlertSlimClass : "") @AlertClass--@(AlertSeverity.ToString().ToLower()) @(Dismissable ? AlertDismissableClass : "")"
+    role="alert" @attributes="AdditionalAttributes">
+    <div class="@AlertBodyClass">
+        @if (!string.IsNullOrWhiteSpace(Header))
+        {
+            <h2 class="@AlertHeadingClass">@Header</h2>
+        }
+        <div class="@AlertTextClass">
+            @ChildContent
+        </div>
+    </div>
+    @if (Dismissable)
+    {
+        <button class="@ButtonClass @AlertCloseClass" @onclick="() => Dismissed?.Invoke()">
+            <svg class="@IconClass" aria-hidden="true" focusable="false" role="img">
+                <use xlink:href="/images/sprite.svg#close"></use>
+            </svg>
+        </button>
+    }
+</div>

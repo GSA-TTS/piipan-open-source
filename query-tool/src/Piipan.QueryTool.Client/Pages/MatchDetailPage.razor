@@ -1,0 +1,14 @@
+﻿@page "/match/{MatchId}"
+@using Piipan.QueryTool.Client.Components.MatchDetail
+@code {
+    [Parameter] public string MatchId { get; set; }
+    protected override void OnInitialized()
+    {
+        ClientAppData.CurrentPage = null;
+    }
+}
+<PageTitle>Piipan Match Detail</PageTitle>
+
+<div class="grid-container">
+    <MatchDetailWrapper MatchId="@MatchId" />
+</div>

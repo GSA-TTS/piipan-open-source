@@ -1,0 +1,40 @@
+﻿@page "/tag"
+@using Piipan.Components.Tag
+@using Piipan.Components.Enums
+@inherits BaseComponent
+@code {
+    protected override string[] Files { get; set; } = { "components/TagComponent.razor" };
+
+    private TagTheme Theme { get; set; } = TagTheme.Green;
+    private BorderType BorderType { get; set; } = BorderType.Round;
+    private string Text { get; set; } = "Some Text";
+}
+
+<h1>Tag</h1>
+
+<UsaAccordion Multiselectable="true">
+    <UsaAccordionItem StartsExpanded="true">
+        <HeadingContent>Component Demo</HeadingContent>
+        <BodyContent>
+            <UsaForm Model="Theme">
+                <h2 style="margin: 0;">Show Tag As:</h2>
+                <InputSelect @bind-Value="Theme">
+                    <option value="@TagTheme.Green">Green</option>
+                    <option value="@TagTheme.Gray">Gray</option>
+                    <option value="@TagTheme.Purple">Purple</option>
+                </InputSelect>
+                <InputSelect @bind-Value="BorderType">
+                    <option value="@BorderType.Round">Round</option>
+                    <option value="@BorderType.Square">Square</option>
+                </InputSelect>
+                <UsaFormGroup>
+                    <UsaInputText @bind-Value="Text" />
+                </UsaFormGroup>
+                
+            </UsaForm>
+            <div style="margin-top: 20px"></div>
+            <TagComponent Theme="Theme" BorderType="BorderType" Text="@Text" />
+        </BodyContent>
+    </UsaAccordionItem>
+    <CodeArea FileContents="fileContents" />
+</UsaAccordion>

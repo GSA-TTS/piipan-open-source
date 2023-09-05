@@ -1,0 +1,31 @@
+﻿body {
+}
+
+.initialActionDatePicker {
+    max-width: 135px;
+}
+
+.initalActionDropdown {
+    max-width: 296px;
+}
+
+.initalActionDropdownLabel {
+    margin-top: 16px;
+}
+
+.InitalActionHeader {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 28px;
+    /* identical to box height, or 117% */
+    /* Text Body #1B1B1B */
+
+    color: #1B1B1B;
+    margin-top: 48px;
+    margin-bottom: 0;
+}
+
+.ResolutionFieldsDropdownWidth {
+    max-width: 296px;
+}

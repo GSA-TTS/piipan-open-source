@@ -1,0 +1,33 @@
+{
+    "name": "piipan.dashboard",
+    "version": "1.0.0",
+    "description": "dashboard application for piipan system",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "cypress:audit": "cypress run --browser chrome"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/18F/piipan/tree/bd346748e01fc7bc16179d99cd007e3b2c76a0ab/dashboard/src/Piipan.Dashboard"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "cypress-audit": "^1.1.0",
+        "autoprefixer": "^10.4.13",
+        "cypress": "^12.5.1",
+        "gulp": "^4.0.2",
+        "gulp-postcss": "^9.0.1",
+        "gulp-replace": "^1.1.4",
+        "gulp-sass": "^5.1.0",
+        "gulp-sourcemaps": "^3.0.0",
+        "postcss": "^8.4.21",
+        "postcss-csso": "^6.0.1",
+        "sass": "^1.58.0",
+        "uswds-gulp": "github:uswds/uswds-gulp"
+    },
+    "dependencies": {
+        "uswds": "^2.13.3"
+    }
+}

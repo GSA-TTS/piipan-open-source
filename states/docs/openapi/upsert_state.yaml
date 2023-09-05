@@ -1,0 +1,53 @@
+post:
+  operationId: "Upsert State"
+  tags:
+    - "States"
+  summary: "Insert or Update State Info Row in state_info table"
+  description: "Inserts if no existing record with that state name or updates existing record"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+              - data
+          properties:
+            data:
+              type: object
+              required:
+                - id
+                - state
+                - state_abbreviation
+                - email
+                - phone
+                - region
+                - email_cc
+              properties:
+                id:
+                  type: string
+                  description: "The unique id for state. Normally equal to the alphabetical order of the state"
+                state:
+                  type: string
+                  format: date
+                  description: "The full name of the state"
+                state_abbreviation:
+                  type: string
+                  description: "The state's abbreviation"
+                email:
+                  type: string
+                  description: "The email that notifications will be sent to for a state"
+                phone:
+                  type: string
+                  description: "The phone number to contact a state"
+                region:
+                  type: string
+                  description: "The region the state resides in"
+                email_cc:
+                  type: string
+                  description: "All other emails that should be CC'd when emailing this state. Comma seperated"
+  responses:
+    '200':
+      description: "Successfully upserted"
+    '500':
+      description: "Failed to upsert"

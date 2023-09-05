@@ -1,0 +1,128 @@
+﻿@using Moq
+@using Piipan.Components.Alerts
+@using Piipan.Components.Enums
+@using System.Linq.Expressions
+@using Piipan.Components.Forms
+@using Piipan.Components.Modals
+@using Piipan.Components.Tag
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Components.MatchDetail
+@using Piipan.QueryTool.Client.Components.UnauthorizedBanners
+@using Piipan.QueryTool.Client.Modals
+@using Piipan.QueryTool.Client.Models
+@using Piipan.Shared.Client.Api
+@using Piipan.States.Api.Models
+@using Piipan.Shared.API.Utilities
+@using static Piipan.Components.Tag.TagConstants
+@inherits BaseComponentTest<MatchDetailWrapper>
+
+@code {
+    private IRenderedComponent<UsaForm> usaForm;
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public MatchDetailWrapperTests() : base()
+    {
+        MockApiService.Setup(n => n.GetMatchDetailById(It.IsAny<string>()))
+            .ReturnsAsync(DefaultMatch());
+    }
+    private ApiResponse<MatchResApiResponse> DefaultMatch()
+    {
+        return new ApiResponse<MatchResApiResponse>
+        {
+            Value = new MatchResApiResponse
+            {
+                Data = new MatchDetailsDto
+                {
+                    Initiator = "EA",
+                    States = new string[] { "EA", "EB" },
+                    Status = "open",
+                    Dispositions = new[]
+                    {
+                        new Disposition
+                        {
+                            State = "ea",
+                            VulnerableIndividual = false
+                        },
+                        new Disposition
+                        {
+                            State = "eb",
+                            VulnerableIndividual = false
+                        }
+                    },
+                    MatchId = "M123456"
+                }
+            }
+        };
+    }
+
+    /// <summary>
+    /// Create a matches list component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        JSInterop.SetupVoid("piipan.utilities.registerFormValidation", _ => true).SetVoidResult();
+        JSInterop.Setup<int>("piipan.utilities.getCursorPosition", _ => true).SetResult(1);
+        JSInterop.SetupVoid("piipan.utilities.setCursorPosition", _ => true).SetVoidResult();
+        JSInterop.SetupVoid("piipan.utilities.scrollToElement", _ => true).SetVoidResult();
+        Component = Render<MatchDetailWrapper>(
+            @<MatchDetailWrapper MatchId="@InitialValues.MatchId">
+        </MatchDetailWrapper>
+    );
+        usaForm = Component.HasComponent<UsaForm>() ? Component.FindComponent<UsaForm>() : null;
+    }
+
+    #region Tests
+
+
+
+    /// <summary>
+    /// Verify the match unauthorzied banner shows when not authorized
+    /// </summary>
+    [Fact]
+    public void MatchDetailWrapper_ShouldShow_UnauthorizedBanner_WhenNotAuthorized()
+    {
+        // Arrange - set API to return an unauthorized result
+        MockApiService.Setup(n => n.GetMatchDetailById(It.IsAny<string>()))
+            .ReturnsAsync(new ApiResponse<MatchResApiResponse> { IsUnauthorized = false });
+        CreateTestComponent();
+
+        // Assert
+        Assert.False(Component.HasComponent<MatchDetail>());
+        Assert.True(Component.HasComponent<MatchUnauthorizedBanner>());
+    }
+
+    /// <summary>
+    /// Verify the match detail component shows when authorized
+    /// </summary>
+    [Fact]
+    public void MatchDetailWrapper_ShouldShow_MatchDetail_WhenAuthorized()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Assert.True(Component.HasComponent<MatchDetail>());
+        Assert.False(Component.HasComponent<MatchUnauthorizedBanner>());
+    }
+
+    /// <summary>
+    /// Verify values are passed correctly to MatchDetail component
+    /// </summary>
+    [Fact]
+    public void MatchDetail_Parameters_AreCorrect()
+    {
+        // Arrange
+        var match = DefaultMatch();
+        MockApiService.Setup(n => n.GetMatchDetailById(It.IsAny<string>()))
+            .ReturnsAsync(match);
+        CreateTestComponent();
+
+        // Assert
+        var matchDetail = Component.FindComponent<MatchDetail>();
+        Assert.Equal(matchDetail.Instance.InitialMatch, match.Value);
+    }
+
+    #endregion
+}

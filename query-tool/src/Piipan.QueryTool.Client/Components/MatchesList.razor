@@ -1,0 +1,92 @@
+﻿@using Piipan.Components.Modals
+@using Piipan.Components.Routing
+@using Piipan.Match.Api.Models
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Components.UnauthorizedBanners
+@using Piipan.QueryTool.Client.Helpers
+@using Piipan.QueryTool.Client.Modals
+@inject IModalManager ModalManager
+@inject PiipanNavigationManager NavigationManager
+
+@code {
+    ApiResponse<MatchResListApiResponse> _apiResponse;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _apiResponse = await PiipanApi.GetAllMatchDetails();
+    }
+
+    /// <summary>
+    /// Show the Vulnerable Individual modal when the result is clicked if necessary
+    /// </summary>
+    private void ResultClicked(MatchDetailsDto record)
+    {
+        void Navigate()
+        {
+            NavigationManager.NavigateTo($"/match/{record.MatchId}", false);
+        }
+        if (record.Dispositions.Any(n => n.VulnerableIndividual == true))
+        {
+            ModalManager.Show<VulnerableIndividualModal>(
+                new VulnerableIndividualModal()
+                {
+                    ContinueCallback = Navigate
+                },
+                new ModalInfo
+                {
+                    ForceAction = true
+                }
+            );
+        }
+        else
+        {
+            Navigate();
+        }
+    }
+}
+
+<section>
+    <h1>All Piipan Matches List</h1>
+    @if (_apiResponse == null)
+    {
+        <p>Loading...</p>
+    }
+    else if (_apiResponse.IsUnauthorized)
+    {
+        <GenericUnauthorizedBanner />
+    }
+    else
+    {
+        if (_apiResponse.Value.Data?.Count() > 0)
+        {
+            <table class="usa-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Match ID</th>
+                        <th scope="col">Matching States</th>
+                        <th scope="col">Created At</th>
+                        <th scope="col">Vulnerable Individual</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var result in _apiResponse.Value.Data)
+                {
+                    DateTime? localDateTime = result.CreatedAt?.ToLocalTime();
+                    string timeZoneAbbreviation = localDateTime != null ? TimeZoneInfo.Local.IsDaylightSavingTime(localDateTime.Value) ? TimeZoneInfo.Local.DaylightName : TimeZoneInfo.Local.StandardName : "";
+                    <tr>
+                        <td><a href="/match/@result.MatchId" @onclick="@(() => ResultClicked(result))" @onclick:preventDefault>@result.MatchId</a></td>
+                        <td>@(string.Join(", ", result.States.OrderBy(state => state).Select(state => StateHelper.GetStateName(state))))</td>
+                        <td>@(result.CreatedAt?.ToLocalTime().ToString("M/d/yyyy h:mm:ss tt").ToUpper() + " " + timeZoneAbbreviation)</td>
+                        <td>@(string.Join(",", result.Dispositions.OrderBy(d => d.State).Select(n => ValueToDisplayHelper.GetDisplayValue(n.VulnerableIndividual))))</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No matches found.</p>
+        }
+    }
+</section>
+

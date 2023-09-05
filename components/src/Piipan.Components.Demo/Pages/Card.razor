@@ -1,0 +1,18 @@
+﻿@page "/card"
+@using Piipan.Components.Layout
+@inherits BaseComponent
+@code {
+    protected override string[] Files { get; set; } = { "components/CardComponent.razor" };
+}
+
+<h1>Card</h1>
+
+<UsaAccordion Multiselectable="true">
+    <UsaAccordionItem StartsExpanded="true">
+        <HeadingContent>Component Demo</HeadingContent>
+        <BodyContent>
+            <CardComponent />
+        </BodyContent>
+    </UsaAccordionItem>
+    <CodeArea FileContents="fileContents" />
+</UsaAccordion>

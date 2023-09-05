@@ -1,0 +1,18 @@
+﻿@page "/input-date"
+@inherits BaseComponent
+@code {
+    private InputDateModel DateModel { get; set; } = new InputDateModel();
+    protected override string[] Files { get; set; } = { "components/InputDateComponent.razor", "models/InputDateModel.cs" };
+}
+
+<h1>Input Date</h1>
+
+<UsaAccordion Multiselectable="true">
+    <UsaAccordionItem StartsExpanded="true">
+        <HeadingContent>Component Demo</HeadingContent>
+        <BodyContent>
+            <InputDateComponent DateModel="DateModel" />
+        </BodyContent>
+    </UsaAccordionItem>
+    <CodeArea FileContents="fileContents" />
+</UsaAccordion>

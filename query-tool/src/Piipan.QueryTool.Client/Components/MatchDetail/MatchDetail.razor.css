@@ -1,0 +1,112 @@
+﻿h1 {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    grid-gap: 1rem;
+    gap: 1rem;
+}
+
+::deep .usa-form {
+    max-width: unset;
+}
+
+.two-state-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1rem;
+    gap: 1rem;
+    max-width: 860px;
+}
+
+@media (max-width: 40rem) {
+    .two-state-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.match-detail-grid {
+    display: grid;
+    grid-template-columns: 4fr 8fr;
+    grid-gap: 20px;
+    gap: 20px;
+}
+
+.match-detail-grid.one-col {
+    grid-template-columns: 1fr !important;
+}
+
+@media (max-width: 60rem) {
+    .match-detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+::deep h5 {
+    color: #045881;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.75rem;
+    margin: 0;
+    margin-bottom: 1px;
+}
+
+::deep h5 span {
+    font-weight: 400;
+}
+
+::deep .usa-prose li {
+    max-width: 46rem;
+}
+
+dl {
+    margin: 0;
+}
+
+dt {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+    margin: 0;
+    margin-right: 5px;
+}
+
+dd {
+    display: inline-block;
+    margin: 0;
+    font-size: 16px;
+    line-height: 24px;
+    vertical-align: top;
+    white-space: pre;
+}
+
+.matchInfoDiv {
+    max-width: 910px;
+    margin-bottom: 24px;
+}
+
+.post-save-alert {
+    margin-bottom: 16px;
+}
+
+::deep .usa-alert--error {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.back-button {
+    margin-top: 1rem;
+    line-height: 1.5rem;
+}
+
+.back-button:visited {
+    color: #005ea2;
+}
+
+.back-button svg {
+    vertical-align: middle;
+}
+
+::deep .usa-accordion + .usa-accordion, .usa-accordion + .usa-accordion--bordered {
+    margin-top: 24px;
+}

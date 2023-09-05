@@ -1,0 +1,130 @@
+﻿@using Piipan.Components
+@using System.Linq.Expressions
+@using Piipan.Components.Layout
+@using static Piipan.Components.Layout.LayoutConstants
+@inherits BaseTest<UsaCard>
+
+@code {
+    private IElement? element;
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public UsaCardTests() : base()
+    {
+        InitialValues = new UsaCard()
+        {
+            Header = "Card Header",
+            BodyContent = @<p>Card Data</p>,
+            FooterContent = @<button>Button</button>
+        };
+    }
+
+    /// <summary>
+    /// Create a card component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        Component = Render<UsaCard>(
+            @<UsaCard Header="@InitialValues.Header">
+                <BodyContent>@InitialValues.BodyContent</BodyContent>
+                <FooterContent>@InitialValues.FooterContent</FooterContent>
+            </UsaCard>
+        );
+        element = Component.Find($".{CardClass}");
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of an card component
+    /// </summary>
+    [Fact]
+    public void Card_Should_Exist_And_Have_Correct_Markup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<li class="@CardClass">
+                <div class="@CardContainerClass">
+                    <header class="@CardHeaderClass">
+                        <h2 class="@CardHeadingClass">@InitialValues.Header</h2>
+                    </header>
+                    <div class="@CardBodyClass">@InitialValues.BodyContent</div>
+                    <div class="@CardFooterClass">@InitialValues.FooterContent</div>
+                </div>
+            </li>
+        );
+    }
+
+    /// <summary>
+    /// Verify the card can change its heading after being created
+    /// </summary>
+    [Fact]
+    public void Card_Should_Be_Able_To_Change_Header_Before_And_After_Created()
+    {
+        // Arrange
+        string beforeValue = "Before Value";
+        string afterValue = "After Value";
+        InitialValues.Header = beforeValue;
+        CreateTestComponent();
+
+        // Assert Initial Values
+        var header = Component!.Find($".{CardHeaderClass}");
+        header!.MarkupMatches(@<header class="@CardHeaderClass"><h2 class="@CardHeadingClass">@beforeValue</h2></header>);
+
+        // Act
+        UpdateParameter(p => p.Header, afterValue);
+
+        // Assert Updated Values
+        header!.MarkupMatches(@<header class="@CardHeaderClass"><h2 class="@CardHeadingClass">@afterValue</h2></header>);
+    }
+
+    /// <summary>
+    /// Verify the card can change its footer content after being created
+    /// </summary>
+    [Fact]
+    public void Card_Should_Be_Able_To_Change_Footer_Before_And_After_Created()
+    {
+        // Arrange
+        RenderFragment beforeValue = @<p>Footer Paragraph Before</p>;
+        RenderFragment afterValue = @<span>Footer Span After</span>;
+        InitialValues.FooterContent = beforeValue;
+        CreateTestComponent();
+
+        // Assert Initial Values
+        var header = Component!.Find($".{CardFooterClass}");
+        header!.MarkupMatches(@<div class="@CardFooterClass">@beforeValue</div>);
+
+        // Act
+        UpdateParameter(p => p.FooterContent, afterValue);
+
+        // Assert Updated Values
+        header!.MarkupMatches(@<div class="@CardFooterClass">@afterValue</div>);
+    }
+
+    /// <summary>
+    /// Verify the card can change its body content after being created
+    /// </summary>
+    [Fact]
+    public void Card_Should_Be_Able_To_Change_Body_Before_And_After_Created()
+    {
+        // Arrange
+        RenderFragment beforeValue = @<p>Body Paragraph Before</p>;
+        RenderFragment afterValue = @<ul><li>Body List Item After</li></ul>;
+        InitialValues.BodyContent = beforeValue;
+        CreateTestComponent();
+
+        // Assert Initial Values
+        var header = Component!.Find($".{CardBodyClass}");
+        header!.MarkupMatches(@<div class="@CardBodyClass">@beforeValue</div>);
+
+        // Act
+        UpdateParameter(p => p.BodyContent, afterValue);
+
+        // Assert Updated Values
+        header!.MarkupMatches(@<div class="@CardBodyClass">@afterValue</div>);
+    }
+    #endregion
+}

@@ -1,0 +1,9 @@
+﻿@using Piipan.Components.Tag
+@using Piipan.Components.Enums
+@code {
+    [Parameter] public TagTheme Theme { get; set; }
+    [Parameter] public BorderType BorderType { get; set; }
+    [Parameter] public string Text { get; set; }
+}
+
+<UsaTag Theme="@Theme" BorderType="@BorderType">@Text</UsaTag>

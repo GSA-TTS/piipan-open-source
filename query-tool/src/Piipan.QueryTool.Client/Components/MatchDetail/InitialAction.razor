@@ -1,0 +1,47 @@
+﻿@using Piipan.Components.Forms
+@using Piipan.Match.Api.Models.Resolution
+@implements IDisposable
+@code {
+    [Parameter] public bool InitiatingState { get; set; }
+    [Parameter] public DispositionModel DispositionData { get; set; }
+
+    private (string,string)[] DropdownOptionsInitiating = new (string,string)[] {("Notice Sent", "Notice Sent"), ("Client Provided Required Verification", "Client Provided Required Verification")};
+    private (string,string)[] DropdownOptionsMatching = new (string, string)[] { ("Notice Sent", "Notice Sent"), ("Client Verified Moved Out of State", "Client Verified Moved Out of State") };
+
+    private void InitialActionTakenChanged(string value)
+    {
+        bool actionUnset = string.IsNullOrEmpty(DispositionData.InitialActionTaken);
+        DispositionData.InitialActionTaken = value;
+        if (actionUnset && !string.IsNullOrEmpty(value) && DispositionData.InitialActionAt == null)
+        {
+            DispositionData.InitialActionAt = DateTime.Now.Date;
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        DispositionData.InvalidMatchChanged += InvalidMatchChangedHandler;
+    }
+    public void Dispose()
+    {
+        DispositionData.InvalidMatchChanged -= InvalidMatchChangedHandler;
+    }
+    private void InvalidMatchChangedHandler() => InvokeAsync(StateHasChanged);
+    private bool disableInputs => DispositionData.InvalidMatch == true && string.IsNullOrEmpty(DispositionData.InitialActionTaken) && DispositionData.InitialActionAt == null 
+    && string.IsNullOrEmpty(DispositionData.FinalDisposition) && DispositionData.FinalDispositionDate == null;
+}
+<div id="initial-action-section" class="@(disableInputs ? "disabled-area" : "")" aria-disabled="@(disableInputs ? "true" : "false")">
+    <h5 class="InitalActionHeader">Initial Action</h5>
+        <div class="ResolutionFieldsDropdownWidth">
+              <UsaFormGroup>
+                <UsaSelect DropdownOptions="@(InitiatingState ? DropdownOptionsInitiating : DropdownOptionsMatching)"
+                    Value="@DispositionData.InitialActionTaken" ValueChanged="(value => InitialActionTakenChanged(value))"
+                   ValueExpression="() => DispositionData.InitialActionTaken"
+                   disabled="@disableInputs"/>
+            </UsaFormGroup>
+        </div>
+    <UsaFormGroup>
+            <UsaInputDate @bind-Value="DispositionData.InitialActionAt"
+            disabled="@disableInputs" />
+        </UsaFormGroup>
+</div>

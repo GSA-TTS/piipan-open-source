@@ -1,0 +1,63 @@
+# Orchestrator API base spec
+openapi: 3.0.0
+info:
+  title: "Metrics API"
+  version: 1.0.0
+  description: "API for metrics and metadata for the Piipan system."
+tags:
+  - name: "Metrics"
+servers:
+  - url: "/v1"
+paths:
+  /participant_uploads:
+    get:
+      tags:
+        - "Participant Uploads"
+      summary: "participant uploads index"
+      description: "Queries metrics database to show which states are uploading participants and when"
+      parameters:
+        - $ref: '../schemas/participant-uploads.yaml#/components/parameters/State'
+      responses:
+        '200':
+          description: "List of participant upload events"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipantUploadsResponse'
+  /getlastupload:
+    get:
+      tags:
+        - "Participant Uploads"
+      summary: "get last upload"
+      description: "Gets the last upload from each state, ordered by least recent upload first"
+      responses:
+        '200':
+          description: "List of participant upload events"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetLastUploadResponse'
+  /getuploadstatistics:
+    get:
+      tags:
+        - "Participant Uploads"
+      summary: "gets statistics for all uploads"
+      description: "Gets the count of all completed and failed uploads"
+      responses:
+        '200':
+          description: "Number or failed and completed uploads"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUploadStatisticsResponse'
+security:
+  - BearerAuth: []
+components:
+  schemas:
+    ParticipantUploadsResponse:
+      $ref: '../schemas/participant-uploads.yaml#/ParticipantUploadsResponse'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,50 @@
+<!-- Generated via IaC -->
+
+<policies>
+    <inbound>
+        <base />
+        <authentication-managed-identity resource="{applicationUri}" />
+        <!-- APIM has used this header to authenticate the request, drop it as we forward the request to our internal endpoint, as it has no use for the client's private API key -->
+        <set-header name="Ocp-Apim-Subscription-Key" exists-action="delete" />
+        <!-- Forward APIM subscription key name to our internal endpoint so it can identify the user who initiated the API call -->
+        <set-header name="Ocp-Apim-Subscription-Name" exists-action="override">
+            <value>@(context.Subscription.Name)</value>
+        </set-header>
+        <!--
+            Derive the state abbreviation from the subscription name and pass it on
+            to the backend as a header.
+
+            Fail if subscription name does not match the expected format of:
+            {uppercase-state-abbr}-DupPart (e.g., EA-DupPart).
+        -->
+        <choose>
+            <when condition="@(Regex.IsMatch(context.Subscription.Name, "^[A-Z]{2}-DupPart"))">
+                <set-variable name="InitiatingState" value="@{
+                    string pattern = @"^(?<state>[A-Z]{2})-DupPart";
+                    var matches = Regex.Match(context.Subscription.Name, pattern);
+                    return matches.Groups["state"].Value.ToLower();
+                }" />
+                <set-header name="X-Initiating-State" exists-action="override">
+                    <value>@((string)context.Variables["InitiatingState"])</value>
+                </set-header>
+            </when>
+            <otherwise>
+                <!-- Subscription name does not match the prescribed format -->
+                <!-- TODO: send log to event hub detailing the error -->
+                <return-response>
+                    <set-status code="500" />
+                </return-response>
+            </otherwise>
+        </choose>
+        <rate-limit calls="1050" renewal-period="60" remaining-calls-variable-name="remainingCallsPerSubscription"/>
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

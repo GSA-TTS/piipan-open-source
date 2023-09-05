@@ -1,0 +1,168 @@
+﻿@using Piipan.Components
+@using System.Linq.Expressions
+@using Piipan.Components.Layout
+@using static Piipan.Components.Layout.LayoutConstants
+@inherits BaseTest<UsaAccordion>
+
+@code {
+    private IElement? element;
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public UsaAccordionTests() : base()
+    {
+        InitialValues = new UsaAccordion()
+        {
+            ChildContent = __builder =>
+            {
+                <UsaAccordionItem StartsExpanded="true">
+                    <HeadingContent>Test Header</HeadingContent>
+                    <BodyContent><p>Accordion Content</p></BodyContent>
+                </UsaAccordionItem>
+                <UsaAccordionItem>
+                    <HeadingContent>Test Header 2</HeadingContent>
+                    <BodyContent><p>Accordion Content 2</p></BodyContent>
+                </UsaAccordionItem>
+            },
+            Multiselectable = false
+        };
+    }
+
+    /// <summary>
+    /// Create an accordion component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        Component = Render<UsaAccordion>(
+            @<UsaAccordion Multiselectable="InitialValues.Multiselectable">
+                @InitialValues.ChildContent
+            </UsaAccordion>
+        );
+        element = Component.Find($".{AccordionClass}");
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify that the markup that is generated for this accordion is what we expect
+    /// </summary>
+    [Fact]
+    public void Accordion_Should_Exist_And_Have_Correct_Markup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div class="@AccordionClass" aria-multiselectable="false">
+                <h4 class="@AccordionHeadingClass">
+                    <button class="@AccordionButtonClass" type="button" aria-expanded="true" aria-controls:ignore>Test Header</button>
+                </h4>
+                <div id:ignore class="@AccordionContentClass usa-prose">
+                    <p>Accordion Content</p>
+                </div>
+                <h4 class="@AccordionHeadingClass">
+                    <button class="@AccordionButtonClass" type="button" aria-expanded="false" aria-controls:ignore>Test Header 2</button>
+                </h4>
+                <div id:ignore class="@AccordionContentClass usa-prose" hidden>
+                    <p>Accordion Content 2</p>
+                </div>
+            </div>
+        );
+    }
+
+    /// <summary>
+    /// Verify that if the group allows only one accordion open at a time, we can't have multiple open
+    /// </summary>
+    [Fact]
+    public void Accordion_Verify_Single_Select()
+    {
+        // Arrange
+        InitialValues.Multiselectable = false;
+        CreateTestComponent();
+
+        // Assert
+        VerifySingleSelect();
+    }
+
+    /// <summary>
+    /// Verify that if the group allows multiple accordions open at a time, we can have multiple open
+    /// </summary>
+    [Fact]
+    public void Accordion_Verify_Multi_Select()
+    {
+        // Arrange
+        InitialValues.Multiselectable = true;
+        CreateTestComponent();
+
+        // Assert
+        VerifyMultiSelect();
+    }
+
+    /// <summary>
+    /// Verify that the group can switch from single select to multiselect on the fly
+    /// </summary>
+    [Fact]
+    public void Accordion_Should_Be_Able_To_Change_Multiselect_Before_And_After_Created()
+    {
+        // Arrange
+        bool beforeValue = false;
+        bool afterValue = true;
+        InitialValues.Multiselectable = beforeValue;
+        CreateTestComponent();
+
+        // Assert Initial Values
+        Component!.MarkupMatches(
+            @<div class="@AccordionClass" aria-multiselectable="false" diff:ignoreChildren>
+            </div>
+        );
+        VerifySingleSelect();
+
+        // Act
+        UpdateParameter(p => p.Multiselectable, afterValue);
+
+        // Assert Updated Values
+        Component!.MarkupMatches(
+            @<div class="@AccordionClass" aria-multiselectable="true" diff:ignoreChildren>
+            </div>
+        );
+        VerifyMultiSelect();
+    }
+    #endregion
+
+    /// <summary>
+    /// Verify the accordion is single-select, meaning only one accordion item can be expanded at a time.
+    /// Do this by clicking all the buttons and making sure only the last one is still expanded
+    /// </summary>
+    private void VerifySingleSelect()
+    {
+        var accordionItems = Component!.FindAll($".{AccordionButtonClass}[aria-expanded='false']");
+        foreach (var accordionItem in accordionItems)
+        {
+            accordionItem.Click();
+        }
+        var lastClicked = accordionItems.Last();
+        accordionItems = Component!.FindAll($".{AccordionButtonClass}[aria-expanded='true']");
+        Assert.Equal(1, accordionItems.Count);
+        Assert.Equal(lastClicked.GetAttribute("aria-controls"), accordionItems[0].GetAttribute("aria-controls"));
+    }
+
+    /// <summary>
+    /// Verify the accordion is mult-select, meaning only all accordion items can be expanded at the same time.
+    /// Do this by clicking all the buttons and making sure all are still expanded
+    /// </summary>
+    private void VerifyMultiSelect()
+    {
+        var accordionItems = Component!.FindAll($".{AccordionButtonClass}");
+        foreach (var accordionItem in accordionItems)
+        {
+            if (accordionItem.GetAttribute("aria-expanded") == "false")
+            {
+                accordionItem.Click();    
+            }
+        }
+        int countAllItems = accordionItems.Count;
+        accordionItems = Component!.FindAll($".{AccordionButtonClass}[aria-expanded='true']");
+        Assert.Equal(countAllItems, accordionItems.Count);
+    }
+}

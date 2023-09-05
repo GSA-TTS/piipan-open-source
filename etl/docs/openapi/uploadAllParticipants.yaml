@@ -1,0 +1,60 @@
+put:
+  operationId: "upload_all_participants"
+  summary: Upload a CSV file of bulk participant data
+  description: Upload a CSV file of bulk participant data. Each state is allowed a maximum of 60 requests per minute.
+  tags:
+    - "Bulk Upload"
+  parameters:
+    - name: filename
+      in: path
+      description: Name of file being uploaded
+      required: true
+      schema:
+        type: string
+    - in: header
+      name: Content-Length
+      schema:
+        type: integer
+      required: true
+      description: Size in bytes of your file to be uploaded. A curl request will add this header by default when including a data or file parameter.
+      example: 6413
+  requestBody:
+    content:
+      text/plain:
+        schema:
+          type: string
+          format: binary
+  responses:
+    '201':
+      description: File uploaded
+      content:
+        application/json:
+          schema:
+            title: Upload response
+            type: object
+            properties:
+              data:
+                type: object
+                nullable: true
+                description: The response payload. Will contain a data property with upload details.
+                required:
+                  - upload_id
+                properties:
+                  upload_id:
+                    type: string
+                    description: "A unique upload_id for the successful upload."
+          examples:
+            Default:
+              description: "An upload of a single CSV file of all the participants"
+              value:
+                data:
+                  upload_id: "0x8DA2EA86C4C2089"
+    '401':
+      description: Access denied
+    '411':
+      description: Content-Length not provided
+    '413':
+      description: Payload Too Large
+    '415':
+      description: Unknown file type
+      

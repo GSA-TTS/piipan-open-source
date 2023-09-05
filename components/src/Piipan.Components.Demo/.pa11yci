@@ -1,0 +1,18 @@
+{
+    "defaults": {
+        "timeout": 5000,
+        "viewport": {
+            "width": 1400,
+            "height": 700
+        },
+        "chromeLaunchConfig": {
+            "ignoreHTTPSErrors": true,
+            "args": [
+                "--no-sandbox"
+            ]
+        }
+    },
+    "urls": [
+        "http://localhost:5000"
+    ]
+}

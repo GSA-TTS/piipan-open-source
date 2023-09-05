@@ -1,0 +1,39 @@
+#/components/schemas/GetStatesResponse
+GetStatesResponse:
+  title: States response
+  type: object
+  properties:
+    data:
+      type: array
+      nullable: true
+      description: The response payload. Either an errors or data property will be present in the response, but not both.
+      items:
+        $ref: './state-record.yaml#/StateRecord'
+
+StateResponseExamples:
+  None:
+    description: "A request for states returns no items"
+    value:
+      data: []
+  Multiple:
+    description: "Request returns one item for each state"
+    value:
+      data:
+        - $ref: './state-record.yaml#/StateRecordExamples/VA'
+        - $ref: './state-record.yaml#/StateRecordExamples/MD'
+
+components:
+  responses:
+    '401':
+      description: "Unauthorized"
+    '200_Get_States':
+      description: "Successful response. Returns states"
+      content:
+        application/json:
+          schema:
+            $ref: '#/GetStatesResponse'
+          examples:
+            No states:
+              $ref: '#/StateResponseExamples/None'
+            Multiple states:
+              $ref: '#/StateResponseExamples/Multiple'

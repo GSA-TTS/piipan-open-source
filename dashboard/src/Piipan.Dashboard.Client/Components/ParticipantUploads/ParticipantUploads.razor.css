@@ -1,0 +1,21 @@
+﻿#historical-upload-info {
+    width: 630px;
+}
+@media (max-width: 50rem) {
+    #historical-upload-info {
+        width: unset;
+    }
+}
+
+::deep h2 {
+    font-size: 1.75rem;
+}
+.back-button {
+    margin-top: 1rem;
+    line-height: 1.5rem;
+    color: #005ea2;
+}
+
+.back-button svg {
+    vertical-align: middle;
+}

@@ -1,0 +1,88 @@
+﻿@using Bunit;
+@using Microsoft.AspNetCore.Components.Web
+@using Moq
+@using Piipan.Components.Modals
+@using Piipan.QueryTool.Client.Pages
+@using Piipan.QueryTool.Client.Shared
+@using Piipan.Shared.Client.Components
+@using Piipan.Shared.Client.DTO
+@using Xunit;
+@inherits BaseComponentTest<MainLayout>
+@code {
+    /// <summary>
+    /// Setup the component and register Javascript mocks
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        Component = Render<MainLayout>(@<MainLayout />);
+    }
+
+    [Fact]
+    public void Layout_RendersCorrectly()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component.MarkupMatches(
+            @<div id="inert-area">
+                <button class="usa-skipnav" type="button" onclick="document.getElementById('main-content')?.focus()">Skip to main content</button>
+                <div class="usa-overlay"></div>
+                <div class="sticky-footer">
+                    <div class="sticky-footer__fill">
+                        <header class="usa-header usa-header--extended">
+                            <section class="usa-banner" aria-label="Official government website" diff:ignoreChildren>
+                            </section>
+                            <section class="cui" diff:ignoreChildren>
+                            </section>
+                            <div class="usa-navbar" diff:ignoreChildren>
+                            </div>
+                            <nav aria-label="Primary navigation" class="usa-nav-primary">
+                                <div class="usa-nav__inner">
+                                    <button class="usa-nav__close">
+                                        <img src="/images/close.svg" role="img" alt="Close">
+                                    </button>
+                                    <ul class="usa-nav__primary usa-accordion">
+                                        <li class="usa-nav__primary-item">
+                                            <a href="/" class="usa-nav__link usa-current">
+                                                <span data-title="Search for SNAP Participants">Search for SNAP Participants</span>
+                                            </a>
+                                        </li>
+                                        <li class="usa-nav__primary-item">
+                                            <a href="/match" class="usa-nav__link ">
+                                                <span data-title="Find a Match Record">Find a Match Record</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </nav>
+                        </header>
+                        <div class="container margin-bottom-6 border-top-1px border-base-light">
+                            <main id="main-content" tabindex=-1></main>
+                        </div>
+                    </div>
+                    <footer>
+                        <section class="cui"diff:ignoreChildren>
+                        </section>
+                    </footer>
+                </div>
+        </div>
+    );
+        Assert.True(Component.HasComponent<UsaBanner>());
+        Assert.True(Component.HasComponent<UsaNavBar>());
+        Assert.True(Component.HasComponent<CUI>());
+        Assert.True(Component.HasComponent<ModalContainer>());
+    }
+
+    [Fact]
+    public void Layout_HasMatchListPage_WhenUserIsNationalUser()
+    {
+        // Arrange
+        AppData.States = new string[] { "*" };
+        CreateTestComponent();
+
+        // Assert
+        Assert.Contains("href=\"/list\"", Component.Markup);
+    }
+}

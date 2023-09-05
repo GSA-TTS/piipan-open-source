@@ -1,0 +1,53 @@
+﻿@using System.Linq.Expressions
+@using static FormConstants
+@using static Shared.CommonConstants
+@using static Piipan.Shared.API.Validation.ValidationConstants
+@typeparam TValue
+@inherits UsaFormGroup
+
+@code {
+    [Parameter]
+    public TValue? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<TValue> ValueChanged { get; set; }
+
+    [Parameter]
+    public Expression<Func<TValue>>? ValueExpression { get; set; }
+}
+
+<CascadingValue Value="this">
+    <div class="@InputFormGroupClass @(HasErrors ? InputFormGroupErrorClass : "")">
+        <UsaRadioGroupInput ValueExpression="ValueExpression" Value="Value" ValueChanged="ValueChanged">
+            <UsaLegend Status="Status">
+                @if (LabelOverride != null)
+                {
+                    @LabelOverride
+                }
+                else
+                {
+                    @Label
+                }
+            </UsaLegend>
+            @if (HintContent != null)
+            {
+                <span class="@HintClass">@HintContent</span>
+            }
+            @if (HasErrors)
+            {
+                <span class="@InputErrorMessageClass" id="@(InputElementId)-message"  role="alert">
+                    @foreach (var message in ValidationMessages)
+                    {
+                        var splitMessages = message.Split('\n');
+                        @foreach (var splitMessage in splitMessages)
+                        {
+                            @splitMessage.Replace(ValidationFieldPlaceholder, Label)
+                            <br />
+                        }
+                    }
+                </span>
+            }
+            @ChildContent
+        </UsaRadioGroupInput>
+    </div>
+</CascadingValue>

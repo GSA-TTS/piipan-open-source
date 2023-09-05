@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>Piipan.QueryTool</RootNamespace>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</RestoreLockedMode>
+    <DefaultItemExcludes>mock_user.json;$(DefaultItemExcludes)</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <!--
+    Because our static analysis tool, CodeQL, autobuilds C# with the UseSharedCompilation flag, we check this flag to avoid running npm tasks for these types of builds.
+  -->
+  <Target Name="NpmInstall" Inputs="package.json" Outputs="node_modules/.install-stamp" Condition="'$(UseSharedCompilation)' != 'false'">
+    <!--
+        Use npm install or npm ci depending on ContinuousIntegrationBuild value
+     -->
+    <Exec Command="npm ci" Condition="$(ContinuousIntegrationBuild) == 'true'" />
+    <Exec Command="npm install" Condition="$(ContinuousIntegrationBuild) != 'true'" />
+
+    <!-- Write the stamp file, so incremental builds work -->
+    <Touch Files="node_modules/.install-stamp" AlwaysCreate="true" />
+  </Target>
+
+  <!--
+      2. Compiles assets to wwwroot
+      MSBuild runs NpmInstall before this task because of the DependsOnTargets attribute.
+
+      Because our static analysis tool, CodeQL, autobuilds C# with the UseSharedCompilation flag, we check this flag to avoid running npm tasks for these types of builds.
+   -->
+  <Target Name="NpxGulpBuild" DependsOnTargets="NpmInstall" BeforeTargets="BeforeBuild" Condition="'$(UseSharedCompilation)' != 'false'">
+
+    <Exec Command="npx gulp build" />
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.13" />
+    <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="6.0.13" />
+    <PackageReference Include="NEasyAuthMiddleware" Version="2.0.0" />
+    <PackageReference Include="System.Text.Json" Version="6.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\match\src\Piipan.Match\Piipan.Match.Api\Piipan.Match.Api.csproj" />
+    <ProjectReference Include="..\..\..\match\src\Piipan.Match\Piipan.Match.Client\Piipan.Match.Client.csproj" />
+    <ProjectReference Include="..\..\..\shared\src\Piipan.Shared\Piipan.Shared.csproj" />
+    <ProjectReference Include="..\..\..\states\src\Piipan.States.Client\Piipan.States.Client.csproj" />
+    <ProjectReference Include="..\Piipan.QueryTool.Client\Piipan.QueryTool.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+</Project>

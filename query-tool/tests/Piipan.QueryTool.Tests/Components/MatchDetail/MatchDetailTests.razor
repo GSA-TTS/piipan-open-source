@@ -1,0 +1,663 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@using Moq
+@using Piipan.Components.Alerts
+@using Piipan.Components.Enums
+@using System.Linq.Expressions
+@using Piipan.Components.Forms
+@using Piipan.Components.Modals
+@using Piipan.Components.Routing
+@using Piipan.Components.Tag
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Components.MatchDetail
+@using Piipan.QueryTool.Client.Components.UnauthorizedBanners
+@using Piipan.QueryTool.Client.Modals
+@using Piipan.QueryTool.Client.Models
+@using Piipan.Shared.Client.Api
+@using Piipan.States.Api.Models
+@using Piipan.Shared.API.Utilities
+@using static Piipan.Components.Tag.TagConstants
+@inherits BaseComponentTest<MatchDetail>
+
+@code {
+    private IRenderedComponent<UsaForm> usaForm;
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public MatchDetailTests() : base()
+    {
+        MockApiService.Setup(n => n.SaveMatchUpdate(It.IsAny<string>(), It.IsAny<DispositionModel>()))
+            .ReturnsAsync(DefaultSaveResponse());
+        InitialValues = new Piipan.QueryTool.Client.Components.MatchDetail.MatchDetail()
+        {
+            InitialMatch = DefaultMatchResApiResponse()
+        };
+    }
+
+    /// <summary>
+    /// Create a matches list component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        JSInterop.SetupVoid("piipan.utilities.registerFormValidation", _ => true).SetVoidResult();
+        JSInterop.Setup<int>("piipan.utilities.getCursorPosition", _ => true).SetResult(1);
+        JSInterop.SetupVoid("piipan.utilities.setCursorPosition", _ => true).SetVoidResult();
+        JSInterop.SetupVoid("piipan.utilities.scrollToElement", _ => true).SetVoidResult();
+        Component = Render<MatchDetail>(
+            @<MatchDetail InitialMatch="InitialValues.InitialMatch">
+            </MatchDetail>
+        );
+        usaForm = Component.HasComponent<UsaForm>() ? Component.FindComponent<UsaForm>() : null;
+    }
+
+    private MatchResApiResponse DefaultMatchResApiResponse() {
+        return new MatchResApiResponse
+        {
+            Data = new MatchDetailsDto
+            {
+                Status = "open",
+                MatchId = "M123456",
+                Dispositions = new Disposition[]
+                {
+                    new Disposition
+                    {
+                        State = "ea",
+                        FinalDisposition = "Benefits Approved",
+                        FinalDispositionDate = DateTime.Parse("02/02/2022"),
+                        VulnerableIndividual = false,
+                        InvalidMatch = false,
+                        InitialActionAt = DateTime.Parse("01/01/2022"),
+                        InitialActionTaken = "Notice Sent"
+                    },
+                    new Disposition
+                    {
+                        State = "eb",
+                        FinalDisposition = "Benefits Terminated",
+                        FinalDispositionDate = DateTime.Parse("02/02/2021"),
+                        VulnerableIndividual = false,
+                        InvalidMatch = false,
+                        InitialActionAt = DateTime.Parse("01/01/2021"),
+                        InitialActionTaken = "Notice Sent"
+                    }
+                },
+                Participants = new Participant[]
+                {
+                    new Participant
+                    {
+                        State = "ea",
+                        CaseId = "c123",
+                        ParticipantId = "p123",
+                        RecentBenefitIssuanceDates = new List<DateRange>
+                        {
+                            new DateRange
+                            {
+                                Start = DateTime.Parse("01/01/2022"),
+                                End = DateTime.Parse("02/02/2022")
+                            },
+                            new DateRange
+                            {
+                                Start = DateTime.Parse("03/03/2022"),
+                                End = DateTime.Parse("04/04/2022")
+                            }
+                        }
+                    },
+                    new Participant
+                    {
+                        State = "eb",
+                        CaseId = "c456",
+                        ParticipantId = "p456",
+                        ParticipantClosingDate = DateTime.Parse("01/01/2021"),
+                        RecentBenefitIssuanceDates = new List<DateRange>
+                        {
+                            new DateRange
+                            {
+                                Start = DateTime.Parse("01/01/2021"),
+                                End = DateTime.Parse("02/02/2021")
+                            },
+                            new DateRange
+                            {
+                                Start = DateTime.Parse("03/03/2021"),
+                                End = DateTime.Parse("04/04/2021")
+                            }
+                        }
+                    }
+                },
+                States = new string[] { "ea", "eb" },
+                Initiator = "ea"
+            }
+        };
+    }
+
+    private ApiResponse<MatchDetailSaveResponse> DefaultSaveResponse()
+    {
+        return new ApiResponse<MatchDetailSaveResponse> 
+        {
+            Value = new MatchDetailSaveResponse {
+                SavedMatch = DefaultMatchResApiResponse(),
+                Alerts = new List<Alert>{
+                    new Alert {
+                        AlertSeverity = AlertSeverity.Success,
+                        Html = "<strong>Your update has been successfully saved.</strong>"
+                    }
+                }
+            }
+        };
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of the match detail page
+    /// </summary>
+    [Fact]
+    public void Match_Detail_Should_Exist_And_Have_Correct_Markup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+    @<div id="match-detail-area" style="padding-top: 24px;">
+        <h1>
+            <span class="usa-tag usa-tag--green usa-tag--round">open</span>
+            <span>Match ID: M123456</span>
+        </h1>
+        <div class="usa-form " style="">
+            <form id="snap-resolution-fields-form" novalidate="">
+                <fieldset class="usa-fieldset">
+                    <div class="grid-row matchInfoDiv">
+                        <dl>
+                            <div>
+                                <dt>Match Record Created:</dt>
+                                <dd>
+                                    <span style="color:#6E6E6E">( days since match)</span>
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>Match Query By:</dt>
+                                <dd>Echo Alpha (EA)</dd>
+                            </div>
+                            <div>
+                                <dd>All Piipan matches are based on an exact match of Last Name, Date of Birth, and Social Security Number.</dd>
+                            </div>
+                        </dl>
+                    </div>
+                    <div class="match-detail-grid">
+                        <div diff:ignore>
+                            //Ignoring Resolution Fields Component
+                        </div>
+                        <div>
+                            <div class="usa-accordion" aria-multiselectable="false">
+                                <h4 class="usa-accordion__heading">
+                                    <button class="usa-accordion__button" type="button" aria-expanded="true" aria-controls:ignore>SNAP Participant Information</button>
+                                </h4>
+                                <div id:ignore class="usa-accordion__content usa-prose">
+                                    <div class="two-state-grid">
+                                        <div diff:ignore>
+                                            //Ignoring State Participant Information Component
+                                        </div>
+                                        <div diff:ignore>
+                                            //Ignoring State Participant Information Component
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="usa-accordion" aria-multiselectable="false">
+                                <h4 class="usa-accordion__heading">
+                                    <button class="usa-accordion__button" type="button" aria-expanded="true" aria-controls:ignore>Match Information</button>
+                                </h4>
+                                <div id:ignore class="usa-accordion__content usa-prose">
+                                    <p>Each state's most recent updates are displayed below.</p>
+                                    <div class="two-state-grid">
+                                        <div diff:ignore>
+                                            //Ignoring State Disposition Information Component
+                                        </div>
+                                        <div diff:ignore>
+                                            //Ignoring State Disposition Information Component
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="usa-accordion" aria-multiselectable="false">
+                                <h4 class="usa-accordion__heading">
+                                    <button class="usa-accordion__button" type="button" aria-expanded="true" aria-controls:ignore>State Agency Contact Information</button>
+                                </h4>
+                                <div id:ignore class="usa-accordion__content usa-prose">
+                                    <ul>
+                                        <li>Use this information if you need to contact the other state in regards to this match</li>
+                                        <li>Do not exchange PII about the participant by email; use their state’s Participant ID</li>
+                                    </ul>
+                                    <div class="two-state-grid">
+                                        <div diff:ignore>
+                                            //Ignoring State Contact Information Component
+                                        </div>
+                                        <div diff:ignore>
+                                            //Ignoring State Contact Information Component
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        </div>
+    );
+        Assert.False(Component.HasComponent<MatchUnauthorizedBanner>());
+    }
+
+    /// <summary>
+    /// Verify that a closed case does not have the match resolution fields
+    /// </summary>
+    [Fact]
+    public void ResolutionFields_ShouldNotExist_WhenMatchIsClosed()
+    {
+        // Arrange
+        InitialValues.InitialMatch.Data.Status = "closed";
+        CreateTestComponent();
+
+        // Assert
+        Assert.Empty(Component.FindComponents<ResolutionFields>());
+    }
+
+    /// <summary>
+    /// Verify that a case with a vulnerable individual and invalid match has the appropriate tags
+    /// </summary>
+    [Fact]
+    public void TagsShouldExist_WhenInvalidAndVulnerable()
+    {
+        // Arrange
+        InitialValues.InitialMatch.Data.Dispositions[0].VulnerableIndividual = true;
+        InitialValues.InitialMatch.Data.Dispositions[0].InvalidMatch = true;
+        CreateTestComponent();
+
+        // Assert
+        Assert.Equal(3, Component.FindComponents<UsaTag>().Count()); //open tag, vulnerable tag, and invalid tag
+    }
+
+    /// <summary>
+    /// Verify that the resolution fields section should not exist when the user is not the correct role
+    /// </summary>
+    [Fact]
+    public void ResolutionFields_ShouldNotExist_WhenUserIsNotCorrectRole()
+    {
+        // Arrange
+        AppData.Role = "SomeOtherRole";
+        CreateTestComponent();
+
+        // Assert
+        Assert.Empty(Component.FindComponents<ResolutionFields>());
+    }
+
+    /// <summary>
+    /// Verify the match detail status tag is green when the status is open
+    /// </summary>
+    [Fact]
+    public void Match_Detail_Status_Tag_Should_Be_Green_When_Open()
+    {
+        // Arrange
+        CreateTestComponent();
+        var tag = Component!.Find($".{TagClass}");
+
+        // Assert
+        Assert.True(tag.ClassList.Contains(TagThemeGreenClass));
+    }
+
+    /// <summary>
+    /// Verify the match detail status tag is gray when the status is closed
+    /// </summary>
+    [Fact]
+    public void Match_Detail_Status_Tag_Should_Be_Gray_When_Closed()
+    {
+        // Arrange
+        InitialValues.InitialMatch.Data.Status = "closed";
+        CreateTestComponent();
+        var tag = Component!.Find($".{TagClass}");
+
+        // Assert
+        Assert.True(tag.ClassList.Contains(TagThemeGrayClass));
+    }
+
+    /// <summary>
+    /// Verify the match detail shows the save success notification when set and dismisses when the close button is clicked
+    /// </summary>
+    [Fact]
+    public async Task Match_Detail_Shows_Save_Success_And_Dismissable()
+    {
+        // Arrange
+        // Setting FinalDispositions to null so that we don't enter the Close Match logic
+        InitialValues.InitialMatch.Data.Dispositions[0].FinalDisposition = null;
+        InitialValues.InitialMatch.Data.Dispositions[0].FinalDispositionDate = null;
+        CreateTestComponent();
+
+        var saveButton = usaForm.Find(".ResolutionFieldsSave");
+        await saveButton.ClickAsync(new MouseEventArgs());
+
+        var saveSuccessElement = Component!.Find($".post-save-alert");
+
+        // Assert
+        Assert.NotNull(saveSuccessElement);
+
+        // Act - Dismiss the alert
+        saveSuccessElement.QuerySelector(".usa-button").Click();
+
+        // Assert
+        Assert.Empty(Component!.FindAll($".post-save-alert"));
+    }
+
+    /// <summary>
+    /// Verify the match detail shows server errors
+    /// </summary>
+    [Fact]
+    public async Task MatchDetail_ShowsServerErrors()
+    {
+        // Arrange
+        // Setting FinalDispositions to null so that we don't enter the Close Match logic
+        InitialValues.InitialMatch.Data.Dispositions[0].FinalDisposition = null;
+        InitialValues.InitialMatch.Data.Dispositions[0].FinalDispositionDate = null;
+        CreateTestComponent();
+        MockApiService.Setup(n => n.SaveMatchUpdate(It.IsAny<string>(), It.IsAny<DispositionModel>()))
+            .ReturnsAsync(
+                new ApiResponse<MatchDetailSaveResponse> 
+                { 
+                    Errors = new List<ServerError> { new ServerError("", "An error has occurred") } 
+                });
+
+        var saveButton = usaForm.Find(".ResolutionFieldsSave");
+        await saveButton.ClickAsync(new MouseEventArgs());
+
+        // Assert
+        await ResolutionFieldsTestHelper.VerifyErrors(usaForm, 1, new List<string>
+        {
+            "An error has occurred"
+        }, false, 0);
+    }
+
+    /// <summary>
+    /// Verify that when a valid match detail is saved, the button changes to "Saving Changes..."
+    /// </summary>
+    [Fact]
+    public async Task SubmitButtonShouldSay_SavingChanges_AndBeDisabled_UponSubmissionOfForm()
+    {
+        // Arrange
+        // Setting FinalDispositions to null so that we don't enter the Close Match logic
+        InitialValues.InitialMatch.Data.Dispositions[0].FinalDisposition = null;
+        InitialValues.InitialMatch.Data.Dispositions[0].FinalDispositionDate = null;
+        MockApiService.Setup(n => n.SaveMatchUpdate(It.IsAny<string>(), It.IsAny<DispositionModel>()))
+            .Returns(async () => {
+                await Task.Delay(1000); // put a delay in there so we can check the status of the button
+                return DefaultSaveResponse();
+            });
+        CreateTestComponent();
+        var saveButton = usaForm.Find(".ResolutionFieldsSave");
+
+        // Assert
+        Assert.Equal("Save Changes", saveButton.TextContent);
+        Assert.False(saveButton.HasAttribute("disabled"));
+
+        // Act
+        var task = saveButton.ClickAsync(new MouseEventArgs());
+
+        // Assert
+        Component.WaitForAssertion(() => Assert.True(saveButton.HasAttribute("disabled")));
+        Assert.Equal("Saving Changes...", saveButton.TextContent);
+        await task;
+
+        // Assert the button goes back to original state after saving
+        MockApiService.Verify(n => n.SaveMatchUpdate(It.IsAny<string>(), It.IsAny<DispositionModel>()), Times.Once());
+        Assert.Equal("Save Changes", saveButton.TextContent);
+        Assert.False(saveButton.HasAttribute("disabled"));
+    }
+
+    /// <summary>
+    /// Verify that when an invalid match tries to save after a successful one is saved, the save notification goes away
+    /// </summary>
+    [Fact]
+    public async Task SaveSuccessNotification_DisappearsWhen_SavingInvalidForm()
+    {
+        // Arrange
+        // Setting FinalDispositions to null so that we don't enter the Close Match logic
+        InitialValues.InitialMatch.Data.Dispositions[0].FinalDisposition = null;
+        InitialValues.InitialMatch.Data.Dispositions[0].FinalDispositionDate = null;
+        CreateTestComponent();
+
+        // Act
+        var saveButton = usaForm.Find(".ResolutionFieldsSave");
+        await saveButton.ClickAsync(new MouseEventArgs());
+
+        var saveSuccessElement = Component!.Find($".post-save-alert");
+
+        // Assert
+        Assert.NotNull(saveSuccessElement);
+
+        // Act - Dismiss the alert
+        saveSuccessElement.QuerySelector(".usa-button").Click();
+
+        // Assert
+        Assert.NotNull(saveSuccessElement);
+
+        // Act
+        var initActionTaken = Component.Find("[name=\"DispositionData.InitialActionAt\"]");
+        initActionTaken.Change("");
+        initActionTaken.Blur();
+
+        await saveButton.ClickAsync(new MouseEventArgs());
+
+        // Assert
+        Assert.Empty(Component!.FindAll($".post-save-alert"));
+    }
+
+    /// <summary>
+    /// Verify that the back button exists when coming from the query page and with the right text
+    /// </summary>
+    [Fact]
+    public void BackButton_Exists_WhenFromQueryPage()
+    {
+        // Arrange
+        var navigationManager = Services.GetService<PiipanNavigationManager>();
+        navigationManager.ReferralPage = "https://agency.test.example";
+        CreateTestComponent();
+
+
+        // Assert
+        var backButton = Component.Find(".back-button");
+        Assert.Equal("Back to Search for SNAP Participants", backButton.TextContent);
+    }
+
+    /// <summary>
+    /// Verify that the back button exists when coming from the match search page and with the right text
+    /// </summary>
+    [Fact]
+    public void BackButton_Exists_WhenFromMatchSearchPage()
+    {
+        // Arrange
+        var navigationManager = Services.GetService<PiipanNavigationManager>();
+        navigationManager.ReferralPage = "https://agency.test.example/match";
+        CreateTestComponent();
+
+        // Assert
+        var backButton = Component.Find(".back-button");
+        Assert.Equal("Back to Find a Match Record", backButton.TextContent);
+    }
+
+        /// <summary>
+    /// Verify that the back button exists when coming from the Piipan match list page and with the right text
+    /// </summary>
+    [Fact]
+    public void BackButton_Exists_WhenFromMatchListPage()
+    {
+        // Arrange
+        var navigationManager = Services.GetService<PiipanNavigationManager>();
+        navigationManager.ReferralPage = "https://agency.test.example/list";
+        CreateTestComponent();
+
+        // Assert
+        var backButton = Component.Find(".back-button");
+        Assert.Equal("Back to List of Piipan Matches", backButton.TextContent);
+    }
+
+    /// <summary>
+    /// Verify that the back button does NOT exist when coming from other places
+    /// </summary>
+    [Fact]
+    public void BackButton_DoesNotExists_WhenFromOtherExternalPage()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        var backButtons = Component.FindAll(".back-button");
+        Assert.Empty(backButtons);
+    }
+
+    /// <summary>
+    /// Verify that the back button does NOT exist when coming from other places
+    /// </summary>
+    [Fact]
+    public void BackButton_DoesNotExists_WhenFromOtherInternalPage()
+    {
+        // Arrange
+        var navigationManager = Services.GetService<PiipanNavigationManager>();
+        navigationManager.ReferralPage = "https://agency.test.example/otherpage";
+        CreateTestComponent();
+
+        // Assert
+        var backButtons = Component.FindAll(".back-button");
+        Assert.Empty(backButtons);
+    }
+
+    /// <summary>
+    /// Vulnerable Individual modal appears when coming from an other location and the participant is vulnerable in initiating state
+    /// </summary>
+    [Fact]
+    public void VulnerableIndividualModal_AppearsWhen_InitiatingStateVulnerable_AndFromOtherExternalLocation()
+    {
+        // Arrange
+        InitialValues.InitialMatch.Data.Dispositions[0].VulnerableIndividual = true;
+        CreateTestComponent();
+
+        // Assert
+        var modalManager = Services.GetService<IModalManager>();
+        Assert.True(modalManager.OpenModals.First().ForceAction);
+        Assert.Equal(1, modalManager.OpenModals.Count);
+    }
+
+    /// <summary>
+    /// Close Match modal appears when trying to save a match where it would close
+    /// </summary>
+    [Fact]
+    public async Task CloseMatchModal_AppearsWhen_SavingAndWouldClose()
+    {
+        // Arrange -- default values currently will close the match
+        CreateTestComponent();
+
+        // Act - Simulate saving
+        var saveButton = usaForm.Find(".ResolutionFieldsSave");
+        await saveButton.ClickAsync(new MouseEventArgs());
+
+        // Assert modal is shown
+        var modalManager = Services.GetService<IModalManager>();
+        Assert.False(modalManager.OpenModals.First().ForceAction);
+        Assert.Equal(1, modalManager.OpenModals.Count);
+
+        // Assert simulating the ContinueCallback
+        var modalRenderFragment = modalManager.OpenModals.First().RenderFragment;
+        var renderedModal = Render(modalRenderFragment);
+        var closeMatchModal = renderedModal.FindComponent<CloseMatchModal>();
+
+        // Set the modal info... this would normally get set automatically but we don't have a modal container
+        closeMatchModal.Instance.ModalInfo = modalManager.OpenModals.First();
+        await closeMatchModal.Find(".usa-button").ClickAsync(new MouseEventArgs());
+
+        // Assert it was saved and the modal is now closed
+        MockApiService.Verify(n => n.SaveMatchUpdate(It.IsAny<string>(), It.IsAny<DispositionModel>()), Times.Once());
+        Assert.Empty(modalManager.OpenModals);
+    }
+
+    /// <summary>
+    /// Vulnerable Individual modal appears when coming from an other location and the participant is vulnerable in initiating state
+    /// </summary>
+    [Fact]
+    public void VulnerableIndividualModal_AppearsWhen_InitiatingStateVulnerable_AndFromOtherInternalLocation()
+    {
+        // Arrange
+        var navigationManager = Services.GetService<PiipanNavigationManager>();
+        navigationManager.ReferralPage = "https://agency.test.example/otherpage";
+        InitialValues.InitialMatch.Data.Dispositions[0].VulnerableIndividual = true;
+        CreateTestComponent();
+
+        // Assert
+        var modalManager = Services.GetService<IModalManager>();
+        Assert.True(modalManager.OpenModals.First().ForceAction);
+        Assert.Equal(1, modalManager.OpenModals.Count);
+    }
+
+    /// <summary>
+    /// Vulnerable Individual modal appears when coming from an other location and the participant is vulnerable in matching state
+    /// </summary>
+    [Fact]
+    public void VulnerableIndividualModal_AppearsWhen_MatchingStateVulnerable_AndFromOtherLocation()
+    {
+        // Arrange
+        InitialValues.InitialMatch.Data.Dispositions[1].VulnerableIndividual = true;
+        CreateTestComponent();
+
+        // Assert
+        var modalManager = Services.GetService<IModalManager>();
+        Assert.True(modalManager.OpenModals.First().ForceAction);
+        Assert.Equal(1, modalManager.OpenModals.Count);
+    }
+
+    /// <summary>
+    /// Vulnerable Individual modal does NOT appear when coming from an query page, even when vulnerable individual is set (it would have been shown on the query page)
+    /// </summary>
+    [Fact]
+    public void VulnerableIndividualModal_NotAppearsWhen_InitiatingStateVulnerable_AndFromQueryPageLocation()
+    {
+        // Arrange
+        var navigationManager = Services.GetService<PiipanNavigationManager>();
+        navigationManager.ReferralPage = "https://agency.test.example";
+        InitialValues.InitialMatch.Data.Dispositions[0].VulnerableIndividual = true;
+        CreateTestComponent();
+
+        // Assert
+        var modalManager = Services.GetService<IModalManager>();
+        Assert.Empty(modalManager.OpenModals);
+    }
+
+    /// <summary>
+    /// Vulnerable Individual modal does NOT appear when coming from an match search page, even when vulnerable individual is set (it would have been shown on the query page)
+    /// </summary>
+    [Fact]
+    public void VulnerableIndividualModal_NotAppearsWhen_InitiatingStateVulnerable_AndFromMatchSearchLocation()
+    {
+        // Arrange
+        var navigationManager = Services.GetService<PiipanNavigationManager>();
+        navigationManager.ReferralPage = "https://agency.test.example/match";
+        InitialValues.InitialMatch.Data.Dispositions[0].VulnerableIndividual = true;
+        CreateTestComponent();
+
+        // Assert
+        var modalManager = Services.GetService<IModalManager>();
+        Assert.Empty(modalManager.OpenModals);
+    }
+
+    /// <summary>
+    /// Vulnerable Individual modal does NOT appear when coming from a match list page, even when vulnerable individual is set (it would have been shown on the query page)
+    /// </summary>
+    [Fact]
+    public void VulnerableIndividualModal_NotAppearsWhen_InitiatingStateVulnerable_AndFromMatchListLocation()
+    {
+        // Arrange
+        var navigationManager = Services.GetService<PiipanNavigationManager>();
+        navigationManager.ReferralPage = "https://agency.test.example/list";
+        InitialValues.InitialMatch.Data.Dispositions[0].VulnerableIndividual = true;
+        CreateTestComponent();
+
+        // Assert
+        var modalManager = Services.GetService<IModalManager>();
+        Assert.Empty(modalManager.OpenModals);
+    }
+    #endregion
+}

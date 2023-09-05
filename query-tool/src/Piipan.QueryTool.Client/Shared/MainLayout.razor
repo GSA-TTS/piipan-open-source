@@ -1,0 +1,79 @@
+﻿@inherits LayoutComponentBase
+
+@using Piipan.QueryTool.Client.Components
+@using Piipan.QueryTool.Client.Models
+@using Piipan.Shared.Client.Components
+
+@code {
+    protected override void OnInitialized()
+    {
+        ClientAppData.CurrentPageUpdated += async () =>
+        {
+            await InvokeAsync(StateHasChanged);
+        };
+    }
+    private string OutputNavigationClassName(params string[] linkAliases) {
+        return linkAliases.Contains(ClientAppData.CurrentPage) ? "usa-current" : "";
+    }
+}
+
+<div id="inert-area">
+    <button type="button" class="usa-skipnav" onclick="document.getElementById('main-content')?.focus()">Skip to main content</button>
+    <div class="usa-overlay"></div>
+        <div class="sticky-footer">
+            <div class="sticky-footer__fill">
+                <header class="usa-header usa-header--extended">
+                    <UsaBanner />
+                    <CUI />
+                    <UsaNavBar />
+                     <nav aria-label="Primary navigation" class="usa-nav-primary">
+                        <div class="usa-nav__inner">
+                            <button class="usa-nav__close">
+                                <img src="/images/close.svg" role="img" alt="Close">
+                            </button>
+
+                            <ul class="usa-nav__primary usa-accordion">
+                                <li class="usa-nav__primary-item">
+                                @{
+                                    var linkTitle = "Search for SNAP Participants";
+                                }
+                                <a href="/" class="usa-nav__link @OutputNavigationClassName("")">
+                                    <span data-title="@linkTitle">@linkTitle</span>
+                                    </a>
+                                </li>
+                                <li class="usa-nav__primary-item">
+                                    @{
+                                        linkTitle = "Find a Match Record";
+                                    }
+                                    <a href="/match" class="usa-nav__link @OutputNavigationClassName("match")">
+                                        <span data-title="@linkTitle">@linkTitle</span>
+                                    </a>
+                                </li>
+                                @if (ClientAppData.IsNationalOffice)
+                                {
+                                    <li class="usa-nav__primary-item">
+                                            @{
+                                                linkTitle = "List of Piipan Matches";
+                                            }
+                                        <a href="/list" class="usa-nav__link @OutputNavigationClassName("list")">
+                                            <span data-title="@linkTitle">@linkTitle</span>
+                                        </a>
+                                    </li>
+                                
+                                }
+                            </ul>
+                        </div>
+                    </nav>                   
+                </header>
+                <div class="container margin-bottom-6 border-top-1px border-base-light">
+                    <main id="main-content" tabindex=-1>
+                        @Body
+                    </main>
+                </div>
+            </div>
+            <footer>
+                <CUI />
+            </footer>
+        </div>
+    </div>
+    <Piipan.Components.Modals.ModalContainer />

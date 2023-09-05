@@ -1,0 +1,18 @@
+version: "3.7"
+
+services:
+  app:
+    image: mcr.microsoft.com/dotnet/sdk:6.0
+    volumes:
+      - ../../:/code
+    depends_on:
+      - db
+    environment:
+      MetricsDatabaseConnectionString : "Server=db;Database=metrics;Port=5432;User Id=postgres;Password=securepass;"
+  db:
+    image: postgres:11-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: securepass
+      POSTGRES_DB: metrics

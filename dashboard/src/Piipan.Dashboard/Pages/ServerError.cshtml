@@ -1,0 +1,59 @@
+﻿@page
+@model Piipan.Dashboard.Pages.ServerErrorModel
+@{
+    Layout = "_EmptyLayout";
+    ViewData["Title"] = "Something Unexpected Happened";
+}
+<style>
+    .grid-container {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    grid-gap: 20px;
+    gap: 20px;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+h1, p {
+    margin-top: 0;
+    margin-bottom: 3rem;
+}
+
+p.large-text {
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.svg-area {
+    padding-top: 1rem;
+}
+
+@@media (max-width: 50rem) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+    .svg-area {
+        display: none;
+    }
+}
+</style>
+<div class="grid-container">
+    <div>
+        <h1>Something Unexpected Happened</h1>
+        <p class="large-text">We're sorry, there was an error with your request. Please try again.</p>
+        <p>Error code: 500</p>
+        <p>To request access, please contact the <a href="mailto:@Model.HelpDeskEmail">help desk</a>.</p>
+    </div>
+    <div class="svg-area">
+        <svg width="420" height="420" viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M306.253 411.257C364.245 411.257 411.257 364.245 411.257 306.253C411.257 248.26 364.245 201.249 306.253 201.249C248.26 201.249 201.249 248.26 201.249 306.253C201.249 364.245 248.26 411.257 306.253 411.257Z" stroke="#1B1B1B" stroke-width="5.5" stroke-linejoin="round"/>
+            <path d="M262.502 350.003L350.003 262.502" stroke="#1B1B1B" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M350.003 350.003L262.502 262.502" stroke="#1B1B1B" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8.74365 78.7412H358.746" stroke="#1B1B1B" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M61.2534 35.0068C56.4101 35.0068 52.5098 38.9231 52.5098 43.7505C52.5098 48.5779 56.426 52.4942 61.2534 52.4942C66.0808 52.4942 69.9971 48.5779 69.9971 43.7505C69.9971 38.9231 66.0808 35.0068 61.2534 35.0068Z" fill="#1B1B1B"/>
+            <path d="M96.2442 35.0068C91.4008 35.0068 87.5005 38.9231 87.5005 43.7505C87.5005 48.5779 91.4168 52.4942 96.2442 52.4942C101.072 52.4942 104.988 48.5779 104.988 43.7505C104.988 38.9231 101.072 35.0068 96.2442 35.0068Z" fill="#1B1B1B"/>
+            <path d="M131.251 35.0068C126.408 35.0068 122.507 38.9231 122.507 43.7505C122.507 48.5779 126.424 52.4942 131.251 52.4942C136.078 52.4942 139.995 48.5779 139.995 43.7505C139.995 38.9231 136.078 35.0068 131.251 35.0068Z" fill="#1B1B1B"/>
+            <path d="M169.535 288.749H43.7503C24.4407 288.749 8.74365 273.084 8.74365 253.742V43.7503C8.74365 24.4247 24.4407 8.74365 43.7503 8.74365H323.74C343.081 8.74365 358.746 24.4087 358.746 43.7503V179.125" stroke="#1B1B1B" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </div>
+</div>

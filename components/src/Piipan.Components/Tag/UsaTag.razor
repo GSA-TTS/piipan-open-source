@@ -1,0 +1,11 @@
+﻿@code {
+    [Parameter] public TagTheme Theme { get; set; } = TagTheme.Green;
+    [Parameter] public BorderType BorderType { get; set; } = BorderType.Round;
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object> AdditionalAttributes { get; set; }
+}
+
+<span class="usa-tag usa-tag--@(Theme.ToString().ToLower()) usa-tag--@(BorderType.ToString().ToLower())" @attributes="AdditionalAttributes">
+    @ChildContent
+</span>

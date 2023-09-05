@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33110.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Piipan.SupportTools.Func.Api", "src\Piipan.SupportTools.Func.Api\Piipan.SupportTools.Func.Api.csproj", "{781C4FBA-5ECE-4B55-A9AA-1757FF8134B1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1F2D2B43-E094-4E24-A5FD-BBB4FE1B35C4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Piipan.SupportTools.Func.Api.Tests", "tests\Piipan.SupportTools.Func.Api.Tests\Piipan.SupportTools.Func.Api.Tests.csproj", "{C1612362-D7D8-4425-9C75-3C5CF4CDC77A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Piipan.SupportTools.Core.Tests", "tests\Piipan.SupportTools.Core.Tests\Piipan.SupportTools.Core.Tests.csproj", "{4669E3EB-0D54-4CF4-9AA3-8A4323B06B38}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Piipan.SupportTools.Core", "src\Piipan.SupportTools.Core\Piipan.SupportTools.Core.csproj", "{BEB5F09E-5E1A-454A-A13E-BE5A9BE134C5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{781C4FBA-5ECE-4B55-A9AA-1757FF8134B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{781C4FBA-5ECE-4B55-A9AA-1757FF8134B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{781C4FBA-5ECE-4B55-A9AA-1757FF8134B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{781C4FBA-5ECE-4B55-A9AA-1757FF8134B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1612362-D7D8-4425-9C75-3C5CF4CDC77A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1612362-D7D8-4425-9C75-3C5CF4CDC77A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1612362-D7D8-4425-9C75-3C5CF4CDC77A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1612362-D7D8-4425-9C75-3C5CF4CDC77A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4669E3EB-0D54-4CF4-9AA3-8A4323B06B38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4669E3EB-0D54-4CF4-9AA3-8A4323B06B38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4669E3EB-0D54-4CF4-9AA3-8A4323B06B38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4669E3EB-0D54-4CF4-9AA3-8A4323B06B38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEB5F09E-5E1A-454A-A13E-BE5A9BE134C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEB5F09E-5E1A-454A-A13E-BE5A9BE134C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEB5F09E-5E1A-454A-A13E-BE5A9BE134C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEB5F09E-5E1A-454A-A13E-BE5A9BE134C5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C1612362-D7D8-4425-9C75-3C5CF4CDC77A} = {1F2D2B43-E094-4E24-A5FD-BBB4FE1B35C4}
+		{4669E3EB-0D54-4CF4-9AA3-8A4323B06B38} = {1F2D2B43-E094-4E24-A5FD-BBB4FE1B35C4}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {763BC9BF-8E85-4862-AC5F-3DA0E81156B2}
+	EndGlobalSection
+EndGlobal

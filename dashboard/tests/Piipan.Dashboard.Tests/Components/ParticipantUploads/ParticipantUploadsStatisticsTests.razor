@@ -1,0 +1,95 @@
+﻿@using System.Linq.Expressions
+@using Moq
+@using Piipan.Dashboard.Client.Components.ParticipantUploads
+@using Piipan.Dashboard.Client.Components
+@using Piipan.Dashboard.Tests
+@using Piipan.Metrics.Api
+@using Piipan.Shared.Client.Api
+@using Xunit
+@using Bunit
+@inherits BaseComponentTest<ParticipantUploadsStatistics>
+
+@code {
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public ParticipantUploadsStatisticsTests() : base()
+    {
+    }
+    /// <summary>
+    /// Create a matches list component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        Component = Render<ParticipantUploadsStatistics>(
+            @<ParticipantUploadsStatistics>
+        </ParticipantUploadsStatistics>
+    );
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of the Participant Upload statistics component
+    /// </summary>
+    [Fact]
+    public void ParticipantUploadsStatistics_ShouldExist_AndHaveCorrectMarkup()
+    {
+        // Arrange
+        MockApiService.Setup(n => n.GetUploadStatistics(It.IsAny<ParticipantUploadStatisticsRequest>()))
+            .ReturnsAsync(DefaultResponse());
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<text>
+                <h2>Daily Upload Information</h2>
+                <span diff:ignoreChildren></span>
+                <div id="statistic-wrapper" >
+                    <div class="statistic-card" >
+                        <h3>Daily Failed Uploads</h3>
+                        <span class="statistic-number" >0</span>
+                    </div>
+                    <div class="statistic-card" >
+                        <h3 >Daily Uploads Completed (out of 1)</h3>
+                        <span class="statistic-number" >0</span>
+                    </div>
+                </div>
+        </text>
+    );
+        // Can't verify exact time, so just verify it contains the substring
+        Assert.Contains("last synced on ", Component.Find("span").TextContent);
+    }
+
+    /// <summary>
+    /// Verify the Participant Upload statistics component shows the correct number of failure/complete
+    /// </summary>
+    [Fact]
+    public void ParticipantUploadsStatistics_ShouldShowCorrectNumbers()
+    {
+        // Arrange
+        var response = DefaultResponse();
+        response.Value.TotalFailure = 3;
+        response.Value.TotalComplete = 5;
+        MockApiService.Setup(n => n.GetUploadStatistics(It.IsAny<ParticipantUploadStatisticsRequest>()))
+            .ReturnsAsync(response);
+        CreateTestComponent();
+
+        // Assert
+        var statisticNumbers = Component.FindAll(".statistic-number");
+
+        Assert.Equal("3", statisticNumbers[0].TextContent);
+        Assert.Equal("5", statisticNumbers[1].TextContent);
+    }
+
+    #endregion
+    private ApiResponse<ParticipantUploadStatistics> DefaultResponse() => new ApiResponse<ParticipantUploadStatistics>
+        {
+            Value = new ParticipantUploadStatistics
+            {
+                TotalComplete = 0,
+                TotalFailure = 0
+            }
+        };
+}

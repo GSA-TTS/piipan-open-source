@@ -1,0 +1,481 @@
+﻿@using System.Linq.Expressions
+@using Moq
+@using Piipan.Dashboard.Client.Components.ParticipantUploads
+@using Piipan.Dashboard.Client.DTO
+@using Piipan.Dashboard.Client.Components
+@using Piipan.Dashboard.Tests
+@using Piipan.Dashboard.Tests.Helpers
+@using Piipan.Metrics.Api
+@using Piipan.Shared.Client.Api
+@using Xunit
+@using Bunit
+@inherits BaseComponentTest<ParticipantUploadsResults>
+
+@{
+    //Because XUnit can run test collections in parallel, tests utilizing FakeLocalTimeZone might stomp on each other.
+    //To avoid this, we explicitly put any tests utilizing FakeLocalTimeZone into the same collection to ensure
+    //they run serially. https://xunit.net/docs/running-tests-in-parallel
+}    
+@attribute [Collection("FakeLocalTimeZoneRelatedTests")] 
+@code {
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public ParticipantUploadsResultsTests() : base()
+    {
+        InitialValues = new ParticipantUploadsResults()
+        {
+            
+        };
+    }
+    /// <summary>
+    /// Create a matches list component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        Component = Render<ParticipantUploadsResults>(
+            @<ParticipantUploadsResults Filter="InitialValues.Filter">
+            </ParticipantUploadsResults>
+        );
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of the Participant Upload component when loading
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldExist_AndHaveCorrectMarkup_Loading()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div id="participant-upload-results" >
+                <p>Loading...</p>
+            </div>
+        );
+    }
+
+    /// <summary>
+    /// Verify the default markup of the Participant Upload component when no results
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldExist_AndHaveCorrectMarkup_NoResults()
+    {
+        // Arrange
+        MockApiService.Setup(n => n.GetUploads(It.IsAny<ParticipantUploadRequestFilter>()))
+            .ReturnsAsync(ReturnRandomResults(0));
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div id="participant-upload-results" >
+                <h3>No results</h3>
+            </div>
+        );
+    }
+
+    /// <summary>
+    /// Verify the default markup of the Participant Upload component when 10 results
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldExist_AndHaveCorrectMarkup_10Results()
+    {
+        using (var timeZone = new FakeLocalTimeZone(FakeLocalTimeZone.DefaultTestTimeZone))
+        {
+            // Arrange
+            MockApiService.Setup(n => n.GetUploads(It.IsAny<ParticipantUploadRequestFilter>()))
+                .ReturnsAsync(ReturnRandomResults(10));
+            CreateTestComponent();
+
+            // Assert
+            Component!.MarkupMatches(
+                @<div id="participant-upload-results" >
+                  <table class="usa-table usa-table--striped" >
+                    <thead >
+                      <tr >
+                        <th scope="col">State</th>
+                        <th scope="col">Upload Status</th>
+                        <th scope="col">Timestamp at Processing Start</th>
+                      </tr>
+                    </thead>
+                    <tbody >
+                      <tr >
+                        <td >Echo Alpha (EA)</td>
+                        <td >Complete</td>
+                        <td>1/1/2022 7:00:00 AM TT</td>
+                      </tr>
+                      <tr >
+                        <td >Echo Alpha (EA)</td>
+                        <td >Failed</td>
+                        <td>1/1/2022 7:00:00 AM TT</td>
+                      </tr>
+                      <tr >
+                        <td >Echo Alpha (EA)</td>
+                        <td >Complete</td>
+                        <td>1/1/2022 7:00:00 AM TT</td>
+                      </tr>
+                      <tr >
+                        <td >Echo Alpha (EA)</td>
+                        <td >Failed</td>
+                        <td>1/1/2022 7:00:00 AM TT</td>
+                      </tr>
+                      <tr >
+                        <td >Echo Alpha (EA)</td>
+                        <td >Complete</td>
+                        <td>1/1/2022 7:00:00 AM TT</td>
+                      </tr>
+                      <tr >
+                        <td >Echo Alpha (EA)</td>
+                        <td >Failed</td>
+                        <td>1/1/2022 7:00:00 AM TT</td>
+                      </tr>
+                      <tr >
+                        <td >Echo Alpha (EA)</td>
+                        <td >Complete</td>
+                        <td>1/1/2022 7:00:00 AM TT</td>
+                      </tr>
+                      <tr >
+                        <td >Echo Alpha (EA)</td>
+                        <td >Failed</td>
+                        <td>1/1/2022 7:00:00 AM TT</td>
+                      </tr>
+                      <tr >
+                        <td >Echo Alpha (EA)</td>
+                        <td >Complete</td>
+                        <td>1/1/2022 7:00:00 AM TT</td>
+                      </tr>
+                      <tr >
+                        <td >Echo Alpha (EA)</td>
+                        <td >Failed</td>
+                        <td>1/1/2022 7:00:00 AM TT</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <nav aria-label="Pagination" class="usa-pagination" >
+                    <ul class="usa-pagination__list" >
+                      <li class="usa-pagination__item usa-pagination__page-no" >
+                        <a href="/ParticipantUploads&amp;page=1" class="usa-pagination__button usa-current" aria-label="Page 1" >1</a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+            );
+        }
+    }
+
+    /// <summary>
+    /// Verify the results shouldn't break if the state is not found
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldntBreak_IfStateNotFound()
+    {
+        // Arrange
+        var response = new ApiResponse<UploadResponseDto>()
+            {
+                Value = new UploadResponseDto
+                {
+                    Total = 1,
+                    ParticipantUploadResults = new List<ParticipantUpload>
+                    {
+                        new ParticipantUpload
+                        {
+                            State = "EB",
+                            Status = "COMPLETE",
+                            UploadedAt = DateTime.Now
+                        }
+                    }
+                }
+            };
+        MockApiService.Setup(n => n.GetUploads(It.IsAny<ParticipantUploadRequestFilter>()))
+            .ReturnsAsync(response);
+        CreateTestComponent();
+
+        // Assert
+        // Normally, it would be EB (Echo Bravo), but we our mock state info doesn't have any state info for EB. Just show the abbrevion without the name
+        Assert.Equal("(EB)", Component.FindAll("td")[0].TextContent.Trim());
+    }
+
+    /// <summary>
+    /// Verify the results shouldn't break if the state is null
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldntBreak_IfStateOrStatusNull()
+    {
+        // Arrange
+        var response = new ApiResponse<UploadResponseDto>()
+            {
+                Value = new UploadResponseDto
+                {
+                    Total = 1,
+                    ParticipantUploadResults = new List<ParticipantUpload>
+                    {
+                        new ParticipantUpload
+                        {
+                            State = null,
+                            Status = null,
+                            UploadedAt = DateTime.Now
+                        }
+                    }
+                }
+            };
+        MockApiService.Setup(n => n.GetUploads(It.IsAny<ParticipantUploadRequestFilter>()))
+            .ReturnsAsync(response);
+        CreateTestComponent();
+
+        // Assert
+        // Assert our first two td fields are just empty instead of throwing an error
+        Assert.Equal("", Component.FindAll("td")[0].TextContent.Trim());
+        Assert.Equal("", Component.FindAll("td")[1].TextContent.Trim());
+    }
+
+    /// <summary>
+    /// Verify the pagination only shows one page when the total is less than or equal to 53
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldShowOnlyOnePage_WhenTotalLessThanOrEqualTo53()
+    {
+        // Arrange
+        MockApiService.Setup(n => n.GetUploads(It.IsAny<ParticipantUploadRequestFilter>()))
+            .ReturnsAsync(ReturnRandomResults(20));
+        CreateTestComponent();
+
+        // Assert
+        var paginationItems = Component!.FindAll(".usa-pagination__item");
+        Assert.Equal(1, paginationItems.Count);
+        Assert.Equal("1", paginationItems[0].TextContent);
+        Assert.Equal("Page 1", paginationItems[0].Children[0].GetAttribute("aria-label"));
+        Assert.True(paginationItems[0].Children[0].ClassList.Contains("usa-current"));
+    }
+
+    /// <summary>
+    /// Verify the pagination shows 6 pages and the Next button when there should be 6 pages
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldShowCorrectPages_WhenTotalPagesLessThanOrEqualTo6()
+    {
+        // Arrange
+        var fakeResponse = ReturnRandomResults(53);
+        fakeResponse.Value.Total = 300;
+        MockApiService.Setup(n => n.GetUploads(It.IsAny<ParticipantUploadRequestFilter>()))
+            .ReturnsAsync(fakeResponse);
+        CreateTestComponent();
+
+        // Assert
+        var paginationItems = Component!.FindAll(".usa-pagination__item");
+        Assert.Equal(7, paginationItems.Count);
+
+        for (int i = 1; i <= 6; i++)
+        {
+            Assert.Equal(i.ToString(), paginationItems[i - 1].TextContent);
+            Assert.Equal($"Page {i}", paginationItems[i - 1].Children[0].GetAttribute("aria-label"));
+
+            if (i == 1)
+            {
+                Assert.True(paginationItems[i - 1].Children[0].ClassList.Contains("usa-current"));    
+            }
+            else
+            {
+                Assert.False(paginationItems[i - 1].Children[0].ClassList.Contains("usa-current"));
+            }
+        }
+        Assert.Contains("Next", paginationItems[6].TextContent);
+    }
+
+    /// <summary>
+    /// Verify the pagination shows pages 1 2 .. 10 Next when 10 pages and we're on page 1
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldShowCorrectPages_When10Pages()
+    {
+        // Arrange
+        var fakeResponse = ReturnRandomResults(53);
+        fakeResponse.Value.Total = 530;
+        MockApiService.Setup(n => n.GetUploads(It.IsAny<ParticipantUploadRequestFilter>()))
+            .ReturnsAsync(fakeResponse);
+        CreateTestComponent();
+
+        // Assert
+        var paginationItems = Component!.FindAll(".usa-pagination__item");
+        Assert.Equal(5, paginationItems.Count); // [1] [2] [...] [10] [Next]
+
+        Assert.Equal("1", paginationItems[0].TextContent);
+        Assert.Equal($"Page 1", paginationItems[0].Children[0].GetAttribute("aria-label"));
+        Assert.True(paginationItems[0].Children[0].ClassList.Contains("usa-current"));
+
+        Assert.Equal("2", paginationItems[1].TextContent);
+        Assert.Equal($"Page 2", paginationItems[1].Children[0].GetAttribute("aria-label"));
+        Assert.False(paginationItems[1].Children[0].ClassList.Contains("usa-current"));
+
+        Assert.Equal("...", paginationItems[2].TextContent);
+        Assert.Equal($"SPAN", paginationItems[2].Children[0].TagName);
+
+        Assert.Equal("10", paginationItems[3].TextContent);
+        Assert.Equal($"Page 10", paginationItems[3].Children[0].GetAttribute("aria-label"));
+        Assert.False(paginationItems[3].Children[0].ClassList.Contains("usa-current"));
+
+        Assert.Contains("Next", paginationItems[4].TextContent);
+    }
+
+    /// <summary>
+    /// Verify the pagination shows pages Previous 1 2 3 4 5 .. 10 Next when 10 pages and we're on page 4
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldShowCorrectPages_When10Pages_AndWeAreOnPage4()
+    {
+        // Arrange
+        var fakeResponse = ReturnRandomResults(53);
+        fakeResponse.Value.Total = 530;
+        InitialValues.Filter.Page = 4;
+        MockApiService.Setup(n => n.GetUploads(It.IsAny<ParticipantUploadRequestFilter>()))
+            .ReturnsAsync(fakeResponse);
+        CreateTestComponent();
+
+        // Assert
+        var paginationItems = Component!.FindAll(".usa-pagination__item");
+        Assert.Equal(9, paginationItems.Count);
+
+        Assert.Contains("Previous", paginationItems[0].TextContent);
+
+        for (int i = 3; i <= 5; i++)
+        {
+            Assert.Equal(i.ToString(), paginationItems[i].TextContent);
+            Assert.Equal($"Page {i}", paginationItems[i].Children[0].GetAttribute("aria-label"));
+
+            if (i == 4)
+            {
+                Assert.True(paginationItems[i].Children[0].ClassList.Contains("usa-current"));    
+            }
+            else
+            {
+                Assert.False(paginationItems[i].Children[0].ClassList.Contains("usa-current"));
+            }
+        }
+
+        Assert.Equal("...", paginationItems[6].TextContent);
+        Assert.Equal($"SPAN", paginationItems[6].Children[0].TagName);
+
+        Assert.Equal("10", paginationItems[7].TextContent);
+        Assert.Equal($"Page 10", paginationItems[7].Children[0].GetAttribute("aria-label"));
+        Assert.False(paginationItems[7].Children[0].ClassList.Contains("usa-current"));
+
+        Assert.Contains("Next", paginationItems[8].TextContent);
+    }
+
+    /// <summary>
+    /// Verify the pagination shows pages Previous 1 .. 6 7 8 9 10 Next when 10 pages and we're on page 7
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldShowCorrectPages_When10Pages_AndWeAreOnPage7()
+    {
+        // Arrange
+        var fakeResponse = ReturnRandomResults(53);
+        fakeResponse.Value.Total = 530;
+        InitialValues.Filter.Page = 7;
+        MockApiService.Setup(n => n.GetUploads(It.IsAny<ParticipantUploadRequestFilter>()))
+            .ReturnsAsync(fakeResponse);
+        CreateTestComponent();
+
+        // Assert
+        var paginationItems = Component!.FindAll(".usa-pagination__item");
+        Assert.Equal(9, paginationItems.Count);
+
+        Assert.Contains("Previous", paginationItems[0].TextContent);
+
+        Assert.Equal("1", paginationItems[1].TextContent);
+        Assert.Equal($"Page 1", paginationItems[1].Children[0].GetAttribute("aria-label"));
+        Assert.False(paginationItems[1].Children[0].ClassList.Contains("usa-current"));
+
+        Assert.Equal("...", paginationItems[2].TextContent);
+        Assert.Equal($"SPAN", paginationItems[2].Children[0].TagName);
+
+        for (int i = 3; i <= 7; i++)
+        {
+            var expectedPage = i + 3;
+            Assert.Equal(expectedPage.ToString(), paginationItems[i].TextContent);
+            Assert.Equal($"Page {expectedPage}", paginationItems[i].Children[0].GetAttribute("aria-label"));
+
+            if (expectedPage == 7)
+            {
+                Assert.True(paginationItems[i].Children[0].ClassList.Contains("usa-current"));    
+            }
+            else
+            {
+                Assert.False(paginationItems[i].Children[0].ClassList.Contains("usa-current"));
+            }
+        }
+
+        Assert.Contains("Next", paginationItems[8].TextContent);
+    }
+
+    /// <summary>
+    /// Verify the pagination shows pages Previous 1 .. 9 10 when 10 pages and we're on page 10
+    /// </summary>
+    [Fact]
+    public void ParticipantUploads_ShouldShowCorrectPages_When10Pages_AndWeAreOnPage10()
+    {
+        // Arrange
+        var fakeResponse = ReturnRandomResults(53);
+        fakeResponse.Value.Total = 530;
+        InitialValues.Filter.Page = 10;
+        MockApiService.Setup(n => n.GetUploads(It.IsAny<ParticipantUploadRequestFilter>()))
+            .ReturnsAsync(fakeResponse);
+
+        CreateTestComponent();
+
+        // Assert
+        var paginationItems = Component!.FindAll(".usa-pagination__item");
+        Assert.Equal(5, paginationItems.Count);
+
+        Assert.Contains("Previous", paginationItems[0].TextContent);
+
+        Assert.Equal("1", paginationItems[1].TextContent);
+        Assert.Equal($"Page 1", paginationItems[1].Children[0].GetAttribute("aria-label"));
+        Assert.False(paginationItems[1].Children[0].ClassList.Contains("usa-current"));
+
+        Assert.Equal("...", paginationItems[2].TextContent);
+        Assert.Equal($"SPAN", paginationItems[2].Children[0].TagName);
+
+        for (int i = 3; i <= 4; i++)
+        {
+            var expectedPage = i + 6;
+            Assert.Equal(expectedPage.ToString(), paginationItems[i].TextContent);
+            Assert.Equal($"Page {expectedPage}", paginationItems[i].Children[0].GetAttribute("aria-label"));
+
+            if (expectedPage == 10)
+            {
+                Assert.True(paginationItems[i].Children[0].ClassList.Contains("usa-current"));    
+            }
+            else
+            {
+                Assert.False(paginationItems[i].Children[0].ClassList.Contains("usa-current"));
+            }
+        }
+    }
+
+    private ApiResponse<UploadResponseDto> ReturnRandomResults(int count)
+    {
+        ApiResponse<UploadResponseDto> apiResponse = new();
+        apiResponse.Value = new UploadResponseDto
+            {
+                Total = count,
+                ParticipantUploadResults = new()
+            };
+
+        for (int i = 0; i < count; i++)
+        {
+            apiResponse.Value.ParticipantUploadResults.Add(new ParticipantUpload
+            {
+                State = "EA",
+                Status = i % 2 == 0 ? "COMPLETE" : "FAILED",
+                UploadedAt = FakeLocalTimeZone.Jan_1_2022_Noon_UTC
+            });
+        }
+        return apiResponse;
+    }
+
+    #endregion
+}

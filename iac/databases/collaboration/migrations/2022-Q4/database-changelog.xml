@@ -1,0 +1,18 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.6.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+    <changeSet id="05_30_create-hash_type" logicalFilePath="path-independent" author="email@agency.example" labels="create-hash_type" context="dg-initialization">
+        <comment>768</comment><!-- Piipan-1234 ticket -->
+        <sqlFile relativeToChangelogFile="true" path="05_30_create-hash_type.sql" splitStatements="false"/>
+    </changeSet>    
+    <changeSet id="05_30_match-record" logicalFilePath="path-independent" author="email@agency.example" labels="match-record" context="dg-initialization">
+        <comment>768</comment><!-- Piipan-1234 ticket -->
+        <sqlFile relativeToChangelogFile="true" path="05_30_match-record.sql" splitStatements="true"/>
+        <!-- <rollback>
+            <sqlFile relativeToChangelogFile="true" path="example-rollback-changeset.sql" splitStatements="false"/>
+        </rollback> -->
+    </changeSet>
+    <changeSet id="07_18_state-info" logicalFilePath="path-independent" author="email@agency.example" labels="state-info" context="dg-initialization">
+        <comment>state-info</comment><!-- Piipan-1234 ticket -->
+        <sqlFile relativeToChangelogFile="true" path="07_18_state-info.sql" splitStatements="true"/>
+    </changeSet>
+</databaseChangeLog>

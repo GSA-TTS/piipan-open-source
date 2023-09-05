@@ -1,0 +1,225 @@
+﻿@using System.Linq.Expressions
+@using Bunit.TestDoubles
+@using Piipan.Components.Routing
+@using Piipan.Dashboard.Client.Components.ParticipantUploads
+@using Piipan.Dashboard.Client.Components
+@using Piipan.Dashboard.Tests
+@using Piipan.Metrics.Api
+@using Xunit
+@using Bunit
+@inherits BaseComponentTest<ParticipantUploadsFilter>
+
+@code {
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public ParticipantUploadsFilterTests() : base()
+    {
+        InitialValues = new ParticipantUploadsFilter()
+        {
+            
+        };
+    }
+    /// <summary>
+    /// Create a matches list component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        Component = Render<ParticipantUploadsFilter>(
+            @<ParticipantUploadsFilter UploadRequest="InitialValues.UploadRequest">
+            </ParticipantUploadsFilter>
+        );
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of the matches list table when there are two items
+    /// </summary>
+    [Fact]
+    public void FilterSection_ShouldExist_WithCorrectMarkup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<section id="participant-uploads-filter" >
+                <div class="usa-form " style="">
+                    <form id="upload-filter-form" novalidate="" >
+                        <fieldset class="usa-fieldset">
+                        <div class="top-filters" >
+                            <h2 >Filters</h2>
+                            <div class="top-filter-grid" >
+                            <div class="usa-form-group " >
+                                <label class="usa-label" for="UploadRequest_StartDate">Start Date</label>
+                                <input  id="UploadRequest_StartDate" name="StartDate" style="width: 140px;" type="date" class="usa-input  valid" value=""  >
+                            </div>
+                            <span class="date-separator" >to</span>
+                            <div class="end-date" >
+                                <div class="usa-form-group " >
+                                <label class="usa-label" for="UploadRequest_EndDate">End Date</label>
+                                <input  id="UploadRequest_EndDate" name="EndDate" style="width: 140px;" type="date" class="usa-input  valid" value=""  >
+                                </div>
+                            </div>
+                            <div class="usa-form-group " >
+                                <label class="usa-label" for="UploadRequest_State">State</label>
+                                <select class="usa-select usa-input "  id="UploadRequest_State" name="State" style=""  >
+                                <option value="">- Select -</option>
+                                <option value="EA">Echo Alpha (EA)</option>
+                                </select>
+                            </div>
+                            </div>
+                            <button class="usa-button" type="submit" id="upload-filter-btn" >Apply Filter</button>
+                            <button id="upload-clear-filter" type="submit"  class="usa-button usa-button--unstyled" >Clear Filters</button>
+                        </div>
+                        <div >
+                            <h4 >Quick Filters</h4>
+                            <button type="submit" id="quick-filters-status-failed" class="usa-button usa-button--outline"  >Status: Failed</button>
+                            <button type="submit" id="quick-filters-status-complete" class="usa-button usa-button--outline"  >Status: Complete</button>
+                        </div>
+                        </fieldset>
+                    </form>
+                </div>
+        </section>
+    );
+    }
+
+    /// <summary>
+    /// Verify the Clear Filters button resets all the filters
+    /// </summary>
+    [Fact]
+    public void ClearFilters_ShouldResetFilters()
+    {
+        // Arrange
+        InitialValues.UploadRequest.State = "EA";
+        InitialValues.UploadRequest.Status = "Complete";
+        InitialValues.UploadRequest.StartDate = DateTime.Parse("1/1/2022");
+        InitialValues.UploadRequest.EndDate =  DateTime.Parse("2/1/2022");
+        CreateTestComponent();
+
+        // Assert
+        Assert.Equal("EA", Component.Instance.UploadRequest.State);
+        Assert.Equal("Complete", Component.Instance.UploadRequest.Status);
+        Assert.Equal(DateTime.Parse("1/1/2022"), Component.Instance.UploadRequest.StartDate);
+        Assert.Equal(DateTime.Parse("2/1/2022"), Component.Instance.UploadRequest.EndDate);
+
+        // Act
+        Component.Find("#upload-clear-filter").Click();
+
+        // Assert
+        Assert.Null(Component.Instance.UploadRequest.State);
+        Assert.Null(Component.Instance.UploadRequest.Status);
+        Assert.Null(Component.Instance.UploadRequest.StartDate);
+        Assert.Null(Component.Instance.UploadRequest.EndDate);
+    }
+
+    /// <summary>
+    /// Verify the Quick Status buttons update the status and visually change
+    /// </summary>
+    [Fact]
+    public void QuickStatusButtons_ShouldChangeStatus()
+    {
+        // Arrange
+        CreateTestComponent();
+        var failedBtn = Component.Find("#quick-filters-status-failed");
+        var completeBtn = Component.Find("#quick-filters-status-complete");
+
+        // Act
+        failedBtn.Click();
+
+        // Assert
+        Assert.Equal("Failed", Component.Instance.UploadRequest.Status);
+        Assert.False(failedBtn.ClassList.Contains("usa-button--outline")); // outline should be removed when selected
+        Assert.True(completeBtn.ClassList.Contains("usa-button--outline"));
+
+
+        // Act
+        completeBtn.Click();
+
+        // Assert
+        Assert.Equal("Complete", Component.Instance.UploadRequest.Status);
+        Assert.True(failedBtn.ClassList.Contains("usa-button--outline"));
+        Assert.False(completeBtn.ClassList.Contains("usa-button--outline")); // outline should be removed when selected
+    }
+
+    /// <summary>
+    /// Verify the Quick Status buttons update the status and visually change when the same button is clicked twice in a row
+    /// </summary>
+    [Fact]
+    public void QuickStatusButtons_ShouldChangeStatusFailed_WhenToggledOff()
+    {
+        // Arrange
+        CreateTestComponent();
+        var failedBtn = Component.Find("#quick-filters-status-failed");
+        var completeBtn = Component.Find("#quick-filters-status-complete");
+
+        // Act
+        failedBtn.Click();
+
+        // Assert
+        Assert.Equal("Failed", Component.Instance.UploadRequest.Status);
+        Assert.False(failedBtn.ClassList.Contains("usa-button--outline")); // outline should be removed when selected
+        Assert.True(completeBtn.ClassList.Contains("usa-button--outline"));
+
+
+        // Act
+        failedBtn.Click();
+
+        // Assert
+        Assert.Null(Component.Instance.UploadRequest.Status);
+        Assert.True(failedBtn.ClassList.Contains("usa-button--outline"));
+        Assert.True(completeBtn.ClassList.Contains("usa-button--outline"));
+    }
+
+    /// <summary>
+    /// Verify the Quick Status buttons update the status and visually change when the same button is clicked twice in a row
+    /// </summary>
+    [Fact]
+    public void QuickStatusButtons_ShouldChangeStatusComplete_WhenToggledOff()
+    {
+        // Arrange
+        CreateTestComponent();
+        var failedBtn = Component.Find("#quick-filters-status-failed");
+        var completeBtn = Component.Find("#quick-filters-status-complete");
+
+        // Act
+        completeBtn.Click();
+
+        // Assert
+        Assert.Equal("Complete", Component.Instance.UploadRequest.Status);
+        Assert.True(failedBtn.ClassList.Contains("usa-button--outline"));
+        Assert.False(completeBtn.ClassList.Contains("usa-button--outline"));  // outline should be removed when selected
+
+
+        // Act
+        completeBtn.Click();
+
+        // Assert
+        Assert.Null(Component.Instance.UploadRequest.Status);
+        Assert.True(failedBtn.ClassList.Contains("usa-button--outline"));
+        Assert.True(completeBtn.ClassList.Contains("usa-button--outline"));
+    }
+
+    /// <summary>
+    /// Verify the fields are bound to the form
+    /// </summary>
+    [Fact]
+    public void Filter_Bindings_AreSet()
+    {
+        // Arrange
+        CreateTestComponent();
+        Component.Find("#UploadRequest_StartDate").Change("09/01/2022");
+        Component.Find("#UploadRequest_EndDate").Change("09/02/2022");
+        Component.Find("#UploadRequest_State").Change("EA");
+
+        // Assert
+        Assert.Equal(DateTime.Parse("09/01/2022"), Component.Instance.UploadRequest.StartDate);
+        Assert.Equal(DateTime.Parse("09/02/2022"), Component.Instance.UploadRequest.EndDate);
+        Assert.Equal("EA", Component.Instance.UploadRequest.State);
+    }
+
+
+    #endregion
+}

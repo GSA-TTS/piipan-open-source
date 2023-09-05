@@ -1,0 +1,513 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Text.RegularExpressions;
+@using System.Threading.Tasks;
+@using AngleSharp.Dom;
+@using Bunit;
+@using Microsoft.AspNetCore.Components.Web
+@using Moq
+@using Piipan.Components.Alerts;
+@using Piipan.Components.Forms;
+@using Piipan.Components.Modals;
+@using Piipan.Match.Api.Models;
+@using Piipan.QueryTool.Client.Components;
+@using Piipan.QueryTool.Client.Components.UnauthorizedBanners;
+@using Piipan.QueryTool.Client.Models;
+@using Piipan.Shared.Client.Api
+@using Xunit;
+@using static Piipan.Components.Forms.FormConstants;
+@using static Piipan.Shared.API.Validation.ValidationConstants;
+@inherits BaseComponentTest<QueryForm>
+@code {
+    #region Tests
+    bool invalidDateInput = false;
+    ComponentParameterCollectionBuilder<QueryForm> parameters = new ComponentParameterCollectionBuilder<QueryForm>();
+    IElement? searchReasonInput = null;
+
+    public QueryFormTests() : base()
+    {
+        MockApiService.Setup(n => n.SubmitDuplicateParticipantSearchRequest(It.IsAny<DuplicateParticipantQuery>()))
+            .ReturnsAsync(DefaultResultWith1Match());
+    }
+
+    /// <summary>
+    /// Verify that when the value changes, the backend model is updated
+    /// </summary>
+    [Fact]
+    public void Form_Should_Bind_Value_On_Change()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        FillOutDummyFormData();
+
+        // Assert
+        Assert.Equal("Name", Component.Instance.QueryFormData.LastName);
+        Assert.Equal(DateTime.Parse("1997-01-01"), Component.Instance.QueryFormData.DateOfBirth);
+        Assert.Equal("550-01-6981", Component.Instance.QueryFormData.SocialSecurityNum);
+        Assert.Equal("123", Component.Instance.QueryFormData.ParticipantId);
+        Assert.Equal("456", Component.Instance.QueryFormData.CaseId);
+        Assert.Equal("recertification", Component.Instance.QueryFormData.SearchReason);
+    }
+
+    /// <summary>
+    /// Verify that when there are no results returned that we get an informational alert
+    /// </summary>
+    [Fact]
+    public async Task Verify_No_Results_Alert_Box_No_Results()
+    {
+        // Arrange a response with no results
+        var response = DefaultResultWith1Match();
+        response.Value.Results = new List<OrchMatchResult>();
+        MockApiService.Setup(n => n.SubmitDuplicateParticipantSearchRequest(It.IsAny<DuplicateParticipantQuery>()))
+            .ReturnsAsync(response);
+        CreateTestComponent();
+
+
+        // Add a result with no matches
+        FillOutDummyFormData();
+        await SearchButton.ClickAsync(new MouseEventArgs());
+
+        // Assert
+        var alertBox = Component.FindComponent<UsaAlertBox>();
+        Assert.Contains("This participant does not have a matching record in any other states.", alertBox.Markup);
+        Assert.False(Component.HasComponent<QueryResults>());
+    }
+
+    /// <summary>
+    /// Verify that when there are no matches in the returned result that we get an informational alert
+    /// </summary>
+    [Fact]
+    public async Task Verify_No_Results_Alert_Box_No_Matches()
+    {
+        // Arrange a response with no matches
+        var response = DefaultResultWith1Match();
+        response.Value.Results[0].Matches = new List<ParticipantMatch>();
+        MockApiService.Setup(n => n.SubmitDuplicateParticipantSearchRequest(It.IsAny<DuplicateParticipantQuery>()))
+            .ReturnsAsync(response);
+
+        CreateTestComponent();
+
+        // Act
+        FillOutDummyFormData();
+        await SearchButton.ClickAsync(new MouseEventArgs());
+
+        // Assert
+        var alertBox = Component.FindComponent<UsaAlertBox>();
+        Assert.Contains("This participant does not have a matching record in any other states.", alertBox.Markup);
+        Assert.False(Component.HasComponent<QueryResults>());
+    }
+
+    /// <summary>
+    /// Verify that if we have results that they are shown on the screen
+    /// </summary>
+    [Fact]
+    public async Task Verify_Results_Shown()
+    {
+        // By default the API mock will return a response with matches
+        CreateTestComponent();
+
+        // Act
+        FillOutDummyFormData();
+        await SearchButton.ClickAsync(new MouseEventArgs());
+
+        // Assert
+        Assert.True(Component.HasComponent<QueryResults>());
+        Assert.False(Component.HasComponent<UsaAlertBox>());
+    }
+
+    /// <summary>
+    /// Verify that if we have results that has a vulnerable individual, clicking it shows the vulnerable match modal
+    /// </summary>
+    [Fact]
+    public async Task Verify_VulnerableModal_ShownWhenClicked_VulnerableMatch()
+    {
+        // Arrange a response with match that has VI
+        var response = DefaultResultWith1Match();
+        response.Value.Results[0].Matches.First().VulnerableIndividual = true;
+        MockApiService.Setup(n => n.SubmitDuplicateParticipantSearchRequest(It.IsAny<DuplicateParticipantQuery>()))
+            .ReturnsAsync(response);
+
+        CreateTestComponent();
+
+        // Act
+        FillOutDummyFormData();
+        await SearchButton.ClickAsync(new MouseEventArgs());
+        var queryResults = Component.FindComponent<QueryResults>();
+        queryResults.Find("a").Click();
+
+        // Assert
+        var modalManager = Services.GetService<IModalManager>();
+        Assert.True(modalManager.OpenModals.First().ForceAction);
+        Assert.Equal(1, modalManager.OpenModals.Count);
+    }
+
+    /// <summary>
+    /// Verify that if we have results that has do not have a vulnerable individual, clicking it does NOT show the vulnerable match modal
+    /// </summary>
+    [Fact]
+    public async Task Verify_VulnerableModal_NotShownWhenClicked_NotVulnerableMatch()
+    {
+        // Arrange
+        // By default the API mock will return a response with matches where VI is false
+        CreateTestComponent();
+
+        // Act
+        FillOutDummyFormData();
+        await SearchButton.ClickAsync(new MouseEventArgs());
+        var queryResults = Component.FindComponent<QueryResults>();
+        queryResults.Find("a").Click();
+
+        // Assert
+        var modalManager = Services.GetService<IModalManager>();
+        Assert.Empty(modalManager.OpenModals);
+    }
+
+    /// <summary>
+    /// Verify that when searching a valid form that the button text changes to "Searching..."
+    /// </summary>
+    [Fact]
+    public async Task Button_Should_Say_Searching_While_Searching_Valid_Form()
+    {
+        // Arrange
+        MockApiService.Setup(n => n.SubmitDuplicateParticipantSearchRequest(It.IsAny<DuplicateParticipantQuery>()))
+            .Returns(async () => {
+                await Task.Delay(1000); // put a delay in there so we can check the status of the button
+                return DefaultResultWith1Match();
+            });
+
+        CreateTestComponent();
+
+        // Assert
+        Assert.Equal("Search", SearchButton.TextContent);
+        Assert.False(SearchButton.HasAttribute("disabled"));
+
+        // Act
+        FillOutDummyFormData();
+        var task = SearchButton.ClickAsync(new MouseEventArgs());
+        Component.WaitForAssertion(() => Assert.True(SearchButton.HasAttribute("disabled")));
+        Assert.Equal("Searching...", SearchButton.TextContent);
+        await task;
+
+        // Assert the button goes back to original state after saving
+        MockApiService.Verify(n => n.SubmitDuplicateParticipantSearchRequest(It.IsAny<DuplicateParticipantQuery>()), Times.Once());
+        Assert.Equal("Search", SearchButton.TextContent);
+        Assert.False(SearchButton.HasAttribute("disabled"));
+    }
+
+    /// <summary>
+    /// Verify that when searching an invalid form that the button text does not change to "Searching..."
+    /// </summary>
+    [Fact]
+    public async Task SaveMatchUpdate_NotCalled_WhileSearchingInvalidForm()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Assert.Equal("Search", SearchButton.TextContent);
+        Assert.False(SearchButton.HasAttribute("disabled"));
+
+        // Act
+        await SearchButton.ClickAsync(new MouseEventArgs());
+
+        // Assert
+        MockApiService.Verify(n => n.SubmitDuplicateParticipantSearchRequest(It.IsAny<DuplicateParticipantQuery>()), Times.Never());
+        Assert.Equal("Search", SearchButton.TextContent);
+        Assert.False(SearchButton.HasAttribute("disabled"));
+    }
+
+    /// <summary>
+    /// Verify that when you have authorization the form should not be disabled
+    /// </summary>
+    [Fact]
+    public void Form_Should_Be_Enabled_When_Authorized()
+    {
+        // Arrange
+        AppData.States = new string[] { "EA" };
+        AppData.Location = "EA";
+        CreateTestComponent();
+
+        // Assert
+        Assert.False(Component.HasComponent<GenericUnauthorizedBanner>());
+
+        var wrapper = Component.Find("#snap-participants-query-form-wrapper");
+        Assert.False(wrapper.ClassList.Contains("disabled-area"));
+        Assert.False(wrapper.HasAttribute("inert")); // Inert makes it so the fields cannot be entered
+    }
+
+    /// <summary>
+    /// Verify that when you don't have a state location that the button is disabled
+    /// </summary>
+    [Fact]
+    public void Form_Should_Be_Disabled_When_Not_Authorized()
+    {
+        // Arrange
+        AppData.States = new string[] { "*" };
+        AppData.Location = "National";
+        CreateTestComponent();
+
+        // Assert
+        Assert.True(Component.HasComponent<GenericUnauthorizedBanner>());
+
+        var wrapper = Component.Find("#snap-participants-query-form-wrapper");
+        Assert.True(wrapper.ClassList.Contains("disabled-area"));
+        Assert.True(wrapper.HasAttribute("inert")); // Inert makes it so the fields cannot be entered
+    }
+
+    /// <summary>
+    /// Verify that when the server has an error we display it in an alert box on the screen
+    /// </summary>
+    [Fact]
+    public async Task Form_With_Server_Error_Should_Show_Errors()
+    {
+        // Arrange a server error... it thinks last name isn't filled in and is required
+        ApiResponse<OrchMatchResponseData> response = new() { Errors = new List<ServerError> { new("QueryFormData.LastName", $"{ValidationFieldPlaceholder} is required") } };
+        MockApiService.Setup(n => n.SubmitDuplicateParticipantSearchRequest(It.IsAny<DuplicateParticipantQuery>()))
+            .ReturnsAsync(response);
+
+        CreateTestComponent();
+
+        // Act
+        FillOutDummyFormData();
+        await SearchButton.ClickAsync(new MouseEventArgs());
+
+        var alertBox = Component.FindComponent<UsaAlertBox>();
+        var alertBoxErrors = alertBox.FindAll("li");
+
+        // Assert
+        Assert.Equal(1, alertBoxErrors.Count);
+
+        List<string> errors = new List<string>
+        {
+            "Last Name is required"
+        };
+
+        for (int i = 0; i < alertBoxErrors.Count; i++)
+        {
+            string error = alertBoxErrors[i].TextContent.Replace("\n", "");
+            error = Regex.Replace(error, @"\s+", " ");
+            Assert.Contains(errors[i], error);
+        }
+    }
+
+    /// <summary>
+    /// Verify that when there are required field errors on the screen that they are all shown in the alert box
+    /// and above the field
+    /// </summary>
+    [Fact]
+    public async Task Form_Should_Show_Required_Errors()
+    {
+        // Arrange
+        CreateTestComponent();
+        var form = Component.FindComponent<UsaForm>();
+
+        // Act
+        await SearchButton.ClickAsync(new MouseEventArgs());
+
+        var alertBox = Component.FindComponent<UsaAlertBox>();
+        var alertBoxErrors = alertBox.FindAll("li");
+        var inputErrorMessages = form.FindAll($".{InputErrorMessageClass}");
+
+        // Assert
+        Assert.Equal(5, alertBoxErrors.Count);
+        Assert.Equal(5, inputErrorMessages.Count);
+
+        List<string> errors = new List<string>
+        {
+            "Last Name is required",
+            "Date of Birth is required",
+            "Social Security Number is required",
+            "Participant ID is required",
+            "Search Reason is required"
+        };
+
+        for (int i = 0; i < alertBoxErrors.Count; i++)
+        {
+            string error = alertBoxErrors[i].TextContent.Replace("\n", "");
+            error = Regex.Replace(error, @"\s+", " ");
+            Assert.Contains(errors[i], error);
+        }
+
+        for (int i = 0; i < inputErrorMessages.Count; i++)
+        {
+            string error = inputErrorMessages[i].TextContent.Replace("\n", "");
+            error = Regex.Replace(error, @"\s+", " ");
+            Assert.Contains(errors[i], error);
+        }
+    }
+    /// <summary>
+    /// Verify that when there are special chars in Participant ID
+    /// and above the field
+    /// </summary>
+    [Fact]
+    public async Task Form_Should_Show_Errors_Special_chars()
+    {
+        // Arrange
+        CreateTestComponent();
+        var form = Component.FindComponent<UsaForm>();
+
+        // Assert
+        Assert.Equal("Search", SearchButton.TextContent);
+        Assert.False(SearchButton.HasAttribute("disabled"));
+
+        // Act
+        FillOutDummyFormData();
+        Component.Find("#QueryFormData_ParticipantId").Change("123-_@abc");
+        Component.Find("#QueryFormData_CaseId").Change("Case123-_#abc");
+        searchReasonInput.Change("other");
+        await SearchButton.ClickAsync(new MouseEventArgs());
+
+
+        var inputErrorMessages = form.FindAll($".{InputErrorMessageClass}");
+
+        // Assert
+        Assert.Equal(2, inputErrorMessages.Count);
+
+        List<string> errors = new List<string>
+        {
+            "Participant ID must contain uppercase letters (A-Z), lowercase letters (a-z), numbers (0-9), underscore (_), dash (-).",
+            "Case Number must contain uppercase letters (A-Z), lowercase letters (a-z), numbers (0-9), underscore (_), dash (-)."
+        };
+
+
+        for (int i = 0; i < inputErrorMessages.Count; i++)
+        {
+            string error = inputErrorMessages[i].TextContent.Replace("\n", "");
+            error = Regex.Replace(error, @"\s+", " ");
+            Assert.Contains(errors[i], error);
+        }
+    }
+    /// <summary>
+    /// Verify that when there are special chars in Participant ID
+    /// and above the field
+    /// </summary>
+    [Fact]
+    public async Task Form_Should_Validation_Passed_With_Accepted_Char()
+    {
+        // Arrange
+        CreateTestComponent();
+        var form = Component.FindComponent<UsaForm>();
+
+        // Assert
+        Assert.Equal("Search", SearchButton.TextContent);
+        Assert.False(SearchButton.HasAttribute("disabled"));
+
+        // Act
+        FillOutDummyFormData();
+        Component.Find("#QueryFormData_ParticipantId").Change("123-_abc");
+        Component.Find("#QueryFormData_CaseId").Change("Case123-_abc");
+        searchReasonInput.Change("other");
+        await SearchButton.ClickAsync(new MouseEventArgs());
+
+        var inputErrorMessages = form.FindAll($".{InputErrorMessageClass}");
+
+        // Assert
+        Assert.Equal(0, inputErrorMessages.Count);
+        var queryResults = Component.FindComponent<QueryResults>();
+        Assert.NotNull(queryResults);
+
+    }
+    /// <summary>
+    /// Verify that when there are special chars in Participant ID
+    /// and above the field
+    /// </summary>
+    [Fact]
+    public async Task Form_Should_Show_Errors_Max_Length()
+    {
+        // Arrange
+        CreateTestComponent();
+        var form = Component.FindComponent<UsaForm>();
+
+        // Assert
+        Assert.Equal("Search", SearchButton.TextContent);
+        Assert.False(SearchButton.HasAttribute("disabled"));
+
+        // Act
+        FillOutDummyFormData();
+        Component.Find("#QueryFormData_ParticipantId").Change("This a Test for large string which more than 20 chars.");
+        Component.Find("#QueryFormData_CaseId").Change("This a Test for large string which more than 20 chars.");
+        searchReasonInput.Change("other");
+
+        await SearchButton.ClickAsync(new MouseEventArgs());
+
+        var inputErrorMessages = form.FindAll($".{InputErrorMessageClass}");
+
+        // Assert
+        Assert.Equal(2, inputErrorMessages.Count);
+
+        List<string> errors = new List<string>
+        {
+            "Participant ID can be maximum 20 characters.",
+            "Case Number can be maximum 20 characters."
+        };
+
+
+        for (int i = 0; i < inputErrorMessages.Count; i++)
+        {
+            string error = inputErrorMessages[i].TextContent.Replace("\n", "");
+            error = Regex.Replace(error, @"\s+", " ");
+            Assert.Contains(errors[i], error);
+        }
+    }
+    #endregion Tests
+
+    #region Helper Function
+    
+    private void FillOutDummyFormData()
+    {
+        Component.Find("#QueryFormData_LastName").Change("Name");
+        Component.Find("#QueryFormData_DateOfBirth").Change("1997-01-01");
+        Component.Find("#QueryFormData_SocialSecurityNum").Input("550-01-6981");
+        Component.Find("#QueryFormData_ParticipantId").Change("123");
+        Component.Find("#QueryFormData_CaseId").Change("456");
+        searchReasonInput.Change("recertification");
+    }
+
+    /// <summary>
+    /// Setup the component and register Javascript mocks
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        JSInterop.SetupVoid("piipan.utilities.registerFormValidation", _ => true).SetVoidResult();
+        JSInterop.Setup<int>("piipan.utilities.getCursorPosition", _ => true).SetResult(1);
+        JSInterop.SetupVoid("piipan.utilities.setCursorPosition", _ => true).SetVoidResult();
+        JSInterop.SetupVoid("piipan.utilities.scrollToElement", _ => true).SetVoidResult();
+        JSInterop.Setup<bool>("piipan.utilities.doesElementHaveInvalidInput", _ => true).SetResult(invalidDateInput);
+        Component = Render<QueryForm>(@<QueryForm />);
+        searchReasonInput = Component.Find($".{InputRadioClass}");
+    }
+
+    private IElement SearchButton => Component.Find("#query-form-search-btn");
+
+    private ApiResponse<OrchMatchResponseData> DefaultResultWith1Match()
+    {
+        return new ApiResponse<OrchMatchResponseData>
+        {
+            Value = new OrchMatchResponseData
+            {
+                Results = new()
+                {
+                    new()
+                    {
+                        Index = 1,
+                        Matches = new List<ParticipantMatch>()
+                        {
+                            new ()
+                            {
+                                MatchId = "1234",
+                                State = "ea",
+                                VulnerableIndividual = false
+                            }
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    #endregion Helper Functions
+}

@@ -1,0 +1,189 @@
+﻿@using Piipan.Components.Forms
+@using static Piipan.Components.Forms.FormConstants
+@using static Piipan.Components.Shared.CommonConstants
+@inherits BaseTest<UsaRadioGroup<bool?>>
+@code {
+    public class TestModel {
+        public bool? NotRequiredField { get; set; }
+
+        [UsaRequired]
+        [Display(Name = "Required Field")]
+        public bool? RequiredField { get; set; }
+    }
+    private IRenderedComponent<UsaForm>? form = null;
+    private IElement? inputElement = null;
+    private TestModel model = new TestModel();
+    private RenderFragment? renderFragment = null;
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of an input text
+    /// </summary>
+    [Fact]
+    public void Input_Should_Exist_And_Have_Correct_Markup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div class="usa-form-group ">
+              <fieldset class="usa-fieldset" style=";">
+                <legend class="usa-label usa-legend" for="model_RequiredField">Required Field<span class="usa-required">*</span>
+                </legend>
+                <div class="usa-radio">
+                  <input id:ignore  required="" class="usa-radio__input valid" type="radio" name="model.RequiredField" value="True" >
+                  <label for:ignore class="usa-radio__label">Yes</label>
+                </div>
+                <div class="usa-radio">
+                  <input id:ignore  required="" class="usa-radio__input valid" type="radio" name="model.RequiredField" value="False" >
+                  <label for:ignore class="usa-radio__label">No</label>
+                </div>
+              </fieldset>
+            </div>
+        );
+    }
+
+    /// <summary>
+    /// Verify that when the label is overridden it is displayed instead of the property name
+    /// </summary>
+    [Fact]
+    public void Form_When_Label_Override_Is_Set_It_Is_Used()
+    {
+        // Arrange
+        InitialValues.LabelOverride = @<span>Overriding the label!</span>;
+        CreateTestComponent();
+
+        // Assert
+        Component!.FindComponent<UsaLegend>().MarkupMatches(
+            @<legend class="usa-label usa-legend" for="model_RequiredField">
+              <span>Overriding the label!</span>
+              <span class="usa-required">*</span>
+            </legend>
+        );
+    }
+
+    /// <summary>
+    /// Verify that when the hint content is specified it exists on the form
+    /// </summary>
+    [Fact]
+    public void Form_When_Hint_Content_Is_Not_Null_It_Exists()
+    {
+        // Arrange
+        InitialValues.HintContent = @<text>Hint Content</text>;
+        CreateTestComponent();
+
+        // Assert
+        var hintElement = Component!.Find($".{HintClass}");
+        hintElement.MarkupMatches(
+        @<span class="@HintClass">Hint Content</span>
+    );
+    }
+
+    /// <summary>
+    /// Verify that if the value isn't set that we get errors if field is required
+    /// </summary>
+    [Fact]
+    public void Radio_Should_Have_Errors_When_Empty_And_Required()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        inputElement!.Blur();
+
+        // Assert
+        AssertHasRequiredErrors();
+    }
+
+    /// <summary>
+    /// Verify selecting buttons
+    /// </summary>
+    [Fact]
+    public async Task Radio_Should_Be_able_to_Change_values()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        inputElement.Change("True");
+
+        // Assert
+       Assert.True(model.RequiredField);
+    }
+
+    /// <summary>
+    /// Verify selecting buttons
+    /// </summary>
+    [Fact]
+    public async Task Radio_Should_Be_able_to_Change_values_false()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        inputElement.Change("False");
+
+        // Assert
+       Assert.False(model.RequiredField);
+    }
+       
+
+    #endregion Tests
+
+    #region Helper Function
+
+    protected override void CreateTestComponent()
+    {
+        JSInterop.SetupVoid("piipan.utilities.registerFormValidation", _ => true);
+        var componentFragment = Render<UsaForm>(
+            @<UsaForm Model="model" >
+                <UsaRadioGroup @bind-Value="model.RequiredField" LabelOverride="@InitialValues.LabelOverride" 
+                HintContent="InitialValues.HintContent">
+                        <UsaRadio Value=true>Yes</UsaRadio>
+                        <UsaRadio Value=false>No</UsaRadio>
+                </UsaRadioGroup>
+            </UsaForm>
+        );
+        form = componentFragment;
+        Component = componentFragment.FindComponent<UsaRadioGroup<bool?>>();
+        inputElement = componentFragment.Find($".{InputRadioClass}");
+    }
+
+    protected void CreateTestComponentOtherInputElement()
+    {
+        JSInterop.SetupVoid("piipan.utilities.registerFormValidation", _ => true);
+        var componentFragment = Render<UsaForm>(
+            @<UsaForm Model="model" >
+                <UsaRadioGroup @bind-Value="model.RequiredField" LabelOverride="@InitialValues.LabelOverride" 
+                HintContent="InitialValues.HintContent">
+                        <UsaRadio Value=true>Yes</UsaRadio>
+                        <UsaRadio Value=false>No</UsaRadio>
+                </UsaRadioGroup>
+            </UsaForm>
+        );
+        form = componentFragment;
+        Component = componentFragment.FindComponent<UsaRadioGroup<bool?>>();
+        inputElement = componentFragment.Find($".{RadioClass}");
+    }
+
+    private void AssertHasNoErrors()
+    {
+        Assert.False(inputElement!.ClassList.Contains(InputErrorClass));
+        var errorSpans = form!.FindAll($".{InputErrorMessageClass}");
+        var errorForms = form!.FindAll($".{InputFormGroupErrorClass}");
+        Assert.Equal(0, errorForms.Count);
+        Assert.Equal(0, errorSpans.Count);
+    }
+
+    private void AssertHasRequiredErrors()
+    {
+        var errorForms = form!.FindAll($".{InputFormGroupErrorClass}");
+        var errorSpan = form!.Find($".{InputErrorMessageClass}");
+        Assert.Equal("Required Field is required", errorSpan.TextContent);
+        Assert.Equal(1, errorForms.Count);
+    }
+
+    #endregion Helper Functions
+}

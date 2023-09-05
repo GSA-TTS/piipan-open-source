@@ -1,0 +1,86 @@
+﻿@using Piipan.Components.Alerts
+@using Piipan.Components.Forms
+@using System.Linq.Expressions
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Components.MatchDetail
+@using Piipan.QueryTool.Client.Models
+@using Piipan.Shared.API.Utilities
+@using static Piipan.Components.Alerts.AlertConstants
+@inherits BaseComponentTest<ResolutionFields>
+
+@code {
+    private IRenderedComponent<UsaForm> usaForm;
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public ResolutionFieldsTests() : base()
+    {
+        InitialValues = new ResolutionFields()
+        {
+            DispositionData = new DispositionModel()
+            {
+                InitialActionAt = null,
+                InitialActionTaken = "",
+                InvalidMatch = false,
+                InvalidMatchReason = "",
+                OtherReasoningForInvalidMatch = "",
+                FinalDisposition = "",
+                FinalDispositionDate = null,
+                VulnerableIndividual = null,
+                State = "EA"
+            }
+        };
+    }
+
+
+    /// <summary>
+    /// Create a StateParticipantInformation component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        JSInterop.SetupVoid("piipan.utilities.registerFormValidation", _ => true).SetVoidResult();
+            JSInterop.Setup<int>("piipan.utilities.getCursorPosition", _ => true).SetResult(1);
+            JSInterop.SetupVoid("piipan.utilities.setCursorPosition", _ => true).SetVoidResult();
+            JSInterop.SetupVoid("piipan.utilities.scrollToElement", _ => true).SetVoidResult();
+        usaForm = Render<UsaForm>(
+            @<Piipan.Components.Forms.UsaForm Model="InitialValues.DispositionData">
+                <ResolutionFields State="Echo Bravo" InitiatingState=true DispositionData="@InitialValues.DispositionData">
+                </ResolutionFields>
+            </Piipan.Components.Forms.UsaForm>
+        );
+        Component = usaForm.FindComponent<ResolutionFields>();
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of the state contact information
+    /// </summary>
+    [Fact]
+    public void Resolution_Fields_status_markup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+    @<text >
+      <h3 >Update information about this match for Echo Bravo</h3>
+      <p class="infoSavedText" >After the information is saved, it will appear in the
+        <b >Match Information</b>
+        panel.</p>
+            <div diff:ignore> //Ignoring Vulnerable Invalid Component
+            </div>
+            <div diff:ignore> //Ignoring Initial Action Component
+            </div>
+            <div diff:ignore> //Ignoring Final Disposition Component
+            </div>
+        </text>
+    );
+    }
+
+    
+
+    #endregion
+}

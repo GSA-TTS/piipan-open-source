@@ -1,0 +1,181 @@
+﻿@using Piipan.Components
+@using System.Linq.Expressions
+@using Piipan.Components.Layout
+@using Piipan.Components.Modals
+@using System.IO
+@using static Piipan.Components.Layout.LayoutConstants
+@inherits BaseTest<ModalContainer>
+
+@code {
+    BunitJSModuleInterop moduleInterop;
+    private const string JSFileRelativePath = "/Modals/ModalContainer.razor.js";
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public ModalContainerTests() : base()
+    {
+        InitialValues = new ModalContainer();
+        moduleInterop = this.JSInterop.SetupModule($"./_content/Piipan.Components{JSFileRelativePath}");
+    }
+
+    /// <summary>
+    /// Sometimes when generating the package-lock.json file the peer dependencies for uswds-gulp get added back in.
+    /// If this test is failing, manually remove the peer dependencies from the node_modules/uswds-gulp file.
+    /// </summary>
+    [Fact]
+    public void VerifyModalContainerJSExists()
+    {
+        // Assert
+        Assert.True(File.Exists($"../../../../../src/Piipan.Components{JSFileRelativePath}"));
+    }
+
+    /// <summary>
+    /// Create a card component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        moduleInterop.SetupVoid("SetFocusTrapsAndEscapeListener", _ => true).SetVoidResult();
+        Component = Render<ModalContainer>(
+            @<ModalContainer></ModalContainer>
+        );
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of an card component
+    /// </summary>
+    [Fact]
+    public void Modal_Container_Has_No_Markup_By_Default()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<text></text>
+        );
+    }
+
+    /// <summary>
+    /// Verify the card can change its heading after being created
+    /// </summary>
+    [Fact]
+    public void Modal_Container_Has_Modal_When_Added()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        var modalManager = Services.GetService<IModalManager>();
+        modalManager!.Show(new DummyModal() { Text = "Test modal" });
+
+        // Assert
+        Component!.MarkupMatches(
+            @<div class="usa-modal-wrapper is-visible" role="dialog">
+              <div class="usa-modal-overlay" aria-controls="DummyModal" >
+                <div class="usa-modal" id="DummyModal" aria-labelledby="DummyModal-heading" aria-describedby="DummyModal-description"  >
+                  <div class="usa-modal__content" >
+                    <div class="usa-modal__main" >
+                      <p>Test modal</p>
+                    </div>
+                    <button class="usa-button usa-modal__close" aria-label="Close this window"  >
+                      <svg class="usa-icon" aria-hidden="true" focusable="false" role="img" >
+                        <use xlink:href="/images/sprite.svg#close" ></use>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        );
+        Assert.True(Component!.HasComponent<DummyModal>());
+    }
+
+    /// <summary>
+    /// Verify the modal closes after the overlay is clicked
+    /// </summary>
+    [Fact]
+    public void Modal_Closes_When_Overlay_Clicked()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        var modalManager = Services.GetService<IModalManager>();
+        modalManager!.Show(new DummyModal());
+
+        Component!.Find(".usa-modal-overlay").Click();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<text></text>
+        );
+        Assert.False(Component!.HasComponent<DummyModal>());
+    }
+
+    /// <summary>
+    /// Verify the modal closes after the close button is clicked
+    /// </summary>
+    [Fact]
+    public void Modal_Closes_When_Close_Button_Clicked()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        var modalManager = Services.GetService<IModalManager>();
+        modalManager!.Show(new DummyModal());
+
+        Component!.Find(".usa-modal__close").Click();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<text></text>
+        );
+        Assert.False(Component!.HasComponent<DummyModal>());
+    }
+
+    /// <summary>
+    /// Verify the modal closes after the escape key is clicked
+    /// </summary>
+    [Fact]
+    public void Modal_Closes_When_Escape_Key_Is_Pressed()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        var modalManager = Services.GetService<IModalManager>();
+        modalManager!.Show(new DummyModal());
+
+        // This gets called from Javascript when the Escape key is pressed
+        Component.Instance.CloseNearestModal();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<text></text>
+        );
+        Assert.False(Component!.HasComponent<DummyModal>());
+    }
+
+    /// <summary>
+    /// Verify the modal closes after the escape key is clicked
+    /// </summary>
+    [Fact]
+    public void Modal_Does_Not_Close_When_Escape_Key_Is_Pressed_And_Action_Is_Required()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        var modalManager = Services.GetService<IModalManager>();
+        modalManager!.Show(new DummyModal(), new ModalInfo { ForceAction = true });
+
+        // Assert the Force Action attribute gets set
+        Assert.Equal("true", Component.Find(".usa-modal-overlay").GetAttribute("data-force-action"));
+
+        // This gets called from Javascript when the Escape key is pressed
+        Component.Instance.CloseNearestModal();
+
+        // Assert
+        Assert.True(Component!.HasComponent<DummyModal>());
+    }
+
+    #endregion
+}

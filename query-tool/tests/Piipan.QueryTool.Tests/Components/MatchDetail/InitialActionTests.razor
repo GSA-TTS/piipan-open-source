@@ -1,0 +1,377 @@
+﻿@using Piipan.Components.Alerts
+@using Piipan.Components.Forms
+@using Piipan.Match.Api.Models.Resolution
+@using Piipan.QueryTool.Client.Components.MatchDetail
+@using Piipan.QueryTool.Client.Models
+@using System.Text.RegularExpressions
+@using static Piipan.Shared.API.Validation.ValidationConstants;
+@using static Piipan.Components.Forms.FormConstants;
+@inherits BaseComponentTest<ResolutionFields>
+
+@code {
+    private IRenderedComponent<UsaForm> usaForm;
+    public InitialActionTests()
+    {
+        InitialValues = new ResolutionFields() 
+        {
+            State = "Echo Alpha",
+            InitiatingState = true,
+            DispositionData = new DispositionModel()
+            {
+                InitialActionAt = null,
+                InitialActionTaken = "",
+                InvalidMatch = false,
+                InvalidMatchReason = "",
+                OtherReasoningForInvalidMatch = "",
+                FinalDisposition = "",
+                FinalDispositionDate = null,
+                VulnerableIndividual = null,
+                State = "EA"
+            }
+        };
+    }
+    private IRenderedComponent<InitialAction> initialActionComponent;
+
+    /// <summary>
+    /// Create a StateParticipantInformation component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        base.CreateTestComponent();
+        JSInterop.SetupVoid("piipan.utilities.registerFormValidation", _ => true).SetVoidResult();
+        JSInterop.Setup<int>("piipan.utilities.getCursorPosition", _ => true).SetResult(1);
+        JSInterop.SetupVoid("piipan.utilities.setCursorPosition", _ => true).SetVoidResult();
+        JSInterop.SetupVoid("piipan.utilities.scrollToElement", _ => true).SetVoidResult();
+        usaForm = Render<UsaForm>(
+            @<Piipan.Components.Forms.UsaForm Model="InitialValues.DispositionData">
+                <ResolutionFields State="@InitialValues.State" InitiatingState=InitialValues.InitiatingState DispositionData="@InitialValues.DispositionData">
+                </ResolutionFields>
+            </Piipan.Components.Forms.UsaForm>
+        );
+        Component = usaForm.FindComponent<ResolutionFields>();
+        initialActionComponent = Component.FindComponent<InitialAction>();
+    }
+
+    #region Tests
+
+    /// <summary>
+    /// Verify the default markup of the state contact information
+    /// </summary>
+    [Fact]
+    public void Initial_Action_status_markup_Initiating()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<text >
+              <h3 >Update information about this match for Echo Alpha</h3>
+              <p class="infoSavedText" >After the information is saved, it will appear in the
+                <b >Match Information</b>
+                panel.</p>
+                <div diff:ignore> //ignoreing Vulnerable Invalid Component
+                </div>
+                <div id="initial-action-section" class="" aria-disabled="false">
+                    <h5 class="InitalActionHeader" >Initial Action</h5>
+                    <div class="ResolutionFieldsDropdownWidth" >
+                    <div class="usa-form-group ">
+                        <label class="usa-label" for="DispositionData_InitialActionTaken">Initial Action Taken</label>
+                        <select class="usa-select usa-input "  id="DispositionData_InitialActionTaken" name="DispositionData.InitialActionTaken" style="" value=""  >
+                        <option value="">- Select -</option>
+                        <option value="Notice Sent">Notice Sent</option>
+                        <option value="Client Provided Required Verification">Client Provided Required Verification</option>
+                        </select>
+                    </div>
+                    </div>
+                    <div class="usa-form-group ">
+                    <label class="usa-label" for="DispositionData_InitialActionAt">Initial Action Date</label>
+                    <input  id="DispositionData_InitialActionAt" name="DispositionData.InitialActionAt" style="width: 180px;" type="date" class="usa-input  valid" value=""  >
+                    </div>
+                </div>
+                <div diff:ignore > //Ignoreing Final Disposition Component
+                </div>
+            </text>
+        );
+    }
+
+    /// <summary>
+    /// Verify the default markup of the state contact information
+    /// </summary>
+    [Fact]
+    public void Initial_Action_status_markup_Matching()
+    {
+        // Arrange
+        InitialValues.InitiatingState = false;
+        CreateTestComponent();
+
+        // Assert
+        Component!.MarkupMatches(
+            @<text >
+              <h3 >Update information about this match for Echo Alpha</h3>
+              <p class="infoSavedText" >After the information is saved, it will appear in the
+                <b >Match Information</b>
+                panel.</p>
+                <div diff:ignore> //ignoring Vulnerable Invlid Component
+                </div>
+                    <div id="initial-action-section" class="" aria-disabled="false">
+                    <h5 class="InitalActionHeader" >Initial Action</h5>
+                    <div class="ResolutionFieldsDropdownWidth" >
+                    <div class="usa-form-group ">
+                        <label class="usa-label" for="DispositionData_InitialActionTaken">Initial Action Taken</label>
+                        <select class="usa-select usa-input "  id="DispositionData_InitialActionTaken" name="DispositionData.InitialActionTaken" style="" value=""  >
+                        <option value="">- Select -</option>
+                        <option value="Notice Sent">Notice Sent</option>
+                        <option value="Client Verified Moved Out of State">Client Verified Moved Out of State</option>
+                        </select>
+                    </div>
+                    </div>
+                    <div class="usa-form-group ">
+                    <label class="usa-label" for="DispositionData_InitialActionAt">Initial Action Date</label>
+                    <input  id="DispositionData_InitialActionAt" name="DispositionData.InitialActionAt" style="width: 180px;" type="date" class="usa-input  valid" value=""  >
+                    </div>
+                </div>
+                <div diff:ignore > //ignoring Final Dispositon Component
+                </div>
+        </text>
+    );
+    }
+
+    /// <summary>
+    /// Verify the action date gets correctly defaulted when it's supposed to be
+    /// </summary>
+    [Fact]
+    public void InitialActionDate_DefaultedWhen_InitialActionTakenSet_AndDateIsNull()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        Assert.Null(initialActionComponent.Instance.DispositionData.InitialActionAt);
+
+        // Act
+        Component.Find("[name=\"DispositionData.InitialActionTaken\"]").Change("Notice Sent");
+
+        // Assert
+        Assert.Equal(DateTime.Now.Date, initialActionComponent.Instance.DispositionData.InitialActionAt);
+    }
+
+    /// <summary>
+    /// Verify the action date does not update if it's already set when the initial action changes
+    /// </summary>
+    [Fact]
+    public void InitialActionDate_NotDefaultedWhen_InitialActionTakenSet_AndDateNotNull()
+    {
+        // Arrange
+        InitialValues.DispositionData.InitialActionAt = DateTime.Now.AddDays(-1).Date;
+        CreateTestComponent();
+
+        // Assert
+        Assert.Equal(DateTime.Now.AddDays(-1).Date, initialActionComponent.Instance.DispositionData.InitialActionAt);
+
+        // Act
+        Component.Find("[name=\"DispositionData.InitialActionTaken\"]").Change("Notice Sent");
+
+        // Assert
+        Assert.Equal(DateTime.Now.AddDays(-1).Date, initialActionComponent.Instance.DispositionData.InitialActionAt);
+    }
+
+    /// <summary>
+    /// Verify an error is shown when the date is set and the action is not
+    /// </summary>
+    [Fact]
+    public async Task InitialAction_ShowsErrorWhen_InitialActionDateSet()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        var initActionDate = Component.Find("[name=\"DispositionData.InitialActionAt\"]");
+        initActionDate.Change(DateTime.Now.Date);
+        initActionDate.Blur();
+
+        // Assert
+        await ResolutionFieldsTestHelper.VerifyErrors(usaForm, 1, new List<string>
+        {
+            "Initial Action Taken is required because a date has been selected"
+        });
+    }
+
+    /// <summary>
+    /// Verify an error is shown when the action is set and the date is not
+    /// </summary>
+    [Fact]
+    public async Task InitialActionDate_ShowsErrorWhen_InitialActionSetManually()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        var initActionTaken = Component.Find("[name=\"DispositionData.InitialActionTaken\"]");
+        initActionTaken.Change("Notice Sent");
+        initActionTaken.Blur();
+
+        var initActionDate = Component.Find("[name=\"DispositionData.InitialActionAt\"]");
+        initActionDate.Change("");
+        initActionDate.Blur();
+
+        // Assert
+        await ResolutionFieldsTestHelper.VerifyErrors(usaForm, 1, new List<string>
+        {
+            "Initial Action Date is required"
+        });
+    }
+
+    /// <summary>
+    /// Verify the initial action section is disabled when invalid match is true
+    /// </summary>
+    [Fact]
+    public void InvalidMatchTrue_DisablesInitialAction_WhenInitialActionNotSet()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        // Selct the Invalid Match Yes radio button
+        Component.Find("[name=\"DispositionData.InvalidMatch\"]").Change("True");
+
+        // Assert
+        VerifyDisabledInitialActionSection();
+    }
+
+    /// <summary>
+    /// Verify the initial action section is enabled when invalid match is false
+    /// </summary>
+    [Fact]
+    public void InvalidMatchFalse_EnablesInitialAction_WhenInitialActionNotSet()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Act
+        // Selct the Invalid Match No radio button
+        Component.Find("[name=\"DispositionData.InvalidMatch\"]").Change("False");
+
+        // Assert
+        VerifyEnabledInitialActionSection();
+    }
+
+    /// <summary>
+    /// Verify the initial action section is enabled when invalid match is not set
+    /// </summary>
+    [Fact]
+    public void InvalidMatchNull_EnablesInitialAction_WhenInitialActionNotSet()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert
+        VerifyEnabledInitialActionSection();
+    }
+
+    /// <summary>
+    /// Verify the initial action section is enabled when invalid match is true
+    /// but initial action date was previously set
+    /// </summary>
+    [Fact]
+    public void InvalidMatchTrue_InitialActionEnabled_WhenInitialActionAtSet()
+    {
+        // Arrange
+        InitialValues.DispositionData.InitialActionAt = DateTime.Now;
+        CreateTestComponent();
+
+        // Act
+        // Selct the Invalid Match Yes radio button
+        Component.Find("[name=\"DispositionData.InvalidMatch\"]").Change("True");
+
+        // Assert
+        VerifyEnabledInitialActionSection();
+    }
+
+    /// <summary>
+    /// Verify the initial action section is enabled when invalid match is true
+    /// but initial action taken was previously set
+    /// </summary>
+    [Fact]
+    public void InvalidMatchTrue_InitialActionEnabled_WhenInitialActionTakenSet()
+    {
+        // Arrange
+        InitialValues.DispositionData.InitialActionTaken = "Notice Sent";
+        CreateTestComponent();
+
+        // Act
+        // Selct the Invalid Match Yes radio button
+        Component.Find("[name=\"DispositionData.InvalidMatch\"]").Change("True");
+
+        // Assert
+        VerifyEnabledInitialActionSection();
+    }
+
+    /// <summary>
+    /// Verify the initial action section is disabed when invalid match is true
+    /// but initial action taken was previously set, and then it is cleared
+    /// </summary>
+    [Fact]
+    public void InvalidMatchTrue_InitialActionDisabled_WhenInitialActionTakenSetAndThenCleared()
+    {
+        // Arrange
+        InitialValues.DispositionData.InitialActionTaken = "Notice Sent";
+        CreateTestComponent();
+
+        // Act
+        // Selct the Invalid Match Yes radio button
+        Component.Find("[name=\"DispositionData.InvalidMatch\"]").Change("True");
+        Component.Find("[name=\"DispositionData.InitialActionTaken\"]").Change("");
+
+        // Assert
+        VerifyDisabledInitialActionSection();
+    }
+
+    /// <summary>
+    /// Verify the initial action section is disabed when invalid match is true
+    /// but initial action date was previously set, and then it is cleared
+    /// </summary>
+    [Fact]
+    public void InvalidMatchTrue_InitialActionDisabled_WhenInitialActionAtSetAndThenCleared()
+    {
+        // Arrange
+        InitialValues.DispositionData.InitialActionAt = DateTime.Now;
+        CreateTestComponent();
+
+        // Act
+        // Selct the Invalid Match Yes radio button
+        Component.Find("[name=\"DispositionData.InvalidMatch\"]").Change("True");
+        Component.Find("[name=\"DispositionData.InitialActionAt\"]").Change("");
+
+        // Assert
+        VerifyDisabledInitialActionSection();
+    }
+
+    private void VerifyDisabledInitialActionSection()
+    {
+        var initialActionSection = Component.Find("#initial-action-section");
+
+        // Assert
+        Assert.True(initialActionSection.ClassList.Contains("disabled-area"));
+        var inputs = initialActionSection.QuerySelectorAll("input,select");
+        Assert.Equal(2, inputs.Count());
+        foreach (var input in inputs)
+        {
+            Assert.True(input.HasAttribute("disabled"));
+        }
+    }
+
+    private void VerifyEnabledInitialActionSection()
+    {
+        var initialActionSection = Component.Find("#initial-action-section");
+
+        // Assert
+        Assert.False(initialActionSection.ClassList.Contains("disabled-area"));
+        var inputs = initialActionSection.QuerySelectorAll("input,select");
+        Assert.Equal(2, inputs.Count());
+        foreach (var input in inputs)
+        {
+            Assert.False(input.HasAttribute("disabled"));
+        }
+    }
+
+    #endregion
+}

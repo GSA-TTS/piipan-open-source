@@ -1,0 +1,233 @@
+openapi: 3.0.0
+info:
+  title: Bulk API
+  version: 2.0.0
+  description: |
+    The API for performing bulk uploads.
+    File Preparation.
+    This API requires a file to be submitted with the appropriate schema. The details of that file's schema can be found at <a href='../../../../etl/docs/csv/import-schema.json'>File schema</a>
+tags:
+  - name: UploadAllParticipants
+servers:
+  - url: '/bulk/{stateAbbr}/v2'
+    variables:
+      stateAbbr:
+        default: none
+        description: Lowercase two-letter postal code abbreviation
+paths:
+  '/upload_all_participants/{filename}':
+    put:
+      operationId: upload_all_participants
+      summary: Upload a CSV file of bulk participant data
+      description: Upload a CSV file of bulk participant data. Each state is allowed a maximum of 60 requests per minute.
+      tags:
+        - Bulk Upload
+      parameters:
+        - name: filename
+          in: path
+          description: Name of file being uploaded
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: Content-Length
+          schema:
+            type: integer
+          required: true
+          description: Size in bytes of your file to be uploaded. A curl request will add this header by default when including a data or file parameter.
+          example: 6413
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '201':
+          description: File uploaded
+          content:
+            application/json:
+              schema:
+                title: Upload response
+                type: object
+                properties:
+                  data:
+                    type: object
+                    nullable: true
+                    description: The response payload. Will contain a data property with upload details.
+                    required:
+                      - upload_id
+                    properties:
+                      upload_id:
+                        type: string
+                        description: A unique upload_id for the successful upload.
+              examples:
+                Default:
+                  description: An upload of a single CSV file of all the participants
+                  value:
+                    data:
+                      upload_id: '0x8DA2EA86C4C2089'
+        '401':
+          description: Access denied
+        '411':
+          description: Content-Length not provided
+        '413':
+          description: Payload Too Large
+        '415':
+          description: Unknown file type
+  '/uploads/{upload_identifier}':
+    get:
+      operationId: Get Upload Details
+      tags:
+        - Bulk Upload
+      summary: Get Upload Details
+      description: Get details regarding a bulk upload. Each state is allowed a maximum of 120 requests per minute.
+      parameters:
+        - in: header
+          name: From
+          schema:
+            type: string
+          description: 'As in the HTTP/1.1 RFC, used for logging purposes as a means for identifying the source of invalid or unwanted requests. The interpretation of this field is that the request is being performed on behalf of the state government-affiliated person whose email address (or username) is specified here. It is not used for authentication or authorization.'
+          required: true
+        - in: path
+          name: upload_identifier
+          schema:
+            type: string
+          description: The Upload ID retrieved from a bulk upload
+          required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    description: The response payload representing upload data.
+                    required:
+                      - upload_identifier
+                      - created_at
+                      - status
+                    properties:
+                      upload_identifier:
+                        type: string
+                        description: The unique identifier for the upload
+                        example: '0x8DA63770FEF1551'
+                      created_at:
+                        type: string
+                        format: date
+                        description: The timestamp when the requested upload was performed.
+                        example: '2022-07-11T19:54:27.903811Z'
+                      participants_uploaded:
+                        type: integer
+                        description: The number or participants uploaded into the Piipan
+                        example: 50
+                      error_message:
+                        type: string
+                        description: Error details as to why an upload failed
+                        example: Exception of type 'CsvHelper.FieldValidationException' was thrown.
+                      completed_at:
+                        type: string
+                        format: date
+                        description: The timestamp when the requested upload was completed.
+                        example: '2022-07-11T19:54:28.303961Z'
+                      status:
+                        type: string
+                        description: |-
+                          COMPLETE - when successful
+                           FAILED - The upload was unsuccessful. The Piipan will continue to match against records of active participants from your previous successful upload
+                           UPLOADING - The file is uploading to the Piipan, or the file has uploaded but is still being validated
+                        example: COMPLETE
+              examples:
+                Successul upload 200:
+                  description: 200 Response to successful upload
+                  value:
+                    data:
+                      status: COMPLETE
+                      upload_identifier: '0x8DA63770FEF1551'
+                      created_at: '2022-07-11T19:54:27.903811Z'
+                      participants_uploaded: '40'
+                      completed_at: '2022-07-11T19:54:28.303961Z'
+                Failed Upload '200':
+                  description: 200 response on an upload that failed
+                  value:
+                    data:
+                      status: FAILED
+                      upload_identifier: '0x8DA63770FEF1551'
+                      created_at: '2022-07-11T19:54:27.903811Z'
+                      error_message: Exception of type 'CsvHelper.FieldValidationException' was thrown.
+                      completed_at: '2022-07-11T19:54:28.303961Z'
+                Not Found:
+                  description: 404 Not found exception
+                  value:
+                    errors:
+                      - status: '404'
+                        title: NotFoundException
+                        detail: not found
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: string
+                    description: Status of the upload
+                    example: '400'
+                  title:
+                    type: string
+                    description: The title of the error
+                    example: Bad Request Exception
+                  detail:
+                    type: string
+                    description: The detailed description of the error
+                    example: Request was not valid
+        '401':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: string
+                    description: Status of the upload
+                    example: '401'
+                  message:
+                    type: string
+                    description: The message explaining the reason for access denied
+                    example: Access denied due to invalid subscription key. Make sure to provide a valid key for an active subscription
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    description: The array of errors when getting the upload.
+                    properties:
+                      status:
+                        type: string
+                        description: Status of the upload
+                        example: '404'
+                      title:
+                        type: string
+                        description: The title of the error
+                        example: NotFoundException
+                      detail:
+                        type: string
+                        description: The detailed description of the error
+                        example: not found
+security:
+  - ApiKeyAuth: []
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Ocp-Apim-Subscription-Key

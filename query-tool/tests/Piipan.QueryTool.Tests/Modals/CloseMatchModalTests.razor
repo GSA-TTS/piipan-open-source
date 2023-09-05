@@ -1,0 +1,182 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@using Piipan.Components
+@using System.Linq.Expressions
+@using Piipan.Components.Forms
+@using Piipan.Components.Layout
+@using Piipan.Components.Modals
+@using Piipan.Components.Routing
+@using Piipan.QueryTool.Client.Modals
+@using System.IO
+@using static Piipan.Components.Layout.LayoutConstants
+@using static Piipan.Components.Forms.FormConstants
+@inherits BaseComponentTest<ModalContainer>
+
+@code {
+    /// <summary>
+    /// Set the default initial values for this test component
+    /// </summary>
+    public CloseMatchModalTests() : base()
+    {
+    }
+
+    /// <summary>
+    /// Verify the default markup of the close match modal
+    /// </summary>
+    [Fact]
+    public void CloseMatchModal_ShouldExist_And_HaveCorrectMarkup()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        // Assert - by default no modals means no rendered HTML
+        Component.MarkupMatches(@<text></text>);
+
+        var modalManager = Services.GetService<IModalManager>();
+        modalManager.Show<CloseMatchModal>(
+            new CloseMatchModal()
+            {
+            }
+        );
+
+
+        // Assert
+        Component.MarkupMatches(
+            @<div class="usa-modal-wrapper is-visible" role="dialog">
+                <div class="usa-modal-overlay" aria-controls="CloseMatchModal">
+                    <div class="usa-modal" id="CloseMatchModal" aria-labelledby="CloseMatchModal-heading" aria-describedby="CloseMatchModal-description">
+                        <div class="usa-modal__content">
+                            <div class="usa-modal__main">
+                                <h2 class="usa-modal__heading" id="CloseMatchModal-heading">
+                                    Close Match
+                                </h2>
+                                <div class="usa-prose">
+                                    <p id="CloseMatchModal-description">
+                                        Saving these changes will designate this match record as closed because both States have completed all required updates. Closed match records can no longer be edited.
+                                    </p>
+                                </div>
+                                <div class="usa-modal__footer">
+                                    <ul class="usa-button-group">
+                                        <li class="usa-button-group__item">
+                                            <button type="button" class="usa-button">
+                                                Save & Close
+                                            </button>
+                                        </li>
+                                        <li class="usa-button-group__item">
+                                            <button type="button" class="usa-button usa-button--unstyled padding-105 text-center">
+                                                Cancel and return to form
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <button class="usa-button usa-modal__close" aria-label="Close this window"  >
+                              <svg class="usa-icon" aria-hidden="true" focusable="false" role="img" >
+                                <use xlink:href="/images/sprite.svg#close" ></use>
+                              </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    );
+    }
+
+    /// <summary>
+    /// Verify the close match modal starts closing the match when the Save & Close button is pressed
+    /// </summary>
+    [Fact]
+    public void CloseMatchModal_ShouldSave_WhenSaveAndCloseIsClicked()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        bool saveClicked = false;
+
+        // Act
+        var modalManager = Services.GetService<IModalManager>();
+        IRenderedComponent<CloseMatchModal> closeMatchModal = null;
+        IElement continueButton = null;
+        IElement cancelButton = null;
+        bool saveFinished = false;
+        modalManager.Show<CloseMatchModal>(new CloseMatchModal()
+        {
+            SaveCallback = async () =>
+            {
+                saveClicked = true; // Something happens when continue button is clicked. For this test, just set a variable to verify it was called.
+                await Task.Delay(100);
+                saveFinished = true;
+            }
+        });
+        closeMatchModal = Component.FindComponent<CloseMatchModal>();
+        continueButton = Component.Find(".usa-button");
+        cancelButton = Component.Find(".usa-button--unstyled");
+
+        // Assert modal initially has expected values
+        Assert.Equal("Save & Close", continueButton.TextContent);
+        Assert.False(closeMatchModal.Instance.ModalInfo.ForceAction);
+        Assert.False(saveClicked);
+        Assert.False(cancelButton.HasAttribute("disabled"));
+
+        // Act
+        var task = continueButton.ClickAsync(new MouseEventArgs());
+
+        // Assert
+        Assert.True(saveClicked);
+        // Assert modal has new expected values
+        Assert.Equal("Closing...", continueButton.TextContent);
+        Assert.True(closeMatchModal.Instance.ModalInfo.ForceAction);
+        Assert.True(cancelButton.HasAttribute("disabled"));
+
+        Component.WaitForAssertion(() => Assert.True(saveFinished));
+
+        // Assert it closes when done saving
+        Component.MarkupMatches(@<text></text>);
+    }
+
+    /// <summary>
+    /// Verify the close match modal starts closing the match when the Save & Close button is pressed
+    /// </summary>
+    [Fact]
+    public void CloseMatchModal_ShouldCloseModal_WhenCancelIsClicked()
+    {
+        // Arrange
+        CreateTestComponent();
+
+        bool saveClicked = false;
+
+        // Act
+        var modalManager = Services.GetService<IModalManager>();
+        var closeMatchModal = new CloseMatchModal()
+        {
+            SaveCallback = () =>
+            {
+                saveClicked = true; // Something happens when continue button is clicked. For this test, just set a variable to verify it was called.
+                return Task.CompletedTask;
+            }
+        };
+        modalManager.Show<CloseMatchModal>(closeMatchModal);
+
+        var cancelButton = Component.Find(".usa-button--unstyled");
+
+        // Act
+        cancelButton.Click();
+
+        // Assert modal has new expected values
+        Assert.False(saveClicked);
+        Component.MarkupMatches(@<text></text>);
+    }
+
+    /// <summary>
+    /// Create a confirm modal component
+    /// </summary>
+    protected override void CreateTestComponent()
+    {
+        var htmlFragment = Render(
+            @<div>
+                <div id="inert-area">
+                </div><Piipan.Components.Modals.ModalContainer />
+            </div>
+        );
+        Component = htmlFragment.FindComponent<ModalContainer>();
+    }
+}

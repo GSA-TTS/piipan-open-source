@@ -1,0 +1,33 @@
+﻿.usa-tooltip__body {
+    max-width: 526px;
+    width: max-content;
+    font-weight: normal;
+    white-space: unset;
+    --translateXPercent: 0;
+    transform: translateX(calc(-1 * var(--translateXPercent)));
+}
+
+@media (max-width: 657px) {
+    .usa-tooltip__body {
+        max-width: 80vw;
+    }
+}
+
+.usa-tooltip__body.usa-tooltip__body--top {
+    bottom: calc(100% + 10px);
+}
+
+.usa-tooltip__body:after {
+    left: calc(var(--translateXPercent) + 9px);
+}
+.usa-tooltip__body--top:after {
+    bottom: -5px;
+}
+
+.usa-tooltip__body.usa-tooltip__body--bottom {
+    top: calc(100% + 10px);
+}
+
+.usa-tooltip__body--bottom:after {
+    top: -5px;
+}
