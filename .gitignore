@@ -1,0 +1,25 @@
+.DS_Store
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+**/local.settings.json
+
+# Visual Studio Ignores
+**/.vs/*
+
+.vs/*
+
+# Local History for Visual Studio Code
+.history/
+iac/env/tts/eth.bash
+iac/env/tts/eth1.bash
+iac/env/tts/eth2.bash
+iac/env/fns/**
+**/liquibase.properties
+liquibase.properties
+.runsettings
+coveragereport/
