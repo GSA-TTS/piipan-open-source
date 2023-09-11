@@ -6,22 +6,22 @@
 *A privacy-preserving system for storing and matching de-identified Personal Identifiable Information (PII) records.*
 
 ## Quick links
-- [Quickstart Guide for States](./docs/quick-start-guide-states.md)
+- [Quickstart Guide for Tenants](./docs/quick-start-guide-states.md)
 - [High-level architecture diagram](./docs/diagrams/piipan-architecture.png)
 
 ## Overview
 
-Piipan is a reference model for program integrity initiatives that aim to prevent multiple enrollment in federally-funded, but state-managed benefit programs. It is the open-source foundation for the [USDA Food and Nutrition Service](https://www.fns.usda.gov) National Accuracy Clearinghouse (NAC), a congressionally mandated matching system for the [Supplemental Nutrition Assistance Program (SNAP)](https://www.fns.usda.gov/snap/supplemental-nutrition-assistance-program).
+Piipan is a reference model for privacy-preserving systems that store and match de-identified Personal Identifiable Information (PII) records across multiple tenants. This allows finding matches between different data sources without revealing the individuals' identities.
 
 Under this model:
-1. State eligibility systems share *de-identified* participant data to Piipan daily
+1. Tenant systems share *de-identified* participant data to Piipan daily
 
 <p align="center">
   <a href="./docs/diagrams/daily-snapshots.png"><img src="./docs/diagrams/daily-snapshots.png" alt="De-identified participant data" width="60%"></a>
   <!-- Google Slides: https://docs.google.com/presentation/d/1Lctqx9EuGvC9M5PGgQK6zXSiMfUWyafaX00KlZDhx4c/edit#slide=id.gbbca7102b2_0_175 -->
 </p>
 
-2. Duplicate participation is prevented by using Piipan to search for matches during eligibility (re)certification
+2. Duplicate participation is prevented by using Piipan to search for matches
 
 <p align="center">
   <a href="./docs/diagrams/prevent-duplicate-enrolment.png"><img src="./docs/diagrams/prevent-duplicate-enrolment.png" alt="De-identified participant data" width="80%"></a>
@@ -31,15 +31,9 @@ Under this model:
 Paramount quality attributes of this system include:
 * Preserving the privacy of program participants
 * Accuracy of matches
-* Adaptability to multiple benefit programs
+* Adaptability to multiple programs
 
-[Sec. 4011 of the 2018 Farm Bill](https://www.congress.gov/bill/115th-congress/house-bill/2/text), *Interstate data matching to prevent multiple issuances*, further guides our work, mandating that the information made available by state agencies:
-* Shall be used only for the purpose of preventing multiple enrollment
-* Shall not be retained for longer than is necessary
-
-To achieve this product vision, Piipan incorporates a Privacy-Preserving Record Linkage (PPRL) technique to de-identify the PII of program participants at the state-level. Please see our [high-level treatment](./docs/pprl-plain.md) and our [technical specification](./docs/pprl.md) for more details.
-
-**Note**: Our documentation will sometimes use the terms Piipan and NAC interchangeably. However, more precisely, Piipan is our [open-source product available on GitHub](https://github.com/18F/piipan), while the NAC is a deployment of that product, configured specifically for the Food and Nutrition Service, and operated under their policies and regulations. 
+To achieve this, Piipan incorporates a Privacy-Preserving Record Linkage (PPRL) technique to de-identify the PII of program participants. Please see our [high-level treatment](./docs/pprl-plain.md) and our [technical specification](./docs/pprl.md) for more details.
 
 ## Documentation
 
