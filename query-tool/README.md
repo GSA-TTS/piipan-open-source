@@ -1,6 +1,6 @@
-# NAC Query Tool
+# Piipan Query Tool
 
-*Piipan subsystem providing a web interface for querying the NAC*
+*Piipan subsystem providing a web interface for querying the Piipan*
 
 ## Documentation
 

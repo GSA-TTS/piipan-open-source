@@ -34,11 +34,11 @@ namespace Piipan.States.Core.Integration.Tests
             var cryptographyClient = new Mock<ICryptographyClient>();
 
             cryptographyClient.Setup(c => c.DecryptFromBase64String(_stateInfoDto.Email))
-                .Returns("email@usda.gov");
+                .Returns("email@email.gov");
             cryptographyClient.Setup(c => c.DecryptFromBase64String(_stateInfoDto.Phone))
                 .Returns("123123123");
             cryptographyClient.Setup(c => c.DecryptFromBase64String(_stateInfoDto.EmailCc))
-                .Returns("emailCc@usda.gov");
+                .Returns("emailCc@email.gov");
 
             var stateInfoService = new StateInfoService(daoStateInfoMock.Object, cryptographyClient.Object, logger.Object);
 
@@ -48,9 +48,9 @@ namespace Piipan.States.Core.Integration.Tests
             // Assert
             daoStateInfoMock.Verify(c => c.GetStateByAbbreviation(It.Is<string>(d => d == "TT")));
             Assert.Equal("test1", result.State);
-            Assert.Equal("email@usda.gov", result.Email);
+            Assert.Equal("email@email.gov", result.Email);
             Assert.Equal("99", result.Id);
-            Assert.Equal("emailCc@usda.gov", result.EmailCc);
+            Assert.Equal("emailCc@email.gov", result.EmailCc);
             Assert.Equal("123123123", result.Phone);
 
             logger.Verify(c => c.Log(
@@ -61,13 +61,13 @@ namespace Piipan.States.Core.Integration.Tests
                 It.IsAny<Func<object, Exception, string>>()), Times.Never);
 
             cryptographyClient.Verify(c => c.DecryptFromBase64String("m4cHpnQQ6OmkRi3MbA8nc9H/bC5eVf7uOmRhK8L7qWzKHBbQcUwd28WL40mw/BYj"), Times.Once);
-            Assert.Equal("email@usda.gov", cryptographyClient.Object.DecryptFromBase64String("m4cHpnQQ6OmkRi3MbA8nc9H/bC5eVf7uOmRhK8L7qWzKHBbQcUwd28WL40mw/BYj"));
+            Assert.Equal("email@email.gov", cryptographyClient.Object.DecryptFromBase64String("m4cHpnQQ6OmkRi3MbA8nc9H/bC5eVf7uOmRhK8L7qWzKHBbQcUwd28WL40mw/BYj"));
 
             cryptographyClient.Verify(c => c.DecryptFromBase64String("sajNo6NgQGJJ14MtpBvrCg=="), Times.Once);
             Assert.Equal("123123123", cryptographyClient.Object.DecryptFromBase64String("sajNo6NgQGJJ14MtpBvrCg=="));
 
             cryptographyClient.Verify(c => c.DecryptFromBase64String("+eU5yR+Io0kIiWFnGQ2+WX4zUi/gVwcqQuKJokWYydV+zJ5HHqEZGGNqvlwKWD6/"), Times.Once);
-            Assert.Equal("emailCc@usda.gov", cryptographyClient.Object.DecryptFromBase64String("+eU5yR+Io0kIiWFnGQ2+WX4zUi/gVwcqQuKJokWYydV+zJ5HHqEZGGNqvlwKWD6/"));
+            Assert.Equal("emailCc@email.gov", cryptographyClient.Object.DecryptFromBase64String("+eU5yR+Io0kIiWFnGQ2+WX4zUi/gVwcqQuKJokWYydV+zJ5HHqEZGGNqvlwKWD6/"));
         }
 
         [Fact]
@@ -167,11 +167,11 @@ namespace Piipan.States.Core.Integration.Tests
 
             var cryptographyClient = new Mock<ICryptographyClient>();
             cryptographyClient.Setup(c => c.DecryptFromBase64String(_stateInfoDto.Email))
-                .Returns("email@usda.gov");
+                .Returns("email@email.gov");
             cryptographyClient.Setup(c => c.DecryptFromBase64String(_stateInfoDto.Phone))
                 .Returns("123123123");
             cryptographyClient.Setup(c => c.DecryptFromBase64String(_stateInfoDto.EmailCc))
-                .Returns("emailCc@usda.gov");
+                .Returns("emailCc@email.gov");
 
             var stateInfoService = new StateInfoService(daoStateInfoMock.Object, cryptographyClient.Object, logger.Object);
 
@@ -180,21 +180,21 @@ namespace Piipan.States.Core.Integration.Tests
 
             // Assert
             Assert.Equal(1, result?.Count());
-            Assert.Equal("email@usda.gov", result?.ToArray()[0].Email);
+            Assert.Equal("email@email.gov", result?.ToArray()[0].Email);
             Assert.Equal("123123123", result?.ToArray()[0].Phone);
-            Assert.Equal("emailCc@usda.gov", result?.ToArray()[0].EmailCc);
+            Assert.Equal("emailCc@email.gov", result?.ToArray()[0].EmailCc);
             Assert.Equal(_stateInfoDto.Id, result?.ToArray()[0].Id);
             Assert.Equal(_stateInfoDto.StateAbbreviation, result?.ToArray()[0].StateAbbreviation);
             Assert.Equal(_stateInfoDto.State, result?.ToArray()[0].State);
 
             cryptographyClient.Verify(c => c.DecryptFromBase64String("m4cHpnQQ6OmkRi3MbA8nc9H/bC5eVf7uOmRhK8L7qWzKHBbQcUwd28WL40mw/BYj"), Times.Once);
-            Assert.Equal("email@usda.gov", cryptographyClient.Object.DecryptFromBase64String("m4cHpnQQ6OmkRi3MbA8nc9H/bC5eVf7uOmRhK8L7qWzKHBbQcUwd28WL40mw/BYj"));
+            Assert.Equal("email@email.gov", cryptographyClient.Object.DecryptFromBase64String("m4cHpnQQ6OmkRi3MbA8nc9H/bC5eVf7uOmRhK8L7qWzKHBbQcUwd28WL40mw/BYj"));
 
             cryptographyClient.Verify(c => c.DecryptFromBase64String("sajNo6NgQGJJ14MtpBvrCg=="), Times.Once);
             Assert.Equal("123123123", cryptographyClient.Object.DecryptFromBase64String("sajNo6NgQGJJ14MtpBvrCg=="));
 
             cryptographyClient.Verify(c => c.DecryptFromBase64String("+eU5yR+Io0kIiWFnGQ2+WX4zUi/gVwcqQuKJokWYydV+zJ5HHqEZGGNqvlwKWD6/"), Times.Once);
-            Assert.Equal("emailCc@usda.gov", cryptographyClient.Object.DecryptFromBase64String("+eU5yR+Io0kIiWFnGQ2+WX4zUi/gVwcqQuKJokWYydV+zJ5HHqEZGGNqvlwKWD6/"));
+            Assert.Equal("emailCc@email.gov", cryptographyClient.Object.DecryptFromBase64String("+eU5yR+Io0kIiWFnGQ2+WX4zUi/gVwcqQuKJokWYydV+zJ5HHqEZGGNqvlwKWD6/"));
         }
 
 

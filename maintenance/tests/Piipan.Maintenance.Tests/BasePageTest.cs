@@ -58,7 +58,7 @@ namespace Piipan.Maintenance.Tests
                 {
                     new StateInfoDto
                     {
-                        Email = "ea-test@usda.example",
+                        Email = "ea-test@agency.example",
                         Phone = "123-123-1234",
                         State = "Echo Alpha",
                         StateAbbreviation = "EA"

@@ -1,10 +1,10 @@
-# So you're an Engineer on the NAC
+# So you're an Engineer on the Piipan
 
-Hello and welcome to the NAC Engineering Team! As you may have seen, there’s a lot of documentation to sift through, so where do you start? Great question! This guide is here to help.
+Hello and welcome to the Piipan Engineering Team! As you may have seen, there’s a lot of documentation to sift through, so where do you start? Great question! This guide is here to help.
 
-This guide is meant to introduce how the NAC works for Engineers. It threads together various NAC subsystems and workflows to show you how everything works as a whole at a high level. It may touch on program specifics where needed, but for deeper dives into the history and purpose of the project, see the [project overview](https://github.com/18F/piipan#overview).
+This guide is meant to introduce how the Piipan works for Engineers. It threads together various Piipan subsystems and workflows to show you how everything works as a whole at a high level. It may touch on program specifics where needed, but for deeper dives into the history and purpose of the project, see the [project overview](https://github.com/18F/piipan#overview).
 
-This guide will show you how to perform each of the key features that are currently implemented in the NAC in a developer/playground environment.
+This guide will show you how to perform each of the key features that are currently implemented in the Piipan in a developer/playground environment.
 
 ## Prerequisites
 
@@ -13,20 +13,20 @@ This guide assumes that:
 1. You can read and write code
 1. You can navigate the Microsoft Azure portal
     - For example, you know what a "resource" and "resource group" are
-1. You have access to an Azure portal, with a version of the NAC deployed on it
+1. You have access to an Azure portal, with a version of the Piipan deployed on it
     - If you have access to an existing DEV environment, use that!
     - Otherwise, you may deploy onto a sandbox Azure environment that's available to you following the [Infrastructure As Code](./iac.md) steps.
 1. You are [logged into the Azure CLI](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli#sign-in-interactively) using an account that has access to your specified Azure environment
 1. You have sufficient Azure access privileges
     - There may be some kinks to work out as you go through this guide. Contact an 18F developer if access restrictions get in your way.
 
-## The NAC at a glance
+## The Piipan at a glance
 
-Broadly, the main tasks of the NAC are:
+Broadly, the main tasks of the Piipan are:
 
-1. Each state uploads deidentified participant data, in bulk, to the NAC
-1. SNAP Eligibility Workers query the NAC for participant matches between states
-1. SNAP Eligibility Workers collaborate to resolve matches (not yet implemented)
+1. Each state uploads deidentified participant data, in bulk, to the Piipan
+1. Tenant Workers query the Piipan for participant matches between states
+1. Tenant Workers collaborate to resolve matches (not yet implemented)
 1. FNS monitors state uploads and other metrics (partially implemented)
 
 From an Engineering perspective, this guide will walk you through:
@@ -48,9 +48,9 @@ Some particularly helpful docs to read before you start:
 
 ## How to prepare participant data for upload
 
-The NAC can’t find matches without having participant data in its system.
+The Piipan can’t find matches without having participant data in its system.
 
-First, states will deidentify their participant data according to the [PPRL specifications](./pprl.md). While each state is responsible for how they implement these specs, the NAC has [its own implementation of the hashing process](../shared/src/Piipan.Shared/Deidentification/LdsDeidentifier.cs) that the Query Tool uses.
+First, states will deidentify their participant data according to the [PPRL specifications](./pprl.md). While each state is responsible for how they implement these specs, the Piipan has [its own implementation of the hashing process](../shared/src/Piipan.Shared/Deidentification/LdsDeidentifier.cs) that the Query Tool uses.
 
 The resulting file to upload will be in csv format. You can either attempt to create a csv yourself using these techniques, or use this [example csv](../etl/docs/csv/example.csv) for the upload instructions in the next section.
 
@@ -66,7 +66,7 @@ The resulting file to upload will be in csv format. You can either attempt to cr
 
 ## How to upload data
 
-The [ETL subsystem](../etl) is responsible for anything related to uploading participant data to the NAC. The ETL documentation has instructions for uploading data in various developer-friendly ways. Here, we will show how to upload data in the same way that a state would, using the [Bulk Upload API](./openapi/generated/bulk-api/openapi.md).
+The [ETL subsystem](../etl) is responsible for anything related to uploading participant data to the Piipan. The ETL documentation has instructions for uploading data in various developer-friendly ways. Here, we will show how to upload data in the same way that a state would, using the [Bulk Upload API](./openapi/generated/bulk-api/openapi.md).
 
 #### To Read
 
@@ -98,7 +98,7 @@ Once data from states is in the system, data can be queried for matches between 
 
 ### Querying through the Duplicate Participation API
 
-As the name suggests, the [Match](../match) subsystem handles all things related to matching. The NAC exposes an API to states called the Duplicate Participation API. Here, we will show how to query this API for matches.
+As the name suggests, the [Match](../match) subsystem handles all things related to matching. The Piipan exposes an API to states called the Duplicate Participation API. Here, we will show how to query this API for matches.
 
 #### To Read
 
@@ -260,10 +260,10 @@ For additional infomation of running Integration tests locally using [Visual Stu
 
 Congrats on making it through all of the steps! By now, you should:
 
-- have a general idea of how states will interact with the NAC
+- have a general idea of how states will interact with the Piipan
 - know what each subsystem is responsible for
 - have a general idea of where to look to find more information
-- understand the broad strokes of how the infrastructure underlying the NAC is managed and how applications are deployed
+- understand the broad strokes of how the infrastructure underlying the Piipan is managed and how applications are deployed
 
 ## Further Reading
 

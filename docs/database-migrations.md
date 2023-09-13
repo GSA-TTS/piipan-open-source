@@ -39,7 +39,7 @@
 
 ```
     <changeSet id="05_30_match-record" logicalFilePath="path-independent" author="john.doe@abcd.test" labels="match-record" context="dg-initialization">
-        <comment>768</comment><!-- Nac-1234 ticket -->
+        <comment>768</comment><!-- Piipan-1234 ticket -->
         <sqlFile relativeToChangelogFile="true" path="05_30_match-record.sql" splitStatements="true"/> <!-- with >
         <!-- <rollback>
             <sqlFile relativeToChangelogFile="true" path="example-rollback-changeset.sql" splitStatements="false"/>
@@ -55,7 +55,7 @@
 <changeSet id="05_30_match-record" logicalFilePath="path-independent" author="john.smith@abcd.test" labels="match-record" context="dg-initialization">
 ```
 
-1. Include a comment tag in the changeset that contains the JIRA ticket number. Just the numeric value ONLY e.g. for Nac-768 you would put
+1. Include a comment tag in the changeset that contains the JIRA ticket number. Just the numeric value ONLY e.g. for Piipan-768 you would put
 
 ```
         <comment>768</comment><!-- piipan-768 ticket -->

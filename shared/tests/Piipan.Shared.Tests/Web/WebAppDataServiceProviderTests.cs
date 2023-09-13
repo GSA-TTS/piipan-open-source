@@ -51,7 +51,7 @@ namespace Piipan.Shared.Tests.Web
             // Assert these values which are defined in the Mocks
             Assert.Equal("noreply@tts.test", webAppDataServiceProvider.Email);
             Assert.Equal("EA", webAppDataServiceProvider.Location);
-            Assert.Equal("test@usda.example", webAppDataServiceProvider.HelpDeskEmail);
+            Assert.Equal("test@email.example", webAppDataServiceProvider.HelpDeskEmail);
             Assert.Equal("Worker", webAppDataServiceProvider.Role);
             Assert.Equal("https://tts.test", webAppDataServiceProvider.BaseUrl);
             Assert.Equal(new string[] { DefaultMocks.Role_Worker, DefaultMocks.Role_Oversight }, webAppDataServiceProvider.AppRolesByArea[RoleConstants.ViewMatchArea]);
@@ -89,7 +89,7 @@ namespace Piipan.Shared.Tests.Web
             // Assert these values which are defined in the Mocks
             Assert.Equal("noreply@tts.test", webAppDataServiceProvider.Email);
             Assert.Equal("EA", webAppDataServiceProvider.Location);
-            Assert.Equal("test@usda.example", webAppDataServiceProvider.HelpDeskEmail);
+            Assert.Equal("test@email.example", webAppDataServiceProvider.HelpDeskEmail);
             Assert.Equal("Worker", webAppDataServiceProvider.Role);
             Assert.Equal("https://tts.test", webAppDataServiceProvider.BaseUrl);
             Assert.Equal(new string[] { DefaultMocks.Role_Worker, DefaultMocks.Role_Oversight }, webAppDataServiceProvider.AppRolesByArea[RoleConstants.ViewMatchArea]);

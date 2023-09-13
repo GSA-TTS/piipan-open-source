@@ -179,7 +179,7 @@ Example of a `match_res_events` record that closes a match:
   id: 456,
   match_id: "ABCDE",
   inserted_at: "2022-04-24T18:25:43.511Z",
-  actor: "NAC System",
+  actor: "Piipan System",
   actor_state: null,
   delta: {
     status: "closed"

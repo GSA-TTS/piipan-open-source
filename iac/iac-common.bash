@@ -613,9 +613,9 @@ set_defaults () {
     QUERY_TOOL_URL="https://${QUERY_TOOL_FRONTDOOR_NAME}"$(front_door_host_suffix)
 	
     if [ "${ENV}" == "prod" ] ; then
-        QUERY_TOOL_DISPLAY_URL="https://search.nac.fns.usda.gov"
+        QUERY_TOOL_DISPLAY_URL="https://search.agency.gov"
     else
-        QUERY_TOOL_DISPLAY_URL="https://search-${ENV}.nac.fns.usda.gov"
+        QUERY_TOOL_DISPLAY_URL="https://search-${ENV}.agency.gov"
     fi
 
     # Private DNS Zone, used for Azue PSQL databases

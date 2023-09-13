@@ -66,7 +66,7 @@ To build all subsystems at once, navigate to Piipan's top-level directory and ex
 
 ### How to Test
 
-For a more detailed analysis on testing best practices in NAC, review the following guide:
+For a more detailed analysis on testing best practices in Piipan, review the following guide:
 * [Server-Side Automated Testing](https://github.com/18F/piipan/tree/dev/docs/server-side-automated-testing-guide.md)
 
 #### Unit Tests
