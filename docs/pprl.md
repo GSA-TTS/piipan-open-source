@@ -12,9 +12,9 @@ Our PPRL technique in brief:
 - Piipan searches for exact matches across the secure hashes of the participating tenants
 - When tenant eligibility systems query the duplicate participation API during (re)certification, the secure hash for the de-identified data is provided as input, instead of their PII
 
-Only one secure hash is currently defined for piipan and is derived from *last name*, *Date of Birth (DoB)*, and *Social Security Number (SSN)* and the application of the [SHA-512 cryptographic hash function](https://en.wikipedia.org/wiki/SHA-2). Additional secure hashes may be defined in the future to support additional matching algorithms beyond an exact match against last name, DoB, and SSN.
+Only one secure hash is currently defined for piipan and is derived from *last name*, *Date of Birth (DoB)*, and *Social Security Number (SSN)* and the application of a [cryptographic hash function](https://en.wikipedia.org/wiki/SHA-2). Additional secure hashes may be defined in the future to support additional matching algorithms beyond an exact match against last name, DoB, and SSN.
 
-Finally, in order for exact matching against de-identified PII to be effective, tenants must consistently validate and normalize the PII values, concatenate them in a specified manner, and then apply the SHA-512 hash function. These steps are described in detail below.
+Finally, in order for exact matching against de-identified PII to be effective, tenants must consistently validate and normalize the PII values, concatenate them in a specified manner, and then apply the hash function. These steps are described in detail below.
 
 ## 1. Validation and Normalization
 
@@ -119,10 +119,9 @@ For example:
 
 ## 3. Hash generation
 
-1. Take the validated, normalized, and concatenated values and apply the SHA-512 hash algorithm, resulting in a 64-byte byte array
+1. Take the validated, normalized, and concatenated values and apply the hash algorithm, resulting in a 64-byte byte array
 1. Convert the byte array to a 128-character lower-cased hexadecimal digest to get a value suitable for the bulk upload and duplicate participation APIs
 
-Examples in C#/.NET, bash/openssl, and Python are provided below. 
 
 Executing all examples using an input of:
 ```
@@ -133,48 +132,3 @@ results in a hash digest of:
 04d1117b976e9c894294ab6198bee5fdaac1f657615f6ee01f96bcfc7045872c60ea68aa205c04dd2d6c5c9a350904385c8d6c9adf8f3cf8da8730d767251eef
 ```
 
-### C# with .NET
-
-```
-using System;
-using System.Security.Cryptography;
-using System.Text;
-
-public class Program
-{
-    public static void Main()
-    {
-        string source = "hopper,1978-08-14,078-05-1121";
-        SHA512 sha = SHA512Managed.Create();
-        byte[] result = sha.ComputeHash(Encoding.UTF8.GetBytes(source));
-
-        Console.WriteLine(ByteArrayToHexDigest(result));
-    }
-
-    private static string ByteArrayToHexDigest(byte[] data)
-    {
-        var sb = new StringBuilder();
-
-        for (int i = 0; i < data.Length; i++)
-        {
-            sb.Append(data[i].ToString("x2"));
-        }
-        return sb.ToString();
-    }
-}
-```
-
-### bash with openssl
-
-```
-echo -n "hopper,1978-08-14,078-05-1121" | openssl dgst -sha512
-```
-
-### Python 3
-
-```
-import hashlib
-sha = hashlib.sha512()
-sha.update(b"hopper,1978-08-14,078-05-1121")
-print(sha.hexdigest())
-```
