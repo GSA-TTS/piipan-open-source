@@ -4,16 +4,12 @@ This guide is to help development teams integrate their systems with piipan.
 
 ## Overview
 
-In order to onboard to piipan, tenants will need to:
 
-1. Upload de-identified data to piipan on daily basis
-2. Conduct searches against piipan during certification, recertification, and the addition of household members
-3. Resolve matches identified by piipan
 
 ### Uploading De-identified data to piipan
 Follow these steps to provide the daily de-identified data information that piipan will need to detect possible duplicate data in your tenant:
 
-1. Understand the piipan material in the [system overview](https://github.com/18F/piipan#overview) and our [introduction to our Privacy-Preserving Record Linkage approach](https://github.com/18F/piipan/blob/dev/docs/pprl-plain.md).
+1. Understand the piipan material in the [system overview](/README.md#overview) and our [introduction to our Privacy-Preserving Record Linkage approach](/docs/pprl-plain.md).
 2. Understand which de-identified data are considered [`active e-identified data`](/etl/docs/bulk-import.md#definition-of-active-participants).
 3. Export active data from your system to a plain text CSV file.
     1. Exclude entries that are [missing key data fields](/etl/docs/bulk-import.md#participant-records-to-exclude) or are not considered [active e-identified data](/etl/docs/bulk-import.md#definition-of-active-participants)
@@ -38,17 +34,7 @@ The piipan provides 2 web service APIs for tenant integrations:
 1. [Bulk Upload API](./openapi/generated/bulk-api/openapi.md)
 1. [Duplicate Participation API](./openapi/generated/duplicate-participation-api/openapi.md)
 
-Each API has one or more RPC or REST operations and uses JSON in the operation request and/or response bodies. All operations must be made over HTTPS and authenticated by an API key. Each tenant will be issued a key for the Bulk Upload API and a separate key for the Duplicate Participation API.
-
-## Environments
-
-Several isolated piipan systems are being built for tenants to use:
-
-| Environment    | Purpose                                 | Status    | API hostname                           |
-|----------------|-----------------------------------------|-----------|----------------------------------------|
-| Testing        | For initial testing with synthetic data | Available | tts-apim-duppartapi-test.azure-api.net |
-| Pre-production | For testing with synthetic data at scale, coordinated with FNS     | Pending   | -                                      |
-| Production     | For production use with real data       | Pending   | -                                      |
+Each API has one or more RPC or REST operations and uses JSON in the operation request and/or response bodies. All operations must be made over HTTPS and authenticated by an API key. Each tenant will be issued a key for the Bulk Upload API and a separate key for the Duplicate 
 
 ## Usage notes
 
@@ -61,14 +47,9 @@ Several isolated piipan systems are being built for tenants to use:
 ### Failed requests
 - Bulk uploads can be resubmitted as required; the most recent upload will overwrite any pre-existing de-identified data snapshot.
 
-## Sample records
-
-The test environment currently includes three sample tenants (i.e., `EA`, `EB`, `EC`) that reflect an upload of this [de-identified example CSV](../etl/docs/csv/example.csv). 
-
-The [plain text CSV](../etl/docs/csv/plaintext-example.csv) that this file is derived from is also published. Searching for any of the individuals in the [plain text CSV](../etl/docs/csv/plaintext-example.csv) should return back a match result.
 
 ## Feedback
 
-Need to report a defect? We track API issues through [GitHub](https://github.com/18F/piipan/issues).
+Need to report a defect? We track API issues through GitHub.
 
 Have a question, or want to work through a technical issue? Start a thread in our Microsoft Teams channel or reach out to us by email.
