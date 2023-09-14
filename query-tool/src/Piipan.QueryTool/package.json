@@ -26,7 +26,7 @@
     "gulp-sourcemaps": "^3.0.0",
     "postcss": "^8.4.18",
     "postcss-csso": "^6.0.1",
-    "sass": "^1.58.0",
+    "sass": "^1.67.0",
     "uswds-gulp": "github:uswds/uswds-gulp"
   },
   "dependencies": {
