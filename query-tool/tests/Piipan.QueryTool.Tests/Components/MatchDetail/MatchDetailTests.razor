@@ -456,7 +456,7 @@
     {
         // Arrange
         var navigationManager = Services.GetService<PiipanNavigationManager>();
-        navigationManager.ReferralPage = "https://usda.test.example";
+        navigationManager.ReferralPage = "https://agency.test.example";
         CreateTestComponent();
 
 
@@ -473,7 +473,7 @@
     {
         // Arrange
         var navigationManager = Services.GetService<PiipanNavigationManager>();
-        navigationManager.ReferralPage = "https://usda.test.example/match";
+        navigationManager.ReferralPage = "https://agency.test.example/match";
         CreateTestComponent();
 
         // Assert
@@ -489,7 +489,7 @@
     {
         // Arrange
         var navigationManager = Services.GetService<PiipanNavigationManager>();
-        navigationManager.ReferralPage = "https://usda.test.example/list";
+        navigationManager.ReferralPage = "https://agency.test.example/list";
         CreateTestComponent();
 
         // Assert
@@ -519,7 +519,7 @@
     {
         // Arrange
         var navigationManager = Services.GetService<PiipanNavigationManager>();
-        navigationManager.ReferralPage = "https://usda.test.example/otherpage";
+        navigationManager.ReferralPage = "https://agency.test.example/otherpage";
         CreateTestComponent();
 
         // Assert
@@ -583,7 +583,7 @@
     {
         // Arrange
         var navigationManager = Services.GetService<PiipanNavigationManager>();
-        navigationManager.ReferralPage = "https://usda.test.example/otherpage";
+        navigationManager.ReferralPage = "https://agency.test.example/otherpage";
         InitialValues.InitialMatch.Data.Dispositions[0].VulnerableIndividual = true;
         CreateTestComponent();
 
@@ -617,7 +617,7 @@
     {
         // Arrange
         var navigationManager = Services.GetService<PiipanNavigationManager>();
-        navigationManager.ReferralPage = "https://usda.test.example";
+        navigationManager.ReferralPage = "https://agency.test.example";
         InitialValues.InitialMatch.Data.Dispositions[0].VulnerableIndividual = true;
         CreateTestComponent();
 
@@ -634,7 +634,7 @@
     {
         // Arrange
         var navigationManager = Services.GetService<PiipanNavigationManager>();
-        navigationManager.ReferralPage = "https://usda.test.example/match";
+        navigationManager.ReferralPage = "https://agency.test.example/match";
         InitialValues.InitialMatch.Data.Dispositions[0].VulnerableIndividual = true;
         CreateTestComponent();
 
@@ -651,7 +651,7 @@
     {
         // Arrange
         var navigationManager = Services.GetService<PiipanNavigationManager>();
-        navigationManager.ReferralPage = "https://usda.test.example/list";
+        navigationManager.ReferralPage = "https://agency.test.example/list";
         InitialValues.InitialMatch.Data.Dispositions[0].VulnerableIndividual = true;
         CreateTestComponent();
 

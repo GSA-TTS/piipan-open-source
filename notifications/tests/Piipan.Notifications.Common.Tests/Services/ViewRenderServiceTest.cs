@@ -23,7 +23,7 @@ namespace Piipan.Notifications.Common.Tests.Services
                     MatchingUrl = It.IsAny<string>(),
                     IsInitiatingState = true,
                     InitialActionBy = initialActionBy,
-                    ReplyToEmail = "helpdesk@usda.example"
+                    ReplyToEmail = "helpdesk@agency.example"
                 },
                 MatchingStateEmailRecipientsModel = new EmailToModel()
                 {
@@ -41,7 +41,7 @@ namespace Piipan.Notifications.Common.Tests.Services
             var emailBody = await viewRenderService.GenerateMessageContent("MatchEmail.cshtml", notification.MatchEmailDetails);
             // Assert
             Assert.Contains("foo", emailBody);
-            Assert.Contains("<p>This is an automated notification and we are unable to accept replies. If you need additional assistance, please contact us at <a href=\"mailto:helpdesk@usda.example?subject=NAC%20Match%20foo\">helpdesk@usda.example</a>.</p>", emailBody);
+            Assert.Contains("<p>This is an automated notification and we are unable to accept replies. If you need additional assistance, please contact us at <a href=\"mailto:helpdesk@agency.example?subject=NAC%20Match%20foo\">helpdesk@agency.example</a>.</p>", emailBody);
             Assert.Contains("<p>A NAC match has been found with your state.</p>", emailBody);
             Assert.Contains($"<p><em>Initial action to resolve this match must be taken and communicated to the other State agency <strong>by {initialActionBy.ToShortDateString()}</strong>", emailBody);
         }
@@ -60,7 +60,7 @@ namespace Piipan.Notifications.Common.Tests.Services
                     MatchingUrl = It.IsAny<string>(),
                     IsInitiatingState = false,
                     InitialActionBy = initialActionBy,
-                    ReplyToEmail = "helpdesk@usda.example"
+                    ReplyToEmail = "helpdesk@agency.example"
                 },
                 MatchingStateEmailRecipientsModel = new EmailToModel()
                 {
@@ -78,7 +78,7 @@ namespace Piipan.Notifications.Common.Tests.Services
             var emailBody = await viewRenderService.GenerateMessageContent("MatchEmail.cshtml", notification.MatchEmailDetails);
             // Assert
             Assert.Contains("foo", emailBody);
-            Assert.Contains("<p>This is an automated notification and we are unable to accept replies. If you need additional assistance, please contact us at <a href=\"mailto:helpdesk@usda.example?subject=NAC%20Match%20foo\">helpdesk@usda.example</a>.</p>", emailBody);
+            Assert.Contains("<p>This is an automated notification and we are unable to accept replies. If you need additional assistance, please contact us at <a href=\"mailto:helpdesk@agency.example?subject=NAC%20Match%20foo\">helpdesk@agency.example</a>.</p>", emailBody);
             Assert.Contains("<p>A NAC match has been found with your state.</p>", emailBody);
             Assert.Contains($"<p><em>Initial action to resolve this match must be taken and communicated to the other State agency <strong>by {initialActionBy.ToShortDateString()}</strong>", emailBody);
         }
@@ -108,7 +108,7 @@ namespace Piipan.Notifications.Common.Tests.Services
                     CreateDate = DateTime.UtcNow,
                     MatchId = "foo",
                     MatchingUrl = "https://www.example.com/match/foo",
-                    ReplyToEmail = "helpdesk@usda.example"
+                    ReplyToEmail = "helpdesk@agency.example"
                 },
                 DispositionUpdates = new DispositionUpdatesModel()
                 {
@@ -156,7 +156,7 @@ namespace Piipan.Notifications.Common.Tests.Services
                     InitState = "Echo Alpha",
                     MatchingState = "Echo Bravo",
                     MatchingUrl = "https://www.example.com/match/foo",
-                    ReplyToEmail = "helpdesk@usda.example"
+                    ReplyToEmail = "helpdesk@agency.example"
                 },
                 DispositionUpdates = new DispositionUpdatesModel()
                 {
@@ -174,7 +174,7 @@ namespace Piipan.Notifications.Common.Tests.Services
             var emailBody = await viewRenderService.GenerateMessageContent("DispositionEmail.cshtml", notification);
             // Assert
             // Assert first few paragraphs/sections
-            Assert.Contains("<p>This is an automated notification and we are unable to accept replies. If you need additional assistance, please contact us at <a href=\"mailto:helpdesk@usda.example?subject=NAC%20Match%20foo\">helpdesk@usda.example</a>.</p>", emailBody);
+            Assert.Contains("<p>This is an automated notification and we are unable to accept replies. If you need additional assistance, please contact us at <a href=\"mailto:helpdesk@agency.example?subject=NAC%20Match%20foo\">helpdesk@agency.example</a>.</p>", emailBody);
             Assert.Contains("<p>An update was made to NAC Match ID <a href=\"https://www.example.com/match/foo\" title=\"View Match\">foo</a>.</p>", emailBody);
             Assert.Contains("<strong>Initiating State:</strong> Echo Alpha", emailBody);
             Assert.Contains("<strong>Matching State:</strong> Echo Bravo", emailBody);

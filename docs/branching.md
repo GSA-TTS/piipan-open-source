@@ -8,13 +8,13 @@ For all feature & bug related development, a new Git branch should be utilized f
 
 ### Creating the feature/bug branch off of Dev branch
 
-When creating the branch, the name should follow the convention "<jira ticket number>-<optional description>" e.g. nac-1960-add-maintenance-page or in the case of multiple tickets nac-1960-nac-1962-add-maintenance-page
+When creating the branch, the name should follow the convention "<jira ticket number>-<optional description>" e.g. piipan-1960-add-maintenance-page or in the case of multiple tickets piipan-1960-piipan-1962-add-maintenance-page
 
 ```
 git checkout dev
 git pull
-git checkout -b <jira ticket number-<optional description> # e.g. git checkout -b nac-1960-add-maintenance-page" 
-git push origin <jira ticket number-<optional description> # e.g. git push origin nac-1960-add-maintenance-page
+git checkout -b <jira ticket number-<optional description> # e.g. git checkout -b piipan-1960-add-maintenance-page" 
+git push origin <jira ticket number-<optional description> # e.g. git push origin piipan-1960-add-maintenance-page
 ```
 
 ### Creating the GitHub pull request to merge feature/bug work into the Dev branch

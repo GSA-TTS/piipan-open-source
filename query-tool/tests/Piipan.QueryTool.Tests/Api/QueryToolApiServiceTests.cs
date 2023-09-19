@@ -28,7 +28,7 @@ namespace Piipan.QueryTool.Tests.Api
                 });
 
             // Inject the handler or client into your application code
-            var client = new HttpClient(mockHttp.Object) { BaseAddress = new System.Uri("https://usda.test.example/") };
+            var client = new HttpClient(mockHttp.Object) { BaseAddress = new System.Uri("https://agency.test.example/") };
             return (mockHttp, client);
         }
 
@@ -49,7 +49,7 @@ namespace Piipan.QueryTool.Tests.Api
 
             var httpRequest = mockHttp.Invocations[0].Arguments[0] as HttpRequestMessage;
             Assert.Equal(HttpMethod.Get, httpRequest.Method);
-            Assert.Equal("https://usda.test.example/api/match/M123456", httpRequest.RequestUri.ToString());
+            Assert.Equal("https://agency.test.example/api/match/M123456", httpRequest.RequestUri.ToString());
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace Piipan.QueryTool.Tests.Api
 
             var httpRequest = mockHttp.Invocations[0].Arguments[0] as HttpRequestMessage;
             Assert.Equal(HttpMethod.Get, httpRequest.Method);
-            Assert.Equal("https://usda.test.example/api/match", httpRequest.RequestUri.ToString());
+            Assert.Equal("https://agency.test.example/api/match", httpRequest.RequestUri.ToString());
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace Piipan.QueryTool.Tests.Api
 
             var httpRequest = mockHttp.Invocations[0].Arguments[0] as HttpRequestMessage;
             Assert.Equal(HttpMethod.Post, httpRequest.Method);
-            Assert.Equal("https://usda.test.example/api/match/M123456", httpRequest.RequestUri.ToString());
+            Assert.Equal("https://agency.test.example/api/match/M123456", httpRequest.RequestUri.ToString());
         }
 
         [Fact]
@@ -160,7 +160,7 @@ namespace Piipan.QueryTool.Tests.Api
 
             var httpRequest = mockHttp.Invocations[0].Arguments[0] as HttpRequestMessage;
             Assert.Equal(HttpMethod.Post, httpRequest.Method);
-            Assert.Equal("https://usda.test.example/api/duplicateparticipantsearch", httpRequest.RequestUri.ToString());
+            Assert.Equal("https://agency.test.example/api/duplicateparticipantsearch", httpRequest.RequestUri.ToString());
         }
 
         [Fact]

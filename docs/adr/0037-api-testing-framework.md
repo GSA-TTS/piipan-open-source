@@ -12,9 +12,9 @@ We would like to have a default programming language/base framework for our auto
 
 ## Decision
 
-We will use Postman and Javascript for automating our API tests. Postman is already used by our partner agency and they have a license for it. The NAC team itself already uses it for manual API testing and the team is already familiar with Javascript as some of the front-end is written with Javascript.
+We will use Postman and Javascript for automating our API tests. Postman is already used by our partner agency and they have a license for it. The Piipan team itself already uses it for manual API testing and the team is already familiar with Javascript as some of the front-end is written with Javascript.
 
-RestAssured was too heavy-handed. None of the current NAC development is in Java so this would introduce an entirely new language our partner agency would need to learn and support. Developing these tests would require developers to write Java source code to implement tests. Developing a custom testing framework would additionally require code for a common set of reusable elements. Developers would need to familiarize themselves with Java, the RestAssured libraries, and the tools and IDEs necessary for Java development. They would need to work with agency technical support to download and install these tools. 
+RestAssured was too heavy-handed. None of the current Piipan development is in Java so this would introduce an entirely new language our partner agency would need to learn and support. Developing these tests would require developers to write Java source code to implement tests. Developing a custom testing framework would additionally require code for a common set of reusable elements. Developers would need to familiarize themselves with Java, the RestAssured libraries, and the tools and IDEs necessary for Java development. They would need to work with agency technical support to download and install these tools. 
 
 ## Consequences
 

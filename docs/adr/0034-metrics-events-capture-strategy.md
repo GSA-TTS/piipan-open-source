@@ -8,7 +8,7 @@ Proposed
 
 ## Context
 
-As the NAC continues to evolve and more states begin onboarding, there will be more interest in system metrics. We need to apply a consistent approach to capturing, persisting, and providing these metrics. Metrics and reporting have not been discussed in great detail yet but growing levels of usage of the NAC will drive discussions about metrics and the types of data stakeholders want to query and review.
+As the Piipan continues to evolve and more states begin onboarding, there will be more interest in system metrics. We need to apply a consistent approach to capturing, persisting, and providing these metrics. Metrics and reporting have not been discussed in great detail yet but growing levels of usage of the Piipan will drive discussions about metrics and the types of data stakeholders want to query and review.
 
 ## Decision
 

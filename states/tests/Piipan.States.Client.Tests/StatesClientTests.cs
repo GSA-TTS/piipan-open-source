@@ -17,7 +17,7 @@ namespace Piipan.States.Client.Tests
                 {
                     new StateInfoDto
                     {
-                        Email = "ea-test@usda.example",
+                        Email = "ea-test@email.example",
                         Phone = "123-456-7890",
                         Id = "123",
                         Region = "MWO",
@@ -26,7 +26,7 @@ namespace Piipan.States.Client.Tests
                     },
                     new StateInfoDto
                     {
-                        Email = "eb-test@usda-gov",
+                        Email = "eb-test@email-gov",
                         Phone = "123-456-7890",
                         Id = "456",
                         Region = "MWO",

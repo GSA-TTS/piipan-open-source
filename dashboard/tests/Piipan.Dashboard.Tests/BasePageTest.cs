@@ -70,7 +70,7 @@ namespace Piipan.Dashboard.Tests
                 {
                     new StateInfoDto
                     {
-                        Email = "ea-test@usda.example",
+                        Email = "ea-test@email.example",
                         Phone = "123-123-1234",
                         State = "Echo Alpha",
                         StateAbbreviation = "EA"
@@ -104,7 +104,7 @@ namespace Piipan.Dashboard.Tests
             serviceProviderMock.Setup(c => c.GetService(typeof(IMemoryCache))).Returns(new MemoryCache(new MemoryCacheOptions()));
 
             var inMemorySettings = new Dictionary<string, string> {
-                {"HelpDeskEmail", "test@usda.example"},
+                {"HelpDeskEmail", "test@email.example"},
             };
 
             IConfiguration configuration = new ConfigurationBuilder()

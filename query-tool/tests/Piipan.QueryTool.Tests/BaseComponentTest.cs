@@ -27,12 +27,12 @@ namespace Piipan.QueryTool.Tests
         protected ClientAppDataDto AppData { get; set; }
             = new ClientAppDataDto()
             {
-                Email = "test@usda.example",
-                HelpDeskEmail = "help@usda.example",
+                Email = "test@agency.example",
+                HelpDeskEmail = "help@agency.example",
                 Location = "EA",
                 States = new string[] { "EA" },
                 Role = "Worker",
-                BaseUrl = "https://test.usda.example",
+                BaseUrl = "https://test.agency.example",
                 AppRolesByArea = new Dictionary<string, string[]>() {
                         { RoleConstants.ViewMatchArea, new string[] { "Worker", "Oversight" }},
                         { RoleConstants.EditMatchArea, new string[] { "Worker" }}
@@ -41,12 +41,12 @@ namespace Piipan.QueryTool.Tests
                 {
                     Results = new List<StateInfoDto> {
                             new StateInfoDto{
-                                Email = "ea@usda.example",
+                                Email = "ea@agency.example",
                                 State = "Echo Alpha",
                                 StateAbbreviation = "EA"
                             },
                             new StateInfoDto{
-                                Email = "eb@usda.example",
+                                Email = "eb@agency.example",
                                 State = "Echo Bravo",
                                 StateAbbreviation = "EB"
                             }
@@ -54,7 +54,7 @@ namespace Piipan.QueryTool.Tests
                 },
                 LoggedInUsersState = new StateInfoDto
                 {
-                    Email = "ea@usda.example",
+                    Email = "ea@agency.example",
                     State = "EA"
                 }
             };

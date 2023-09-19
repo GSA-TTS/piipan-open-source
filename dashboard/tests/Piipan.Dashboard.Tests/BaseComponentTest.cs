@@ -27,12 +27,12 @@ namespace Piipan.Dashboard.Tests
         protected ClientAppDataDto AppData { get; set; }
             = new ClientAppDataDto()
             {
-                Email = "test@usda.example",
-                HelpDeskEmail = "help@usda.example",
+                Email = "test@email.example",
+                HelpDeskEmail = "help@email.example",
                 Location = "EA",
                 States = new string[] { "EA" },
                 Role = "Worker",
-                BaseUrl = "https://test.usda.example",
+                BaseUrl = "https://test.email.example",
                 AppRolesByArea = new Dictionary<string, string[]>() {
                         { RoleConstants.ViewMatchArea, new string[] { "Worker", "Oversight" }},
                         { RoleConstants.EditMatchArea, new string[] { "Worker" }}
@@ -41,7 +41,7 @@ namespace Piipan.Dashboard.Tests
                 {
                     Results = new List<StateInfoDto> {
                             new StateInfoDto{
-                                Email = "ea@usda.example",
+                                Email = "ea@email.example",
                                 State = "Echo Alpha",
                                 StateAbbreviation = "EA"
                             }
@@ -49,7 +49,7 @@ namespace Piipan.Dashboard.Tests
                 },
                 LoggedInUsersState = new StateInfoDto
                 {
-                    Email = "ea@usda.example",
+                    Email = "ea@email.example",
                     State = "EA"
                 }
             };

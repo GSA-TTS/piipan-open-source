@@ -23,7 +23,7 @@ A common free option for testing emails called Putsmail could only send the emai
 
 ## Decision
 
-Propose to use Litmus for email testing. Licensing and actual test workflows TBD. There has also been talk about using something other than emails to notify users in the NAC, such as Push Notifications. All of this needs to be considered before making the decision to purchase a Litmus license.
+Propose to use Litmus for email testing. Licensing and actual test workflows TBD. There has also been talk about using something other than emails to notify users in the Piipan, such as Push Notifications. All of this needs to be considered before making the decision to purchase a Litmus license.
 
 A Litmus Basic license should suffice, as we would get 1,000 Email Previews / month and unlimited read-only users. If there are around 50 previews generated every time an email is sent, this leaves us with 20 emails we can test manually per month. Litmus Plus would also be a good option if we see a need to test more regularly, but at our current need Basic would suffice.
 

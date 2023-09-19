@@ -59,7 +59,7 @@ namespace Piipan.QueryTool.Tests
                 {
                     new StateInfoDto
                     {
-                        Email = "ea-test@usda.example",
+                        Email = "ea-test@agency.example",
                         Phone = "123-123-1234",
                         State = "Echo Alpha",
                         StateAbbreviation = "EA"
@@ -92,7 +92,7 @@ namespace Piipan.QueryTool.Tests
 
 
             var inMemorySettings = new Dictionary<string, string> {
-                {"HelpDeskEmail", "test@usda.example"},
+                {"HelpDeskEmail", "test@agency.example"},
             };
 
             IConfiguration configuration = new ConfigurationBuilder()

@@ -36,7 +36,7 @@ namespace Piipan.Shared.Tests.Mocks
         static StateInfoDto EA() =>
             new StateInfoDto
             {
-                Email = "ea-test@usda.example",
+                Email = "ea-test@agency.example",
                 Phone = "123-123-1234",
                 State = "Echo Alpha",
                 StateAbbreviation = "EA"
@@ -67,7 +67,7 @@ namespace Piipan.Shared.Tests.Mocks
         public static IConfiguration ConfigurationMock(Dictionary<string, string> inMemorySettings = null)
         {
             inMemorySettings ??= new Dictionary<string, string> {
-                {"HelpDeskEmail", "test@usda.example"},
+                {"HelpDeskEmail", "test@agency.example"},
             };
 
             return new ConfigurationBuilder()
@@ -88,7 +88,7 @@ namespace Piipan.Shared.Tests.Mocks
                             {
                                 new StateInfoDto
                                 {
-                                    Email = "ea-test@usda.example",
+                                    Email = "ea-test@agency.example",
                                     Phone = "123-123-1234",
                                     State = "Echo Alpha",
                                     StateAbbreviation = "EA"
@@ -267,9 +267,9 @@ namespace Piipan.Shared.Tests.Mocks
                     { RoleConstants.EditMatchArea, new string[] { Role_Worker } },
                 }
             );
-            dataServiceProvider.Setup(c => c.HelpDeskEmail).Returns("help@usda.example");
+            dataServiceProvider.Setup(c => c.HelpDeskEmail).Returns("help@agency.example");
             dataServiceProvider.Setup(c => c.Role).Returns(Role_Worker);
-            dataServiceProvider.Setup(c => c.BaseUrl).Returns("https://webapp.usda.example");
+            dataServiceProvider.Setup(c => c.BaseUrl).Returns("https://webapp.agency.example");
             dataServiceProvider.Setup(c => c.StateInfo).Returns(DefaultStatesResponse());
             dataServiceProvider.Setup(c => c.LoggedInUsersState).Returns(EA());
             dataServiceProvider.Setup(c => c.IsNationalOffice).Returns(() => dataServiceProvider.Object.States?.Contains("*") ?? false);
@@ -340,13 +340,13 @@ namespace Piipan.Shared.Tests.Mocks
                     {
                         new StateInfoDto
                         {
-                            Email = "ea@usda.example",
+                            Email = "ea@email.example",
                             State = "Echo Alpha",
                             StateAbbreviation = "EA"
                         },
                         new StateInfoDto
                         {
-                            Email = "eb@usda.example",
+                            Email = "eb@email.example",
                             State = "Echo Bravo",
                             StateAbbreviation = "EB"
                         }

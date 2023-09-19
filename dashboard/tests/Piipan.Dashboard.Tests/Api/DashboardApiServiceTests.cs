@@ -29,7 +29,7 @@ namespace Piipan.Dashboard.Tests.Api
                 });
 
             // Inject the handler or client into your application code
-            var client = new HttpClient(mockHttp.Object) { BaseAddress = new System.Uri("https://usda.test.example/") };
+            var client = new HttpClient(mockHttp.Object) { BaseAddress = new System.Uri("https://agency.test.example/") };
             return (mockHttp, client);
         }
 
@@ -66,7 +66,7 @@ namespace Piipan.Dashboard.Tests.Api
             Assert.Equal(HttpMethod.Get, httpRequest.Method);
             Assert.True(httpRequest.RequestUri.TryReadQueryAs<ParticipantUploadRequestFilter>(out var parsedQueryString));
             Assert.Equal(originalFilter, parsedQueryString);
-            Assert.Equal("https://usda.test.example/api/uploads", $"{httpRequest.RequestUri.Scheme}://{httpRequest.RequestUri.Host}{httpRequest.RequestUri.AbsolutePath}");
+            Assert.Equal("https://agency.test.example/api/uploads", $"{httpRequest.RequestUri.Scheme}://{httpRequest.RequestUri.Host}{httpRequest.RequestUri.AbsolutePath}");
         }
 
         [Fact]
@@ -127,7 +127,7 @@ namespace Piipan.Dashboard.Tests.Api
 
             Assert.True(httpRequest.RequestUri.TryReadQueryAs<ParticipantUploadStatisticsRequest>(out var parsedQueryString));
             Assert.Equal(statisticsRequest, parsedQueryString);
-            Assert.Equal("https://usda.test.example/api/uploads/statistics", $"{httpRequest.RequestUri.Scheme}://{httpRequest.RequestUri.Host}{httpRequest.RequestUri.AbsolutePath}");
+            Assert.Equal("https://agency.test.example/api/uploads/statistics", $"{httpRequest.RequestUri.Scheme}://{httpRequest.RequestUri.Host}{httpRequest.RequestUri.AbsolutePath}");
         }
 
         [Fact]

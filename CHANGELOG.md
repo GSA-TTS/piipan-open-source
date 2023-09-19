@@ -149,7 +149,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Bulk Upload E2E Postman API test enhancements
 
 ### Fixed
-- Accessibility issues with NAC email notifications that were highlighted by Litmus tests.
+- Accessibility issues with Piipan email notifications that were highlighted by Litmus tests.
 
 ## [1.2.0] - 2022-10-24
 

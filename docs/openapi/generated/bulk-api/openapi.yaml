@@ -122,7 +122,7 @@ paths:
                         example: '2022-07-11T19:54:27.903811Z'
                       participants_uploaded:
                         type: integer
-                        description: The number or participants uploaded into the NAC
+                        description: The number or participants uploaded into the Piipan
                         example: 50
                       error_message:
                         type: string
@@ -137,8 +137,8 @@ paths:
                         type: string
                         description: |-
                           COMPLETE - when successful
-                           FAILED - The upload was unsuccessful. The NAC will continue to match against records of active participants from your previous successful upload
-                           UPLOADING - The file is uploading to the NAC, or the file has uploaded but is still being validated
+                           FAILED - The upload was unsuccessful. The Piipan will continue to match against records of active participants from your previous successful upload
+                           UPLOADING - The file is uploading to the Piipan, or the file has uploaded but is still being validated
                         example: COMPLETE
               examples:
                 Successul upload 200:

@@ -31,8 +31,8 @@ namespace Piipan.Match.Core.Tests.Services
                 .Setup(r => r.GetDecryptedStates())
                     .ReturnsAsync(new List<StateInfoDbo>()
                     {
-                    new StateInfoDbo() { Id = "1", State = "Echo Alpha", StateAbbreviation = "ea" , Email = "ea-test@usda.example"},
-                    new StateInfoDbo() { Id = "2", State = "Echo Bravo", StateAbbreviation = "eb" , Email = "eb-test@usda.example", EmailCc = "eb-test-cc@Nac.gov"  },
+                    new StateInfoDbo() { Id = "1", State = "Echo Alpha", StateAbbreviation = "ea" , Email = "ea-test@agency.example"},
+                    new StateInfoDbo() { Id = "2", State = "Echo Bravo", StateAbbreviation = "eb" , Email = "eb-test@agency.example", EmailCc = "eb-test-cc@Nac.gov"  },
                     });
             return stateInfoDao;
         }
@@ -109,13 +109,13 @@ namespace Piipan.Match.Core.Tests.Services
             notificationService.Verify(
                 r => r.PublishNotificationOnMatchResEventsUpdate(It.Is<NotificationRecord>(n =>
                     correctInputs(n) &&
-                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "eb-test@usda.example"
+                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "eb-test@agency.example"
                 )), Times.Never);
 
             notificationService.Verify(
                 r => r.PublishNotificationOnMatchResEventsUpdate(It.Is<NotificationRecord>(n =>
                     correctInputs(n) &&
-                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "ea-test@usda.example"
+                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "ea-test@agency.example"
                 )), Times.Never);
         }
 
@@ -156,13 +156,13 @@ namespace Piipan.Match.Core.Tests.Services
             notificationService.Verify(
                 r => r.PublishNotificationOnMatchResEventsUpdate(It.Is<NotificationRecord>(n =>
                     correctInputs(n) &&
-                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "eb-test@usda.example"
+                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "eb-test@agency.example"
                 )), Times.Once);
 
             notificationService.Verify(
                 r => r.PublishNotificationOnMatchResEventsUpdate(It.Is<NotificationRecord>(n =>
                     correctInputs(n) &&
-                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "ea-test@usda.example"
+                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "ea-test@agency.example"
                 )), Times.Once);
         }
 
@@ -199,13 +199,13 @@ namespace Piipan.Match.Core.Tests.Services
             notificationService.Verify(
                 r => r.PublishNotificationOnMatchResEventsUpdate(It.Is<NotificationRecord>(n =>
                     correctInputs(n) &&
-                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "eb-test@usda.example"
+                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "eb-test@agency.example"
                 )), Times.Once);
 
             notificationService.Verify(
                 r => r.PublishNotificationOnMatchResEventsUpdate(It.Is<NotificationRecord>(n =>
                     correctInputs(n) &&
-                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "ea-test@usda.example"
+                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "ea-test@agency.example"
                 )), Times.Never);
         }
 
@@ -242,13 +242,13 @@ namespace Piipan.Match.Core.Tests.Services
             notificationService.Verify(
                 r => r.PublishNotificationOnMatchResEventsUpdate(It.Is<NotificationRecord>(n =>
                     correctInputs(n) &&
-                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "eb-test@usda.example"
+                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "eb-test@agency.example"
                 )), Times.Never);
 
             notificationService.Verify(
                 r => r.PublishNotificationOnMatchResEventsUpdate(It.Is<NotificationRecord>(n =>
                     correctInputs(n) &&
-                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "ea-test@usda.example"
+                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "ea-test@agency.example"
                 )), Times.Once);
         }
 
@@ -286,13 +286,13 @@ namespace Piipan.Match.Core.Tests.Services
             notificationService.Verify(
                 r => r.PublishNotificationOnMatchResEventsUpdate(It.Is<NotificationRecord>(n =>
                     correctInputs(n) &&
-                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "eb-test@usda.example"
+                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "eb-test@agency.example"
                 )), Times.Never);
 
             notificationService.Verify(
                 r => r.PublishNotificationOnMatchResEventsUpdate(It.Is<NotificationRecord>(n =>
                     correctInputs(n) &&
-                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "ea-test@usda.example"
+                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "ea-test@agency.example"
                 )), Times.Never);
         }
         [Fact]
@@ -329,13 +329,13 @@ namespace Piipan.Match.Core.Tests.Services
             notificationService.Verify(
                 r => r.PublishNotificationOnMatchResEventsUpdate(It.Is<NotificationRecord>(n =>
                     correctInputs(n) &&
-                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "eb-test@usda.example"
+                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "eb-test@agency.example"
                 )), Times.Never);
 
             notificationService.Verify(
                 r => r.PublishNotificationOnMatchResEventsUpdate(It.Is<NotificationRecord>(n =>
                     correctInputs(n) &&
-                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "ea-test@usda.example"
+                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "ea-test@agency.example"
                 )), Times.Never);
         }
         [Fact]
@@ -372,13 +372,13 @@ namespace Piipan.Match.Core.Tests.Services
             notificationService.Verify(
                 r => r.PublishNotificationOnMatchResEventsUpdate(It.Is<NotificationRecord>(n =>
                     correctInputs(n) &&
-                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "eb-test@usda.example"
+                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "eb-test@agency.example"
                 )), Times.Never);
 
             notificationService.Verify(
                 r => r.PublishNotificationOnMatchResEventsUpdate(It.Is<NotificationRecord>(n =>
                     correctInputs(n) &&
-                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "ea-test@usda.example"
+                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "ea-test@agency.example"
                 )), Times.Never);
         }
         [Fact]
@@ -415,13 +415,13 @@ namespace Piipan.Match.Core.Tests.Services
             notificationService.Verify(
                 r => r.PublishNotificationOnMatchResEventsUpdate(It.Is<NotificationRecord>(n =>
                     correctInputs(n) &&
-                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "eb-test@usda.example"
+                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "eb-test@agency.example"
                 )), Times.Never);
 
             notificationService.Verify(
                 r => r.PublishNotificationOnMatchResEventsUpdate(It.Is<NotificationRecord>(n =>
                     correctInputs(n) &&
-                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "ea-test@usda.example"
+                    n.UpdateNotifyStateEmailRecipientsModel != null && n.UpdateNotifyStateEmailRecipientsModel.EmailTo == "ea-test@agency.example"
                 )), Times.Never);
         }
 

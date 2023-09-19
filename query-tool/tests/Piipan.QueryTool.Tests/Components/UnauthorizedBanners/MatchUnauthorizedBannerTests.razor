@@ -21,7 +21,7 @@
     /// </summary>
     protected override void CreateTestComponent()
     {
-        AppData.HelpDeskEmail = "test@usda.example";
+        AppData.HelpDeskEmail = "test@agency.example";
         base.CreateTestComponent();
         Component = Render<MatchUnauthorizedBanner>(
             @<MatchUnauthorizedBanner>
@@ -46,7 +46,7 @@
               <div class="usa-alert__body">
                 <div class="usa-alert__text">
                   <p>This Match ID does not exist or you do not have adequate permissions. For additional information, please contact the
-                    <a href="mailto:test@usda.example">help desk</a>.</p>
+                    <a href="mailto:test@agency.example">help desk</a>.</p>
                 </div>
               </div>
             </div>
