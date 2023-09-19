@@ -63,7 +63,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fixed notifications so that for an identified match no emails are sent if either State (initiating or matching) is set to disabled
 - Fixed click area for Radio Button component
 - Sign out page formatting
-- Fixed Match Url in notifications and Find Matches responses to utilize friendly usda dns urls rather than Azure generated urls.
+- Fixed Match Url in notifications and Find Matches responses to utilize friendly dns urls rather than Azure generated urls.
 
 ## [1.2.1] - 2022-12-13
 
