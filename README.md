@@ -6,7 +6,7 @@
 *A privacy-preserving system for storing and matching de-identified Personal Identifiable Information (PII) records.*
 
 ## Quick links
-- [Quickstart Guide for Tenants](./docs/quick-start-guide-states.md)
+- [Quickstart Guide for Tenants](./docs/quick-start-guide-tenants.md)
 - [High-level architecture diagram](./docs/diagrams/piipan-architecture.png)
 
 ## Overview
