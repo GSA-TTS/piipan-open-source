@@ -11,7 +11,7 @@
     <PackageReference Include="Dapper-NodaTime" Version="0.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="6.0.13" />
     <PackageReference Include="Azure.Core" Version="1.27.0" />
-    <PackageReference Include="Azure.Identity" Version="1.8.1" />
+    <PackageReference Include="Azure.Identity" Version="1.10.2" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.6.2" />
