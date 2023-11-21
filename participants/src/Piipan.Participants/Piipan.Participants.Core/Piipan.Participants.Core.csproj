@@ -16,7 +16,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="Npgsql.NodaTime" Version="7.0.1" />
+    <PackageReference Include="Npgsql.NodaTime" Version="8.0.0" />
     <PackageReference Include="PostgreSQLCopyHelper" Version="2.8.0" />
   </ItemGroup>
 
