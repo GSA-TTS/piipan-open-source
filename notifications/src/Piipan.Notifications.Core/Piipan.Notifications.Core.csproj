@@ -39,7 +39,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Update="images\usda-symbol-color.png">
+    <None Update="images\18f-symbol-color.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

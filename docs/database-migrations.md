@@ -29,7 +29,7 @@
     1. Should be idempotent if possible. This isn't always possible or in some cases not practical. But we should strive for idempotency.
     1. NOTE: Once a script has been applied to a database, liquibase will skip over it on future runs.
 1. Name the file following a convention/format "mm_dd_{Script description}.sql". Naming should include a good description (e.g. 07_18_insert-state-info.sql)
-1. Specify the author. It should be the author's usda email address
+1. Specify the author. It should be the author's email address
 1. Set the "logicalFilePath" attribute to "path-independent". Without this setting, liquibase considers changesets path-dependent and it will attempt to rerun changesets if/when you run liquibase from a different directory from where you previously ran it.
 1. Save the script as a sql file in the appropriate Git folder. (e.g. iac/databases/collaboration/migrations/2022-Q4)
 1. Update the Liquibase changelog file with a changeset reference to the new script. e.g. In iac/databases/collaboration/migrations/2022-Q4/database-changelog-2022-Q4.xml as a new changeset block like the following

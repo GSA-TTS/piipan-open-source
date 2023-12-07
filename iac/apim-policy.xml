@@ -35,7 +35,7 @@
                 <set-body>@{
                     return new JObject(
                             new JProperty("statusCode", context.Response.StatusCode),
-                            new JProperty("message", "The system has encountered an error. Please try your request again. If the error persists, please contact the NAC Helpdesk.")
+                            new JProperty("message", "The system has encountered an error. Please try your request again. If the error persists, please contact the Piipan Helpdesk.")
                             ).ToString();
                 }</set-body>
             </when>

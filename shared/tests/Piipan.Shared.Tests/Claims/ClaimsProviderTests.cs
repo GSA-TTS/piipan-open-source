@@ -145,7 +145,7 @@ namespace Piipan.Shared.Claims.Tests
         }
 
         /// <summary>
-        /// When multiple role claims exist, we should take the location from the one that starts with the NAC Location prefix
+        /// When multiple role claims exist, we should take the location from the one that starts with the PIIPAN Location prefix
         /// </summary>
         [Fact]
         public void GetLocationWhenMultipleRoleClaimsExist()

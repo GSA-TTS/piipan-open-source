@@ -25,10 +25,10 @@
                 "displayName": "Ensure that multi-factor authentication is enabled",
                 "exemptionCategory": "Waiver",
                 "metadata": {
-                    "requestedBy": "NAC",
+                    "requestedBy": "Piipan",
                     "approvedBy": "ISD",
                     "approvedOn": "2022-10-19T00:00:00.0000000Z",
-                    "ticketRef": "Jira: NAC-15, NAC-18"
+                    "ticketRef": "Jira: Piipan-15, Piipan-18"
                 },
                 "policyAssignmentId": "[variables('policyAssignmentId')]",
                 "policyDefinitionReferenceIds": [
@@ -43,14 +43,14 @@
             "apiVersion": "2020-07-01-preview",
             "name": "[concat(parameters('policyName'), '2')]",
             "properties": {
-                "description": "Control: Enable sensitive data encryption at rest using Customer Managed Keys rather than Microsoft Managed keys. \n\nExemption: Per ISD, Platform Managed Keys over Customer Managed Keys (CMKs) does not pose a significant issue especially considering the NAC Mitigating Factors. Implementing CMKs incurs additional overhead of managing keys internally and thus potentially another attack vector with those keys getting lost or compromised.",
+                "description": "Control: Enable sensitive data encryption at rest using Customer Managed Keys rather than Microsoft Managed keys. \n\nExemption: Per ISD, Platform Managed Keys over Customer Managed Keys (CMKs) does not pose a significant issue especially considering the Piipan Mitigating Factors. Implementing CMKs incurs additional overhead of managing keys internally and thus potentially another attack vector with those keys getting lost or compromised.",
                 "displayName": "Storage accounts should use customer-managed key for encryption",
                 "exemptionCategory": "Waiver",
                 "metadata": {
-                    "requestedBy": "NAC",
+                    "requestedBy": "Piipan",
                     "approvedBy": "ISD",
                     "approvedOn": "2022-10-19T00:00:00.0000000Z",
-                    "ticketRef": "Jira: NAC-27"
+                    "ticketRef": "Jira: Piipan-27"
                 },
                 "policyAssignmentId": "[variables('policyAssignmentId')]",
                 "policyDefinitionReferenceIds": [
@@ -67,10 +67,10 @@
                 "displayName": "Ensure the web app has 'Client Certificates (Incoming client certificates)' set to 'On'",
                 "exemptionCategory": "Waiver",
                 "metadata": {
-                    "requestedBy": "NAC",
+                    "requestedBy": "Piipan",
                     "approvedBy": "ISD",
                     "approvedOn": "2022-10-19T00:00:00.0000000Z",
-                    "ticketRef": "Jira: NAC-17"
+                    "ticketRef": "Jira: Piipan-17"
                 },
                 "policyAssignmentId": "[variables('policyAssignmentId')]",
                 "policyDefinitionReferenceIds": [

@@ -6,7 +6,7 @@ function setupTest()
 {
     // Because the GET request happens right on page load, we must intercept it before navigating to the page. Thus we cannot use beforeEach
     cy.visit('/list');
-    cy.title({ timeout: 10000 }).should('eq', 'NAC Matches List');
+    cy.title({ timeout: 10000 }).should('eq', 'Piipan Matches List');
     cy.injectAxe();
 }
 

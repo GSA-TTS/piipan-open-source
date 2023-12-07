@@ -1,10 +1,10 @@
 {
 	"id": "07dcc5b2-9b3d-4b9d-a6d4-9ef459e47b92",
-	"name": "FNS_QA_Env",
+	"name": "Piipan_QA_Env",
 	"values": [
 		{
 			"key": "base_url",
-			"value": "https:///fns-apim-duppartapi-test.azure-api.us ",
+			"value": "https:///Piipan-apim-duppartapi-test.azure-api.us ",
 			"type": "default",
 			"enabled": true
 		},

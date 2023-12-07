@@ -178,7 +178,7 @@
                                 <dd>Echo Alpha (EA)</dd>
                             </div>
                             <div>
-                                <dd>All NAC matches are based on an exact match of Last Name, Date of Birth, and Social Security Number.</dd>
+                                <dd>All Piipan matches are based on an exact match of Last Name, Date of Birth, and Social Security Number.</dd>
                             </div>
                         </dl>
                     </div>
@@ -482,7 +482,7 @@
     }
 
         /// <summary>
-    /// Verify that the back button exists when coming from the NAC match list page and with the right text
+    /// Verify that the back button exists when coming from the Piipan match list page and with the right text
     /// </summary>
     [Fact]
     public void BackButton_Exists_WhenFromMatchListPage()
@@ -494,7 +494,7 @@
 
         // Assert
         var backButton = Component.Find(".back-button");
-        Assert.Equal("Back to List of NAC Matches", backButton.TextContent);
+        Assert.Equal("Back to List of Piipan Matches", backButton.TextContent);
     }
 
     /// <summary>

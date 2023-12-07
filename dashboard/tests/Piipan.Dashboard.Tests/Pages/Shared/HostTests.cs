@@ -17,7 +17,7 @@ namespace Piipan.Dashboard.Tests.Pages.Shared
             var (page, output) = await renderer.RenderViewWithNoModel(PageName);
 
             // assert it contains the correct title and both expected Blazor component references
-            Assert.Contains("<title>NAC Metrics Dashboard</title>", output);
+            Assert.Contains("<title>Piipan Metrics Dashboard</title>", output);
             Assert.Contains("Piipan.Shared.Client.Components.AppInitiator", output);
             Assert.Contains("Piipan.Dashboard.Client.App", output);
         }

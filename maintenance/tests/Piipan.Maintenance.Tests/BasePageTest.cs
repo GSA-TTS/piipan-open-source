@@ -91,7 +91,7 @@ namespace Piipan.Maintenance.Tests
 
 
             var inMemorySettings = new Dictionary<string, string> {
-                {"HelpDeskEmail", "test@usda.example"},
+                {"HelpDeskEmail", "test@18f.example"},
             };
 
             IConfiguration configuration = new ConfigurationBuilder()

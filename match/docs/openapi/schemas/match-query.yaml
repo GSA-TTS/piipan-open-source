@@ -57,7 +57,7 @@ Person:
       pattern: "^[A-Za-z0-9-_]+$"
     search_reason:
       type: string
-      description: "The case action or other valid reason for performing the NAC search.  Valid options are 'application', 'recertification', 'new_household_member', or 'other'"
+      description: "The case action or other valid reason for performing the Piipan search.  Valid options are 'application', 'recertification', 'new_household_member', or 'other'"
     vulnerable_individual:
       type: boolean
       description: "Location protection flag for vulnerable individuals. True values indicate that the individual’s location must be protected from disclosure to avoid harm to the individual. Apply the same protections to true and null values."

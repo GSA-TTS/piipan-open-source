@@ -24,7 +24,7 @@
         // Assert
         var pageTitleComponent = Component.FindComponent<PageTitle>();
         var renderedFragment = Render(pageTitleComponent.Instance.ChildContent);
-        renderedFragment.MarkupMatches(@<text>NAC Matches List</text>);
+        renderedFragment.MarkupMatches(@<text>PIIPAN Matches List</text>);
         Assert.True(Component.HasComponent<MatchesList>());
         Assert.Equal("list", Services.GetService<ClientAppDataDto>().CurrentPage);
     }

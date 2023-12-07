@@ -17,7 +17,7 @@ namespace Piipan.QueryTool.Tests.Layouts
             var (page, output) = await renderer.RenderViewWithNoModel(PageName);
 
             // assert it contains the correct title and both expected Blazor component references
-            Assert.Contains("<title>NAC Query Tool</title>", output);
+            Assert.Contains("<title>PIIPAN Query Tool</title>", output);
             Assert.Contains("Piipan.Shared.Client.Components.AppInitiator", output);
             Assert.Contains("Piipan.QueryTool.Client.App", output);
         }

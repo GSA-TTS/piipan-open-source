@@ -87,7 +87,7 @@ Below are the permissions currently needed to access different areas of the appl
    1. You must have a Location claim that maps to a state that has access to the match, or a National location. Local development examples: Location-EA if EA is involved in the match, Location-National can see all matches, etc.
    1. You must have a Role claim that is one of the accepted ViewMatch roles specified in appsettings.json. For local development, that is "Worker" or "Oversight".
 - To be able to edit details for a match on the "Match Detail" screen, you must have a Role claim that is one of the accepted "EditMatch" roles specified in appsettings.json. For local development, that is "Worker". If you have view access but not edit access, you will see a read-only version of the match.
-- "List of NAC Matches" is accessible only if your Location claim matches the NationalOfficeValue in appsettings.json. If you have this Location, you will see a list of matches, but if you do not you will get an Unauthorized banner.
+- "List of Piipan Matches" is accessible only if your Location claim matches the NationalOfficeValue in appsettings.json. If you have this Location, you will see a list of matches, but if you do not you will get an Unauthorized banner.
 
 To add role based authentication to certain pages in the future, simply add a new item in the Roles array in appsettings.json, and check for that role in your page. There may be a way to add a role or location attribute to pages to make the authentication logic more streamlined, but research on that has not been done yet. Research on this will be done after the work done to change into a SPA is completed.
 

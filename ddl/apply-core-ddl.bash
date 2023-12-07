@@ -41,7 +41,7 @@ main () {
 
   # Create copy of liquibase.properties template file and replace user/pw tokens with actual values
   cp ../iac/databases/sample.liquibase.properties ./liquibase.properties
-  sed -i -e "s/<NAC-USERNAME>/${PGUSER}/" -e "s/<NAC-PASSWORD>/${secret}/" ./liquibase.properties
+  sed -i -e "s/<PIIPAN-USERNAME>/${PGUSER}/" -e "s/<PIIPAN-PASSWORD>/${secret}/" ./liquibase.properties
 
   echo "Creating $METRICS_DB_NAME database and applying DDL"
   db_init "${METRICS_DB_NAME}" "${DB_ADMIN_NAME}"

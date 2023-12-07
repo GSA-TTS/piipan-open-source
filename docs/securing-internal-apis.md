@@ -65,7 +65,7 @@ Once an API server is deployed in the form of an Azure Function, the following s
 1. The Azure Function's [App Service Authentication](#app-service-authentication) functionality is enabled and configured with the following details:
     - The authentication method is set to use Azure AD
     - The Azure Function's Azure AD representative is set to the application object created above
-    - The "token issuer URL" is set to the standard issuer URL for the Azure environment. E.g., `https://login.microsoftonline.com/{azure-ad-tennant-id}/` for Azure Commercial (using `az cloud show --query endpoints.activeDirectory` to discover the endpoint for the current cloud environment).
+    - The "token issuer URL" is set to the standard issuer URL for the Azure environment. E.g., `https://login.microsoftonline.com/{azure-ad-Tenant-id}/` for Azure Commercial (using `az cloud show --query endpoints.activeDirectory` to discover the endpoint for the current cloud environment).
 
 At this point, authentication is fully configured and implemented on the server side. Specifically, the server will use Azure AD to authenticate clients. Access tokens will be issued to clients that are members of the server's tenant *and* are assigned at least one of the application roles defined in the server's representative application object. Any requests from clients that do not conform to that policy will result in `401 unauthorized` responses.
 

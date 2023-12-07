@@ -24,7 +24,7 @@
         // Assert
         var pageTitleComponent = Component.FindComponent<PageTitle>();
         var renderedFragment = Render(pageTitleComponent.Instance.ChildContent);
-        renderedFragment.MarkupMatches(@<text>NAC Participant Search</text>);
+        renderedFragment.MarkupMatches(@<text>PIIPAN Participant Search</text>);
         Assert.True(Component.HasComponent<QueryForm>());
         Assert.Equal("", Services.GetService<ClientAppDataDto>().CurrentPage);
     }

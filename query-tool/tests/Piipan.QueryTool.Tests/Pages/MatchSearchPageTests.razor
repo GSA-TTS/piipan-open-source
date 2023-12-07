@@ -24,7 +24,7 @@
         // Assert
         var pageTitleComponent = Component.FindComponent<PageTitle>();
         var renderedFragment = Render(pageTitleComponent.Instance.ChildContent);
-        renderedFragment.MarkupMatches(@<text>NAC Match Search</text>);
+        renderedFragment.MarkupMatches(@<text>PIIPAN Match Search</text>);
         Assert.True(Component.HasComponent<MatchForm>());
         Assert.Equal("match", Services.GetService<ClientAppDataDto>().CurrentPage);
     }

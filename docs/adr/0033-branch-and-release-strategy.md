@@ -28,7 +28,7 @@ If fixes or changes are necessary for a release, we will generate a temporary "h
 
 All "Release" tags should be protected (i.e. an administrator should mark them so that they cannot be changed or deleted).
 
-For examples of tag usage in regards to typical development workflow scenarios, see [Common Git Workflows & Tag Usage Scenarios](../supporting-files/NAC-Release-Support-Workflows.pptx). Sample DevOps pipeline scenarios depicting the use of tags and branches to support multiple enviornments can be viewed [Sample DevOps Pipelines](../supporting-files/DevOpsPipelineScenarios.pdf).
+For examples of tag usage in regards to typical development workflow scenarios, see [Common Git Workflows & Tag Usage Scenarios](../supporting-files/Release-Support-Workflows.pptx). Sample DevOps pipeline scenarios depicting the use of tags and branches to support multiple enviornments can be viewed [Sample DevOps Pipelines](../supporting-files/DevOpsPipelineScenarios.pdf).
 
 ## Consequences
 

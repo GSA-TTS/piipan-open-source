@@ -4,12 +4,12 @@
 # Once done, the only access to database would be through its private endpoint.
 #
 # Arguments:
-#   env (eg: fns/dev)
+#   env (eg: tenant/dev)
 #   resource_group (eg: rg-core-dev)
-#   server_name (eg: fns-db-participant-records-dev)
+#   server_name (eg: tenant-db-participant-records-dev)
 #
 # Usage:
-# ./iac/remove-external-network.bash fns/dev rg-core-dev fns-db-participant-records-dev
+# ./iac/remove-external-network.bash tenant/dev rg-core-dev tenant-db-participant-records-dev
 
 # shellcheck source=./tools/common.bash
 source "$(dirname "$0")"/../../tools/common.bash || exit

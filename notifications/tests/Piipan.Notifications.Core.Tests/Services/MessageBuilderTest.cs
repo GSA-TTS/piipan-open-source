@@ -37,7 +37,7 @@ namespace Piipan.Notifications.Core.Tests.Services
             var smtpClient = new Mock<ISmtpClient>();
 
             var retrieverSetup = new Mock<IUsdaImageRetriever>();
-            retrieverSetup.Setup(x => x.RetrieveUsdaSymbolColorImagePath()).Returns("images/usda-symbol-color.png");
+            retrieverSetup.Setup(x => x.RetrieveUsdaSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
 
             var retriever = retrieverSetup.Object;
 
@@ -85,13 +85,13 @@ namespace Piipan.Notifications.Core.Tests.Services
             bodyBuilder.HtmlBody = "Test email body.";
             bodyBuilder.TextBody = "Test email body.";
             message.Body = bodyBuilder.ToMessageBody();
-            message.Body.ContentId  = @"usda-img";
-            message.Body.ContentType.Name = @"usda-symbol-color.png";
+            message.Body.ContentId  = @"18f-img";
+            message.Body.ContentType.Name = @"18f-symbol-color.png";
 
             var messageBuilder = new MessageBuilder();
             var emailService = new MailService(smtpClient.Object, retriever, emailDelivery, messageBuilder);
 
-            var mimeMessage = messageBuilder.ConstructMimeMessage(emailModel, "images/usda-symbol-color.png", emailDelivery, logger.Object, It.IsAny<Action<Exception>>());
+            var mimeMessage = messageBuilder.ConstructMimeMessage(emailModel, "images/18f-symbol-color.png", emailDelivery, logger.Object, It.IsAny<Action<Exception>>());
             // Assert   
 
             Assert.Equal(message.To.ToString(), mimeMessage.To.ToString());
@@ -124,7 +124,7 @@ namespace Piipan.Notifications.Core.Tests.Services
             var smtpClient = new Mock<ISmtpClient>();
 
             var retrieverSetup = new Mock<IUsdaImageRetriever>();
-            retrieverSetup.Setup(x => x.RetrieveUsdaSymbolColorImagePath()).Returns("images/usda-symbol-color.png");
+            retrieverSetup.Setup(x => x.RetrieveUsdaSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
 
             var retriever = retrieverSetup.Object;
 
@@ -172,8 +172,8 @@ namespace Piipan.Notifications.Core.Tests.Services
             bodyBuilder.HtmlBody = "Test email body.";
             bodyBuilder.TextBody = "Test email body.";
             message.Body = bodyBuilder.ToMessageBody();
-            message.Body.ContentId  = @"usda-img";
-            message.Body.ContentType.Name = @"usda-symbol-color.png";
+            message.Body.ContentId  = @"18f-img";
+            message.Body.ContentType.Name = @"18f-symbol-color.png";
 
             var messageBuilder = new MessageBuilder();
             var emailService = new MailService(smtpClient.Object, retriever, emailDelivery, messageBuilder);
@@ -184,7 +184,7 @@ namespace Piipan.Notifications.Core.Tests.Services
 
              await Assert.ThrowsAnyAsync<Exception>(async () =>
             {
-                mimeMessage = messageBuilder.ConstructMimeMessage(emailModel, "images/usda-symbol-color.png", emailDelivery, logger.Object, (ex) =>
+                mimeMessage = messageBuilder.ConstructMimeMessage(emailModel, "images/18f-symbol-color.png", emailDelivery, logger.Object, (ex) =>
                 {
                     errorEncountered = true;
                 });

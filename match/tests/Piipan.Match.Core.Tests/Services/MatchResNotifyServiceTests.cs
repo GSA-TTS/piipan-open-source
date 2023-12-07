@@ -32,7 +32,7 @@ namespace Piipan.Match.Core.Tests.Services
                     .ReturnsAsync(new List<StateInfoDbo>()
                     {
                     new StateInfoDbo() { Id = "1", State = "Echo Alpha", StateAbbreviation = "ea" , Email = "ea-test@agency.example"},
-                    new StateInfoDbo() { Id = "2", State = "Echo Bravo", StateAbbreviation = "eb" , Email = "eb-test@agency.example", EmailCc = "eb-test-cc@Nac.gov"  },
+                    new StateInfoDbo() { Id = "2", State = "Echo Bravo", StateAbbreviation = "eb" , Email = "eb-test@agency.example", EmailCc = "eb-test-cc@Piipan.gov"  },
                     });
             return stateInfoDao;
         }

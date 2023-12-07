@@ -139,7 +139,7 @@ id serial PRIMARY KEY,
 match_id text NOT NULL, -- references match ID of original match
 inserted_at timestamptz NOT NULL, -- since events are immutable, we just need one timestamp
 actor text NOT NULL, -- the person or automated system performing this change
-actor_state text, -- indicates if the actor is associated with a state involved in the match. If the actor is an automated system or a NAC developer, this field would be null
+actor_state text, -- indicates if the actor is associated with a state involved in the match. If the actor is an automated system or a PIIPAN developer, this field would be null
 delta jsonb NOT NULL -- json object representing data changes submitted by states, as well as stateful domain data like a match's "status"
 ```
 
@@ -201,6 +201,6 @@ What if we wanted to get all current open matches for a given state, or for the 
 
 ### Consequences for the program
 
-An Event Sourcing approach will open up a wide range of features and functionality with relatively little effort. Eligibility workers and FNS could easily view entire activity history for a match. They could view activity history for a single state or multiple states. They could also see the effect of automated processes on match resolution, like for the future "Bulk" matching.
+An Event Sourcing approach will open up a wide range of features and functionality with relatively little effort. Eligibility workers and Tenant could easily view entire activity history for a match. They could view activity history for a single state or multiple states. They could also see the effect of automated processes on match resolution, like for the future "Bulk" matching.
 
-There is also opportunity for finer grained metrics data. Not only would FNS be able to track how often matches are being closed, but they could monitor how quickly states are taking specific actions to resolve matches.
+There is also opportunity for finer grained metrics data. Not only would Tenant be able to track how often matches are being closed, but they could monitor how quickly states are taking specific actions to resolve matches.

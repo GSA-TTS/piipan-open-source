@@ -1,7 +1,7 @@
 # Status
 The piipan is currently in pre-release status. Much of the core functionality is demonstrably working. The ATO process is underway but not complete. Four tenants have begun work on integration.
 
-Piipan has a working continuous integration pipeline in TTS-managed environments that includes automated unit and accessibility tests.  Work is underway to create a similar CI pipeline in FNS-managed environments.
+Piipan has a working continuous integration pipeline in TTS-managed environments that includes automated unit and accessibility tests.  Work is underway to create a similar CI pipeline in Tenant-managed environments.
 
 # Product Roadmap
 The roadmap represents our latest thinking about:
@@ -22,18 +22,18 @@ The three deployments leading to production piipan usage are:
 The goals and features of each phase are described in more detail below. 
 
 ## ATO
-**Goal: Deliver working, secure software using FNS toolchains to the production environment that does not centrally collect PII.**
+**Goal: Deliver working, secure software using Tenant toolchains to the production environment that does not centrally collect PII.**
 
 _Target date: January 2022_
 
 **How this will be used in production**
 - Tenant agencies will be able to verify systems access and credentials to integrate with the production piipan.  Tenants will only use the production piipan with test data that verifies successful systems access. 
 - Tenant agency users who will need access to the piipan website will submit access requests, as needed, and verify their ability to log in to the site  
-- FNS users who will have access to administrative features will have their accounts set up and verify the ability to reach the metrics dashboard 
+- Tenant users who will have access to administrative features will have their accounts set up and verify the ability to reach the metrics dashboard 
 
 **Risks mitigated**
 - Discover and address any deficiencies in the piipan’s implementation of required security controls 
-- Ensure there are no unknown challenges to delivering software to the FNS environment 
+- Ensure there are no unknown challenges to delivering software to the Tenant environment 
 - Discover and address systems access needs with ample time to resolve access limitations 
 
 **External dependencies** 
@@ -45,15 +45,15 @@ _Target date: January 2022_
 
 **Acceptance criteria**
 - ATO has been achieved 
-- The production environment has been deployed through a FNS-hosted CI/CD toolchain 
+- The production environment has been deployed through a Tenant-hosted CI/CD toolchain 
 - Uploads and query-initiated matches work for curated test data in production, using updated deidentification designs
 - Each tenant agency in Group 1A has verified their ability to interact with the production API 
-- Primary users at the tenant agencies and FNS have been identified, access has been granted, and each user has verified their ability to access the piipan website
+- Primary users at the tenant agencies and Tenant have been identified, access has been granted, and each user has verified their ability to access the piipan website
 
 A detailed list of the issues involved in achieving this goal can be found in the [1st release: Initial Production Deployment milestone](https://github.com/18F/piipan/milestone/21) 
 
 ## Pre-MVP Test Launch
-**Goal: FNS can confirm that uploads and matching will work by allowing tenants to send production data (without triggering match actions).  FNS begins monitoring key performance indicators.  FNS can test usability of the process for match determinations to be made.**
+**Goal: Tenant can confirm that uploads and matching will work by allowing tenants to send production data (without triggering match actions).  Tenant begins monitoring key performance indicators.  Tenant can test usability of the process for match determinations to be made.**
 
 _Target date: TBD_
 
@@ -63,7 +63,7 @@ _Target date: TBD_
   - Automated piipan queries to accompany each case action (applications, recertifications, additions of a household member).   
     - All piipan searches will respond with “no match found” 
     - Tenants may disregard search responses at this phase.  Tenants do not need to have user interface updates to their benefits system in place to show the results of piipan searches yet. 
-- FNS will use the metrics website and external tools to monitor system health and performance 
+- Tenant will use the metrics website and external tools to monitor system health and performance 
 
 In this stage, tenants will not be provided with any information on matches discovered or be asked to take action to evaluate the validity of any matches.
 
@@ -82,7 +82,7 @@ In addition to the production environment usage, the test environment will be us
   - Tenants can test their normalization and validation
   - Tenants can monitor the progress of their uploads
 - At least 2 tenants are uploading data to the piipan daily and sending queries to the piipan with each relevant case action
-- FNS can monitor and confirm key performance indicators
+- Tenant can monitor and confirm key performance indicators
   - Tenants are uploading data each day
   - Tenants are performing as many searches as they should, given the volume of applications, recertifications, and additions of household members 
   - Some queries result in matches
@@ -104,8 +104,8 @@ _Target date: TBD_
 **How this will be used in production**
 - Tenants will continue performing daily uploads of deidentified participant records and searching the piipan for every required case action 
 - The piipan will provide match results to tenants 
-- Tenants will take action on every match per regulatory guidance from FNS 
-- FNS will use the metrics website and external tools to monitor system health, performance, and tenant compliance with regulations 
+- Tenants will take action on every match per regulatory guidance from Tenant 
+- Tenant will use the metrics website and external tools to monitor system health, performance, and tenant compliance with regulations 
 
 **Risks mitigated**
 - Validate successful operation of a minimal feature set before adding enhancements and improvements that might be based on untested assumptions 
@@ -117,7 +117,7 @@ _Target date: TBD_
 **Acceptance criteria**
 - At least 3 tenants are using the piipan for every required case action
 - The piipan sends email notifications to each tenant involved in a match when a match is found
-- FNS can use dispositions and invalid matches reported by tenants to measure accuracy
+- Tenant can use dispositions and invalid matches reported by tenants to measure accuracy
 - The piipan implements all protections for vulnerable individuals required by the piipan rule
 - Tenants are provided with onboarding materials and training to make the launch as smooth as possible 
 - When tenants are looking at a match, they are provided with the contact information for their counterparts at the other tenant

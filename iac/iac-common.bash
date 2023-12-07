@@ -36,7 +36,7 @@ APP_SERVICE_PLAN_FUNC_SKU=P1V2
 APP_SERVICE_PLAN_FUNC_KIND=functionapp
 
 # Name of Azure Active Directory admin for PostgreSQL server
-PG_AAD_ADMIN=${PREFIX}-nac-admins-${ENV}
+PG_AAD_ADMIN=${PREFIX}-Piipan-admins-${ENV}
 
 # Name of environment variable used to pass database connection strings
 # to app or function code

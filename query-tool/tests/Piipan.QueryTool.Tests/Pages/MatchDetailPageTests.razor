@@ -55,7 +55,7 @@
         // Assert
         var pageTitleComponent = Component.FindComponent<PageTitle>();
         var renderedFragment = Render(pageTitleComponent.Instance.ChildContent);
-        renderedFragment.MarkupMatches(@<text>NAC Match Detail</text>);
+        renderedFragment.MarkupMatches(@<text>PIIPAN Match Detail</text>);
 
         var matchDetailWrapper = Component.FindComponent<MatchDetailWrapper>();
         Assert.Equal("M123456", matchDetailWrapper.Instance.MatchId);

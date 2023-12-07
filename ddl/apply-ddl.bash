@@ -29,7 +29,7 @@ main () {
 
   # Create copy of liquibase.properties template file and replace user/pw tokens with actual values
   cp ../iac/databases/sample.liquibase.properties ./liquibase.properties
-  sed -i -e "s/<NAC-USERNAME>/${PGUSER}/" -e "s/<NAC-PASSWORD>/${PGPASSWORD}/" ./liquibase.properties
+  sed -i -e "s/<Piipan-USERNAME>/${PGUSER}/" -e "s/<Piipan-PASSWORD>/${PGPASSWORD}/" ./liquibase.properties
 
   while IFS=, read -r abbr _; do
     db=$(echo "$abbr" | tr '[:upper:]' '[:lower:]')

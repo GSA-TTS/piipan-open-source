@@ -12,7 +12,7 @@ namespace Piipan.Notifications.Core.Tests.Extensions
             string imagePath = retriever.RetrieveUsdaSymbolColorImagePath();
             Assert.NotNull(imagePath);
             FileInfo fileInfo = new FileInfo(imagePath);
-            Assert.True(fileInfo.FullName.EndsWith("\\images\\usda-symbol-color.png"));
+            Assert.True(fileInfo.FullName.EndsWith("\\images\\18f-symbol-color.png"));
         }
     }
 }

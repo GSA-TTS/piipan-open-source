@@ -25,25 +25,25 @@ namespace Piipan.Notifications.Core.Tests.Services
                 },
                 MatchingStateEmailRecipientsModel = new EmailToModel()
                 {
-                    EmailTo = "eb@nac.com"
+                    EmailTo = "eb@Piipan.com"
                 },
                 InitiatingStateEmailRecipientsModel = new EmailToModel()
                 {
-                    EmailTo = "ea@nac.com"
+                    EmailTo = "ea@Piipan.com"
                 },
                 IsInitiatingStateEnabled = true,
                 IsMatchingStateEnabled = true
                 
             };
-            string subIS = "Initiating State: NAC Match foo with eb";
+            string subIS = "Initiating State: Piipan Match foo with eb";
             string bodyIS = "IS: Test Body";
-            string subMS = "Matching State: NAC Match foo with ea";
+            string subMS = "Matching State: Piipan Match foo with ea";
             string bodyMS = "MS: Test Body";
 
             var emailModelIS = new EmailModel
             {
 
-                ToList = "ea@nac.com".Split(',').ToList(),
+                ToList = "ea@Piipan.com".Split(',').ToList(),
                 ToCCList = null,
                 ToBCCList = null,
                 Body = bodyIS,
@@ -53,7 +53,7 @@ namespace Piipan.Notifications.Core.Tests.Services
             var emailModelMS = new EmailModel
             {
 
-                ToList = "eb@nac.com".Split(',').ToList(),
+                ToList = "eb@Piipan.com".Split(',').ToList(),
                 ToCCList = null,
                 ToBCCList = null,
                 Body = bodyMS,
@@ -82,8 +82,8 @@ namespace Piipan.Notifications.Core.Tests.Services
             // Assert
             Assert.True(ret);
 
-            notificatioPublish.Verify(m => m.PublishEmail(It.Is<EmailModel>(p => p.Body == emailModelIS.Body && p.Subject == emailModelIS.Subject && p.ToList[0] == "ea@nac.com")), Times.Once);
-            notificatioPublish.Verify(m => m.PublishEmail(It.Is<EmailModel>(p => p.Body == emailModelMS.Body && p.Subject == emailModelMS.Subject && p.ToList[0] == "eb@nac.com")), Times.Once);
+            notificatioPublish.Verify(m => m.PublishEmail(It.Is<EmailModel>(p => p.Body == emailModelIS.Body && p.Subject == emailModelIS.Subject && p.ToList[0] == "ea@Piipan.com")), Times.Once);
+            notificatioPublish.Verify(m => m.PublishEmail(It.Is<EmailModel>(p => p.Body == emailModelMS.Body && p.Subject == emailModelMS.Subject && p.ToList[0] == "eb@Piipan.com")), Times.Once);
         }
         [Fact]
         public async Task PublishMessageFromTemplateTest_Exception()
@@ -113,16 +113,16 @@ namespace Piipan.Notifications.Core.Tests.Services
                 },
                 UpdateNotifyStateEmailRecipientsModel = new EmailToModel()
                 {
-                    EmailTo = "ea@nac.com"
+                    EmailTo = "ea@Piipan.com"
                 }
             };
-            string subject = "Updates made to NAC match foo";
+            string subject = "Updates made to Piipan match foo";
             string body = "Test Body";
 
             var emailModel = new EmailModel
             {
 
-                ToList = "ea@nac.com".Split(',').ToList(),
+                ToList = "ea@Piipan.com".Split(',').ToList(),
                 ToCCList = null,
                 ToBCCList = null,
                 Body = body,
@@ -147,7 +147,7 @@ namespace Piipan.Notifications.Core.Tests.Services
             // Assert
             Assert.True(ret);
 
-            notificatioPublish.Verify(m => m.PublishEmail(It.Is<EmailModel>(p => p.Body == emailModel.Body && p.Subject == emailModel.Subject && p.ToList[0] == "ea@nac.com")), Times.Once);
+            notificatioPublish.Verify(m => m.PublishEmail(It.Is<EmailModel>(p => p.Body == emailModel.Body && p.Subject == emailModel.Subject && p.ToList[0] == "ea@Piipan.com")), Times.Once);
         }
 
         [Fact]
@@ -169,18 +169,18 @@ namespace Piipan.Notifications.Core.Tests.Services
                 },
                 UpdateNotifyStateEmailRecipientsModel = new EmailToModel()
                 {
-                    EmailTo = "ea@nac.com",
-                    EmailCcTo = "test-cc-ea@nac.com"
+                    EmailTo = "ea@Piipan.com",
+                    EmailCcTo = "test-cc-ea@Piipan.com"
                 }
             };
-            string subject = "Updates made to NAC match foo";
+            string subject = "Updates made to Piipan match foo";
             string body = "Test Body";
 
             var emailModel = new EmailModel
             {
 
-                ToList = "ea@nac.com".Split(',').ToList(),
-                ToCCList = "test-cc-ea@nac.com".Split(',').ToList(),
+                ToList = "ea@Piipan.com".Split(',').ToList(),
+                ToCCList = "test-cc-ea@Piipan.com".Split(',').ToList(),
                 ToBCCList = "test-bcc@example.com".Split(',').ToList(),
                 Body = body,
                 Subject = subject,
@@ -206,8 +206,8 @@ namespace Piipan.Notifications.Core.Tests.Services
 
             notificatioPublish.Verify(m => m.PublishEmail(It.Is<EmailModel>(p => p.Body == emailModel.Body &&
                                                                                  p.Subject == emailModel.Subject &&
-                                                                                 p.ToList[0] == "ea@nac.com" &&
-                                                                                 p.ToCCList[0] == "test-cc-ea@nac.com"
+                                                                                 p.ToList[0] == "ea@Piipan.com" &&
+                                                                                 p.ToCCList[0] == "test-cc-ea@Piipan.com"
                                                                                  )), Times.Once);
         }
     }
