@@ -19,7 +19,7 @@ TK
 - Anticipated costs?
 - How are SNAP participants affected?
 - How are state agencies affected?
-- How are FNS users affected?
+- How are users affected?
 
 ### Anything else?
 
