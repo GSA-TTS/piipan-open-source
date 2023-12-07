@@ -14,13 +14,13 @@ namespace Piipan.Notifications.Core.Services
     {
         private readonly ISmtpClient _smtpClient;
         private readonly EmailDelivery _emailDelivery; //Defined in Configuration : "EnableEmails","SmtpCcEmail", "SmtpBccEmail", "SmtpFromEmail" 
-        private readonly IUsdaImageRetriever _usdaImageRetriever;
+        private readonly IUsImageRetriever _UsImageRetriever;
         private readonly IMessageBuilder _messageBuilder;
 
-        public MailService(ISmtpClient smtpClient, IUsdaImageRetriever usdaImageRetriever, EmailDelivery emailDelivery, IMessageBuilder messageBuilder)
+        public MailService(ISmtpClient smtpClient, IUsImageRetriever UsImageRetriever, EmailDelivery emailDelivery, IMessageBuilder messageBuilder)
         {
             _smtpClient = smtpClient;
-            _usdaImageRetriever = usdaImageRetriever;
+            _UsImageRetriever = UsImageRetriever;
             _emailDelivery = emailDelivery;
             _messageBuilder = messageBuilder;
         }
@@ -34,7 +34,7 @@ namespace Piipan.Notifications.Core.Services
         {
             try
             {
-                MimeMessage mimeMessage = _messageBuilder.ConstructMimeMessage(emailModel, _usdaImageRetriever.RetrieveUsdaSymbolColorImagePath(), _emailDelivery, logger, (ex) =>
+                MimeMessage mimeMessage = _messageBuilder.ConstructMimeMessage(emailModel, _UsImageRetriever.RetrieveUsSymbolColorImagePath(), _emailDelivery, logger, (ex) =>
                 {
                     logger.LogError(ex.Message);
                 }); 

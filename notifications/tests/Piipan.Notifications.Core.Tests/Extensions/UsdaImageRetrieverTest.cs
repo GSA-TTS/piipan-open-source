@@ -3,13 +3,13 @@ using Xunit;
 
 namespace Piipan.Notifications.Core.Tests.Extensions
 {
-    public class UsdaImageRetrieverTest
+    public class UsImageRetrieverTest
     {
         [Fact]
-        public void RetrieveUsdaSymbolColorImage_RetrievesImagePath()
+        public void RetrieveUsSymbolColorImage_RetrievesImagePath()
         {
-            UsdaImageRetriever retriever = new UsdaImageRetriever();
-            string imagePath = retriever.RetrieveUsdaSymbolColorImagePath();
+            UsImageRetriever retriever = new UsImageRetriever();
+            string imagePath = retriever.RetrieveUsSymbolColorImagePath();
             Assert.NotNull(imagePath);
             FileInfo fileInfo = new FileInfo(imagePath);
             Assert.True(fileInfo.FullName.EndsWith("\\images\\18f-symbol-color.png"));

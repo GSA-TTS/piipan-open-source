@@ -36,8 +36,8 @@ namespace Piipan.Notifications.Core.Tests.Services
 
             var smtpClient = new Mock<ISmtpClient>();
 
-            var retrieverSetup = new Mock<IUsdaImageRetriever>();
-            retrieverSetup.Setup(x => x.RetrieveUsdaSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
+            var retrieverSetup = new Mock<IUsImageRetriever>();
+            retrieverSetup.Setup(x => x.RetrieveUsSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
 
             var retriever = retrieverSetup.Object;
 
@@ -123,8 +123,8 @@ namespace Piipan.Notifications.Core.Tests.Services
 
             var smtpClient = new Mock<ISmtpClient>();
 
-            var retrieverSetup = new Mock<IUsdaImageRetriever>();
-            retrieverSetup.Setup(x => x.RetrieveUsdaSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
+            var retrieverSetup = new Mock<IUsImageRetriever>();
+            retrieverSetup.Setup(x => x.RetrieveUsSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
 
             var retriever = retrieverSetup.Object;
 

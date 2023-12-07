@@ -40,8 +40,8 @@ namespace Piipan.Notifications.Core.Tests.Services
             string SmtpConnection = "SmtpServer";
             string SmtpServer = "Test";
             Environment.SetEnvironmentVariable(SmtpConnection, SmtpServer);
-            var retrieverSetup = new Mock<IUsdaImageRetriever>();
-            retrieverSetup.Setup(x => x.RetrieveUsdaSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
+            var retrieverSetup = new Mock<IUsImageRetriever>();
+            retrieverSetup.Setup(x => x.RetrieveUsSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
 
             var smtpClient = new SmtpClient();
 
@@ -105,8 +105,8 @@ namespace Piipan.Notifications.Core.Tests.Services
 
             var smtpClient = new Mock<ISmtpClient>();
 
-            var retrieverSetup = new Mock<IUsdaImageRetriever>();
-            retrieverSetup.Setup(x => x.RetrieveUsdaSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
+            var retrieverSetup = new Mock<IUsImageRetriever>();
+            retrieverSetup.Setup(x => x.RetrieveUsSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
 
             var retriever = retrieverSetup.Object;
 
@@ -175,7 +175,7 @@ namespace Piipan.Notifications.Core.Tests.Services
 
             var smtpClient = new Mock<ISmtpClient>();
 
-            var retriever = Mock.Of<IUsdaImageRetriever>();
+            var retriever = Mock.Of<IUsImageRetriever>();
             var logger = new Mock<ILogger<IMailService>>();
             var randomLdsHash = Guid.NewGuid().ToString();
             var emailModel = new EmailModel
@@ -235,8 +235,8 @@ namespace Piipan.Notifications.Core.Tests.Services
             var smtpClient = new Mock<ISmtpClient>();
 
 
-            var retrieverSetup = new Mock<IUsdaImageRetriever>();
-            retrieverSetup.Setup(x => x.RetrieveUsdaSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
+            var retrieverSetup = new Mock<IUsImageRetriever>();
+            retrieverSetup.Setup(x => x.RetrieveUsSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
 
             var retriever = retrieverSetup.Object;
 
@@ -303,8 +303,8 @@ namespace Piipan.Notifications.Core.Tests.Services
 
             var smtpClient = new Mock<ISmtpClient>();
 
-            var retrieverSetup = new Mock<IUsdaImageRetriever>();
-            retrieverSetup.Setup(x => x.RetrieveUsdaSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
+            var retrieverSetup = new Mock<IUsImageRetriever>();
+            retrieverSetup.Setup(x => x.RetrieveUsSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
 
             var retriever = retrieverSetup.Object;
 
@@ -373,8 +373,8 @@ namespace Piipan.Notifications.Core.Tests.Services
             var smtpClient = new Mock<ISmtpClient>();
            
 
-            var retrieverSetup = new Mock<IUsdaImageRetriever>();
-            retrieverSetup.Setup(x => x.RetrieveUsdaSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
+            var retrieverSetup = new Mock<IUsImageRetriever>();
+            retrieverSetup.Setup(x => x.RetrieveUsSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
 
             var retriever = retrieverSetup.Object;
             var logger = new Mock<ILogger<IMailService>>();
@@ -442,8 +442,8 @@ namespace Piipan.Notifications.Core.Tests.Services
             var smtpClient = new Mock<ISmtpClient>();
 
 
-            var retrieverSetup = new Mock<IUsdaImageRetriever>();
-            retrieverSetup.Setup(x => x.RetrieveUsdaSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
+            var retrieverSetup = new Mock<IUsImageRetriever>();
+            retrieverSetup.Setup(x => x.RetrieveUsSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
 
             var retriever = retrieverSetup.Object;
 
@@ -504,8 +504,8 @@ namespace Piipan.Notifications.Core.Tests.Services
 
 
 
-            var retrieverSetup = new Mock<IUsdaImageRetriever>();
-            retrieverSetup.Setup(x => x.RetrieveUsdaSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
+            var retrieverSetup = new Mock<IUsImageRetriever>();
+            retrieverSetup.Setup(x => x.RetrieveUsSymbolColorImagePath()).Returns("images/18f-symbol-color.png");
 
             var retriever = retrieverSetup.Object;
 
