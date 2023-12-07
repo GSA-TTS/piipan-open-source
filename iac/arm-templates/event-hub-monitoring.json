@@ -87,7 +87,7 @@
                 }
             ]
         },
-        // EventHub creates a default consumer group. To assist FNS with SIEM migration, a secondary consumer group is created.
+        // EventHub creates a default consumer group. To assist tenant with SIEM migration, a secondary consumer group is created.
         {
             "type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
             "apiVersion": "2022-01-01-preview",

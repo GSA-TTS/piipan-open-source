@@ -27,7 +27,7 @@ namespace Piipan.Notifications.Core.Services
                 mimeMessage.Subject = emailModel.Subject;
                 var builder = new BodyBuilder();
                 var image = builder.LinkedResources.Add(footerImagePath);
-                image.ContentId = "usda-img";
+                image.ContentId = "18f-img";
                 builder.HtmlBody += emailModel.Body;
                 mimeMessage.Body = builder.ToMessageBody();
                 mimeMessage.From.Add(MailboxAddress.Parse(emailDelivery.EmailFrom));

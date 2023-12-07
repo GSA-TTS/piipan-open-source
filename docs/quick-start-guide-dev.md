@@ -27,7 +27,7 @@ Broadly, the main tasks of the Piipan are:
 1. Each state uploads deidentified participant data, in bulk, to the Piipan
 1. Tenant Workers query the Piipan for participant matches between states
 1. Tenant Workers collaborate to resolve matches (not yet implemented)
-1. FNS monitors state uploads and other metrics (partially implemented)
+1. Tenant monitors state uploads and other metrics (partially implemented)
 
 From an Engineering perspective, this guide will walk you through:
 
@@ -146,7 +146,7 @@ The Query Tool is a web app that uses the Duplicate Participation API to query f
 
 ## How to View Metrics
 
-FNS federal personnel are able to view a variety of metrics through a dashboard application. The [Metrics](../metrics) subsystem manages the metrics API. The only consumer of this API is the Dashboard application, found in the [Dashboard](../dashboard/docs/dashboard.md) subsystem. These systems are not available to states.
+Tenant are able to view a variety of metrics through a dashboard application. The [Metrics](../metrics) subsystem manages the metrics API. The only consumer of this API is the Dashboard application, found in the [Dashboard](../dashboard/docs/dashboard.md) subsystem. These systems are not available to states.
 
 ### Viewing Metrics through the Metrics API
 

@@ -52,7 +52,7 @@ namespace Piipan.Match.Core.Services
             string enabledStates = Environment.GetEnvironmentVariable("EnabledStates")?.ToLower();
             var enabledStatesList = enabledStates?.Split(',') ?? new string[0];
 
-            // Send emails only if the state is enabled. nac-1902
+            // Send emails only if the state is enabled. Piipan-1902
             if (!enabledStatesList.Contains(matchingState.StateAbbreviation.ToLower()) || !enabledStatesList.Contains(initState.StateAbbreviation.ToLower())) //Send Email only if the Initiating state or Matching State is Enabled
                 return;
 
@@ -75,7 +75,7 @@ namespace Piipan.Match.Core.Services
                 InitState = initState?.State,
                 MatchingState = matchingState?.State,
                 MatchingUrl = $"{queryToolUrl}/match/{matchResRecordBeforeUpdate.MatchId}",
-                InitialActionBy = DateTime.UtcNow.ToEasternTime().AddDays(10),  // Converting to Eastern Time since we don't know the end user's timezone. See NAC-1613
+                InitialActionBy = DateTime.UtcNow.ToEasternTime().AddDays(10),  // Converting to Eastern Time since we don't know the end user's timezone. See Piipan-1613
                 CreateDate = matchResRecordAfterUpdate.CreatedAt,
                 ReplyToEmail = _replyToEmail
             };

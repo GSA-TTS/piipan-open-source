@@ -21,9 +21,9 @@ namespace Piipan.Notifications.Core.Services
         public async Task<bool> PublishNotificationOnMatchCreation(NotificationRecord notificationRecord)
         {
             
-            string subject = $"{{0}}: NAC Match {notificationRecord.MatchEmailDetails.MatchId} with {{1}}";
+            string subject = $"{{0}}: Piipan Match {notificationRecord.MatchEmailDetails.MatchId} with {{1}}";
 
-            // Send emails only if the state is enabled. nac-1902
+            // Send emails only if the state is enabled. Piipan-1902
             if (!notificationRecord.IsInitiatingStateEnabled || !notificationRecord.IsMatchingStateEnabled) //No Email is sent out if the Initiating State is not Enabled 
                 return false;
 
@@ -42,7 +42,7 @@ namespace Piipan.Notifications.Core.Services
 
             resultIS = await PublishNotifications(notificationRecord.InitiatingStateEmailRecipientsModel, emailbodyIS, emailsubjectIS);
 
-            // Send emails only if the state is enabled. nac-1902
+            // Send emails only if the state is enabled. Piipan-1902
             if (notificationRecord.IsMatchingStateEnabled)
                 resultMS = await PublishNotifications(notificationRecord.MatchingStateEmailRecipientsModel, emailbodyMS, emailsubjectMS);
 
@@ -53,7 +53,7 @@ namespace Piipan.Notifications.Core.Services
             //Send Notofication to the other State. Todo  Refactor after getting the finialized template file .
 
             var emailbodyIS = await _viewRenderService.GenerateMessageContent("DispositionEmail.cshtml", notificationRecord);
-            var emailsubjectIS = $"Updates made to NAC match {notificationRecord.MatchEmailDetails.MatchId}";
+            var emailsubjectIS = $"Updates made to Piipan match {notificationRecord.MatchEmailDetails.MatchId}";
             return await PublishNotifications(notificationRecord.UpdateNotifyStateEmailRecipientsModel, emailbodyIS, emailsubjectIS);
 
         }

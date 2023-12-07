@@ -60,11 +60,11 @@ namespace Piipan.Match.Core.Tests.Services
             },
             InitiatingStateEmailRecipientsModel = new EmailToModel()
             {
-                EmailTo = "Ea@Nac.gov"
+                EmailTo = "Ea@Piipan.gov"
             },
             MatchingStateEmailRecipientsModel = new EmailToModel()
             {
-                EmailTo = "Eb@Nac.gov"
+                EmailTo = "Eb@Piipan.gov"
             }
         };
 
@@ -142,9 +142,9 @@ namespace Piipan.Match.Core.Tests.Services
                 .Setup(r => r.GetDecryptedStates())
                     .ReturnsAsync(new List<StateInfoDbo>()
                     {
-                    new StateInfoDbo() { Id = "1", State = "Echo Alpha", StateAbbreviation = "ea" , Email = "Ea@Nac.gov" , EmailCc = "Ea-cc@Nac.gov"},
-                    new StateInfoDbo() { Id = "2", State = "Echo Bravo", StateAbbreviation = "eb" , Email = "Eb@Nac.gov" , EmailCc = "Eb-cc@Nac.gov"},
-                    new StateInfoDbo() { Id = "3", State = "Echo Charlie", StateAbbreviation = "ec" , Email = "Ec@Nac.gov" , EmailCc = "Ec-cc@Nac.gov"},
+                    new StateInfoDbo() { Id = "1", State = "Echo Alpha", StateAbbreviation = "ea" , Email = "Ea@Piipan.gov" , EmailCc = "Ea-cc@Piipan.gov"},
+                    new StateInfoDbo() { Id = "2", State = "Echo Bravo", StateAbbreviation = "eb" , Email = "Eb@Piipan.gov" , EmailCc = "Eb-cc@Piipan.gov"},
+                    new StateInfoDbo() { Id = "3", State = "Echo Charlie", StateAbbreviation = "ec" , Email = "Ec@Piipan.gov" , EmailCc = "Ec-cc@Piipan.gov"},
                     });
             return stateInfoDao;
         }
@@ -245,7 +245,7 @@ namespace Piipan.Match.Core.Tests.Services
                                                  )),
                                                   Times.Once);
             // Need to be called only when creating new Match Record
-            notificationService.Verify(r => r.PublishNotificationOnMatchCreation(It.Is<NotificationRecord>(p => p.MatchEmailDetails.InitState == "Echo Alpha" && p.InitiatingStateEmailRecipientsModel.EmailTo == "Ea@Nac.gov" && p.MatchingStateEmailRecipientsModel.EmailTo == "Eb@Nac.gov")), Times.Once);
+            notificationService.Verify(r => r.PublishNotificationOnMatchCreation(It.Is<NotificationRecord>(p => p.MatchEmailDetails.InitState == "Echo Alpha" && p.InitiatingStateEmailRecipientsModel.EmailTo == "Ea@Piipan.gov" && p.MatchingStateEmailRecipientsModel.EmailTo == "Eb@Piipan.gov")), Times.Once);
         }
 
         [Fact]
@@ -581,7 +581,7 @@ namespace Piipan.Match.Core.Tests.Services
                                                   r.Data.First().SearchFrom == search.SearchFrom)),
              Times.Once);
 
-            notificationService.Verify(r => r.PublishNotificationOnMatchCreation(It.Is<NotificationRecord>(p => p.InitiatingStateEmailRecipientsModel.EmailTo == "Ea@Nac.gov")), Times.Never);
+            notificationService.Verify(r => r.PublishNotificationOnMatchCreation(It.Is<NotificationRecord>(p => p.InitiatingStateEmailRecipientsModel.EmailTo == "Ea@Piipan.gov")), Times.Never);
         }
 
         [Fact]
@@ -668,7 +668,7 @@ namespace Piipan.Match.Core.Tests.Services
                                                   r.Data.First().SearchFrom == search.SearchFrom)),
              Times.Once);
 
-            notificationService.Verify(r => r.PublishNotificationOnMatchCreation(It.Is<NotificationRecord>(p => p.InitiatingStateEmailRecipientsModel.EmailTo == "Ea@Nac.gov")), Times.Never);
+            notificationService.Verify(r => r.PublishNotificationOnMatchCreation(It.Is<NotificationRecord>(p => p.InitiatingStateEmailRecipientsModel.EmailTo == "Ea@Piipan.gov")), Times.Never);
         }
         [Fact]
         public async void Resolve_No_Notification_For_Not_Enabled_States()
@@ -752,7 +752,7 @@ namespace Piipan.Match.Core.Tests.Services
                                                  )),
                                                   Times.Once);
             // Need to be called only when creating new Match Record
-            notificationService.Verify(r => r.PublishNotificationOnMatchCreation(It.Is<NotificationRecord>(p => p.MatchEmailDetails.InitState == "Echo Alpha" && p.InitiatingStateEmailRecipientsModel.EmailTo == "Ea@Nac.gov" && p.MatchingStateEmailRecipientsModel.EmailTo == "Eb@Nac.gov")), Times.Never);
+            notificationService.Verify(r => r.PublishNotificationOnMatchCreation(It.Is<NotificationRecord>(p => p.MatchEmailDetails.InitState == "Echo Alpha" && p.InitiatingStateEmailRecipientsModel.EmailTo == "Ea@Piipan.gov" && p.MatchingStateEmailRecipientsModel.EmailTo == "Eb@Piipan.gov")), Times.Never);
         }
 
     }

@@ -41,7 +41,7 @@ Alternative approaches that were also considered:
 - This solution does not directly address the issue with one bad record causing an entire upload to fail.
 - We are coupling our approach to PostgreSQL in a way that past decisions have attempted to avoid. Other database options like Azure SQL support similar bulk insert mechanisms, but our initial approach will be specific to PostgreSQL.
     - Consequently, changing database systems will require a new implementation of the [IParticipantBulkInsertHandler](../../participants/src/Piipan.Participants/Piipan.Participants.Core/DataAccessObjects/IParticipantBulkInsertHandler.cs) interface. The new implementation would need to be [injected into applications](../../participants/src/Piipan.Participants/Piipan.Participants.Core/Extensions/ServiceCollectionExtensions.cs) in place of the [PostgreSQL-specific implementation](../../participants/src/Piipan.Participants/Piipan.Participants.Core/DataAccessObjects/ParticipantBulkInserHandler.cs).
-- This solution does not help with setting up future analysis streams. As a result, we are not confident this is a long term solution for bulk imports but it will allow the NAC to handle import sizes of 1.5 million records which are expected with the MVP rollout. We will revisit other options in the future.
+- This solution does not help with setting up future analysis streams. As a result, we are not confident this is a long term solution for bulk imports but it will allow the Piipan to handle import sizes of 1.5 million records which are expected with the MVP rollout. We will revisit other options in the future.
 
 ## Resources
 

@@ -151,7 +151,7 @@ namespace Piipan.Match.Core.Services
                 var matchingState = states?.Where(n => string.Compare(n.StateAbbreviation, match.State, true) == 0).FirstOrDefault();
                 var queryToolUrl = Environment.GetEnvironmentVariable("QueryToolUrl");
 
-                // Send emails only if the state is enabled. nac-1902
+                // Send emails only if the state is enabled. Piipan-1902
                 if (enabledStatesList.Contains(matchingState.StateAbbreviation.ToLower()) && enabledStatesList.Contains(initState.StateAbbreviation.ToLower())) //Send Email only if the Initiating state or Matching State is Enabled
                 {
                     var MatchRecord = new MatchEmailModel()
@@ -161,7 +161,7 @@ namespace Piipan.Match.Core.Services
                         MatchingState = matchingState?.State,
                         MatchingUrl = $"{queryToolUrl}/match/{participantMatch.MatchId}",
                         CreateDate = record.CreatedAt,
-                        InitialActionBy = DateTime.UtcNow.ToEasternTime().AddDays(10), // Converting to Eastern Time since we don't know the end user's timezone. See NAC-1613
+                        InitialActionBy = DateTime.UtcNow.ToEasternTime().AddDays(10), // Converting to Eastern Time since we don't know the end user's timezone. See Piipan-1613
                         IsInitiatingStateEnabled = enabledStatesList.Contains(initState.StateAbbreviation.ToLower()),
                         IsMatchingStateEnabled = enabledStatesList.Contains(matchingState.StateAbbreviation.ToLower())
 

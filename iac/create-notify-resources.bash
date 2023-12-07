@@ -5,7 +5,7 @@
 # Assumes the script is executed by an Azure user with the Owner/Contributor
 # role for the subscription.
 #
-# azure-env is the name of the deployment environment (e.g., "fns/dev").
+# azure-env is the name of the deployment environment (e.g., "tenant/dev").
 # See iac/env for available environments.
 #
 # usage: create-notify-resources.bash <azure-env>
