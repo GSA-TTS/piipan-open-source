@@ -34,7 +34,7 @@ namespace Piipan.Notifications.Func.Api
             });
             builder.Services.AddTransient<IMessageBuilder, MessageBuilder>();
             builder.Services.AddTransient<IMailService, MailService>();
-            builder.Services.AddTransient<IUsdaImageRetriever, UsdaImageRetriever>();
+            builder.Services.AddTransient<IUsImageRetriever, UsImageRetriever>();
             builder.Services.AddTransient<ISmtpClient>(x =>
             {
                 return new SmtpClient();
