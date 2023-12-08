@@ -6,7 +6,7 @@
     <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</RestoreLockedMode>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Messaging.EventGrid" Version="4.13.0" />
+    <PackageReference Include="Azure.Messaging.EventGrid" Version="4.21.0" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.14.1" />
     <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="FluentValidation" Version="11.4.0" />
