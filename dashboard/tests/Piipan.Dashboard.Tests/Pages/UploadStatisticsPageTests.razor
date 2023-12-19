@@ -25,7 +25,7 @@
         // Assert
         var pageTitleComponent = Component.FindComponent<PageTitle>();
         var renderedFragment = Render(pageTitleComponent.Instance.ChildContent);
-        renderedFragment.MarkupMatches(@<text>National Accuracy Clearinghouse Metrics Dashboard</text>);
+        renderedFragment.MarkupMatches(@<text>Piipan Metrics Dashboard</text>);
         Assert.True(Component.HasComponent<ParticipantUploads>());
     }
 }
