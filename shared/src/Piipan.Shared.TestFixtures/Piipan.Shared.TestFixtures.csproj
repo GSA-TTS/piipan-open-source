@@ -5,7 +5,7 @@
     <RestoreLockedMode Condition="'$(ContinuousIntegrationBuild)' == 'true'">true</RestoreLockedMode>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="dapper" Version="2.0.123" />
+    <PackageReference Include="dapper" Version="2.1.28" />
     <PackageReference Include="npgsql" Version="7.0.1" />
   </ItemGroup>
   <ItemGroup>
