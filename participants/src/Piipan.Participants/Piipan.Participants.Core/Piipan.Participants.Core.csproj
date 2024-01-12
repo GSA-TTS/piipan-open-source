@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Core" Version="1.27.0" />
+    <PackageReference Include="Azure.Core" Version="1.37.0" />
     <PackageReference Include="Azure.Messaging.EventGrid" Version="4.13.0" />
     <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="Dapper-NodaTime" Version="0.1.0" />
