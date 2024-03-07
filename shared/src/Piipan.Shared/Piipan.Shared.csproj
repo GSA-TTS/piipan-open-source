@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="Dapper-NodaTime" Version="0.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="6.0.13" />
     <PackageReference Include="Azure.Core" Version="1.27.0" />
