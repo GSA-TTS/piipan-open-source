@@ -1,4 +1,4 @@
-[![Build Status][badge_ci]][1] [![Maintainability][badge_cc_maint]][2] [![Test Coverage][badge_cc_cov]][3]
+[![Test Coverage][badge_cc_cov]][3]
 
 
 # 🥧 piipan
