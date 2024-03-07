@@ -1,1582 +1,1582 @@
-version: 2
-updates:
-- package-ecosystem: nuget
-  directory: "/components/src/Piipan.Components"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    # We’re staying with versions below 7.x of the .NET libraries in accordance with our decision to stay with .NET 6 for now:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]    
-- package-ecosystem: nuget
-  directory: "/components/src/Piipan.Components.Demo"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    # We’re staying with versions below 7.x of the .NET libraries in accordance with our decision to stay with .NET 6 for now:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]    
-- package-ecosystem: nuget
-  directory: "/components/tests/Piipan.Components.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    # We’re staying with versions below 7.x of the .NET libraries in accordance with our decision to stay with .NET 6 for now:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]              
-- package-ecosystem: nuget
-  directory: "/dashboard/src/Piipan.Dashboard"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    # We’re staying with versions below 7.x of the .NET libraries in accordance with our decision to stay with .NET 6 for now:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]    
-  open-pull-requests-limit: 10
-- package-ecosystem: npm
-  directory: "/dashboard/src/Piipan.Dashboard"
-  schedule:
-    interval: daily
-    time: "09:00"
-  open-pull-requests-limit: 10
-- package-ecosystem: nuget
-  directory: "/dashboard/tests/Piipan.Dashboard.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-  open-pull-requests-limit: 10
-- package-ecosystem: nuget
-  directory: "/etl/src/Piipan.Etl/Piipan.Etl.Func.BulkUpload"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-  open-pull-requests-limit: 10
-- package-ecosystem: nuget
-  directory: "/etl/tests/Piipan.Etl.Func.BulkUpload.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/etl/tests/Piipan.Etl.Func.BulkUpload.IntegrationTests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/maintenance/src/Piipan.Maintenance"
-  schedule:
-    interval: daily
-    time: "09:00"   
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]         
-- package-ecosystem: nuget
-  directory: "/maintenance/tests/Piipan.Maintenance.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"   
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]               
-- package-ecosystem: nuget
-  directory: "/match/src/Piipan.Match.Shared"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/match/src/Piipan.Match.Orchestrator"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/match/src/Piipan.Match/Piipan.Match.Core"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/match/src/Piipan.Match/Piipan.Match.Api"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/match/src/Piipan.Match/Piipan.Match.Func.Api"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/match/tests/Piipan.Match.Orchestrator.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/match/tests/Piipan.Match.Orchestrator.IntegrationTests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/match/tests/Piipan.Match.Core.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/match/tests/Piipan.Match.Func.Api.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/metrics/src/Piipan.Metrics/Piipan.Metrics.Api"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/metrics/src/Piipan.Metrics/Piipan.Metrics.Func.Collect"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/metrics/src/Piipan.Metrics/Piipan.Metrics.Func.Api"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/metrics/src/Piipan.Metrics/Piipan.Metrics.Core"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/metrics/tests/Piipan.Metrics.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/notifications/src/Piipan.Notification.Common"
-  schedule:
-    interval: daily
-    time: "09:00" 
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]        
-- package-ecosystem: nuget
-  directory: "/notifications/src/Piipan.Notifications.Core"
-  schedule:
-    interval: daily
-    time: "09:00" 
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]    
-- package-ecosystem: nuget
-  directory: "/notifications/src/Piipan.Notifications.Func.Api"
-  schedule:
-    interval: daily
-    time: "09:00" 
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]          
-- package-ecosystem: nuget
-  directory: "/notifications/tests/Piipan.Notifications.Common.Tests"
-  schedule:
-    interval: daily
-    time: "09:00" 
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]      
-- package-ecosystem: nuget
-  directory: "/notifications/tests/Piipan.Notifications.Core.Integration.Tests"
-  schedule:
-    interval: daily
-    time: "09:00" 
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]         
-- package-ecosystem: nuget
-  directory: "/notifications/tests/Piipan.Notifications.Core.Tests"
-  schedule:
-    interval: daily
-    time: "09:00" 
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]         
-- package-ecosystem: nuget
-  directory: "/notifications/tests/Piipan.Notifications.Func.Api.Integration.Tests"
-  schedule:
-    interval: daily
-    time: "09:00" 
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]        
-- package-ecosystem: nuget
-  directory: "/notifications/tests/Piipan.Notifications.Func.Api.Tests"
-  schedule:
-    interval: daily
-    time: "09:00" 
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]         
-- package-ecosystem: nuget
-  directory: "/shared/src/Piipan.Shared"
-  schedule:
-    interval: daily
-    time: "09:00" 
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]       
-- package-ecosystem: nuget
-  directory: "/shared/src/Piipan.Shared.API"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]       
-- package-ecosystem: nuget
-  directory: "/shared/src/Piipan.Shared.Notifications"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/shared/src/Piipan.Shared.Cryptography"
-  schedule:
-    interval: daily
-    time: "09:00"      
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]          
-- package-ecosystem: nuget
-  directory: "/shared/src/Piipan.Shared.Middleware"
-  schedule:
-    interval: daily
-    time: "09:00"      
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]             
-- package-ecosystem: nuget
-  directory: "/shared/tests/Piipan.Shared.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-  open-pull-requests-limit: 10
-- package-ecosystem: nuget
-  directory: "/shared/tests/Piipan.Shared.API.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"   
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]                                  
-- package-ecosystem: nuget
-  directory: "/shared/tests/Piipan.Shared.Notifications.Tests"
-  schedule:
-    interval: daily
-    time: "09:00" 
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]     
-- package-ecosystem: nuget
-  directory: "/shared/tests/Piipan.Shared.Cryptography.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]     
-- package-ecosystem: nuget
-  directory: "/query-tool/src/Piipan.QueryTool"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: npm
-  directory: "/query-tool/src/Piipan.QueryTool"
-  schedule:
-    interval: daily
-    time: "09:00"
-- package-ecosystem: nuget
-  directory: "/query-tool/tests/Piipan.QueryTool.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/participants/src/Piipan.Participants/Piipan.Participants.Api"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/participants/src/Piipan.Participants/Piipan.Participants.Core"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/participants/tests/Piipan.Participants.Core.IntegrationTests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/participants/tests/Piipan.Participants.Core.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]   
-- package-ecosystem: nuget
-  directory: "/states/src/Piipan.States/Piipan.States.Api"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]       
-- package-ecosystem: nuget
-  directory: "/states/src/Piipan.States/Piipan.States.Core"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]       
-- package-ecosystem: nuget
-  directory: "/states/tests/Piipan.States.Core.Integration.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]       
-- package-ecosystem: nuget
-  directory: "/states/tests/Piipan.States.Core.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]      
-- package-ecosystem: nuget
-  directory: "/support-tools/src/Piipan.SupportTools.Core"
-  schedule:
-    interval: daily
-    time: "09:00"   
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]     
-- package-ecosystem: nuget
-  directory: "/support-tools/src/Piipan.SupportTools.Func.Api"
-  schedule:
-    interval: daily
-    time: "09:00"   
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]     
-- package-ecosystem: nuget
-  directory: "/support-tools/tests/Piipan.SupportTools.Core.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"   
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]    
-- package-ecosystem: nuget
-  directory: "/support-tools/tests/Piipan.SupportTools.Func.Api.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"   
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]                         
-- package-ecosystem: nuget
-  directory: "/perf-tests/src/Etl.BulkUpload.Performance.TestRunner/Etl.BulkUpload.Performance.TestRunner"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]       
-- package-ecosystem: nuget
-  directory: "/shared/src/Piipan.Shared.TestFixtures"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]       
-- package-ecosystem: nuget
-  directory: "/shared/src/Piipan.Components"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]       
-- package-ecosystem: nuget
-  directory: "/shared/src/Piipan.Components.Demo"
-  schedule:
-    interval: daily
-    time: "09:00"        
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]       
-- package-ecosystem: nuget
-  directory: "/shared/src/Piipan.Components.Tests"
-  schedule:
-    interval: daily
-    time: "09:00"
-  ignore:
-    - dependency-name: "Microsoft.AspNetCore.Authorization"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.Web"
-      versions: ["7.x"]    
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
-      versions: ["7.x"]
-    - dependency-name: "Microsoft.Extensions.*"
-      versions: ["7.x"]            
-    - dependency-name: "Microsoft.NET.Sdk.Functions"
-      versions: ["7.x"]
-    - dependency-name: "System.Configuration.ConfigurationManager"
-      versions: ["7.x"]      
-    - dependency-name: "System.Text.Json"      
-      versions: ["7.x"]    
+# version: 2
+# updates:
+# - package-ecosystem: nuget
+#   directory: "/components/src/Piipan.Components"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     # We’re staying with versions below 7.x of the .NET libraries in accordance with our decision to stay with .NET 6 for now:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]    
+# - package-ecosystem: nuget
+#   directory: "/components/src/Piipan.Components.Demo"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     # We’re staying with versions below 7.x of the .NET libraries in accordance with our decision to stay with .NET 6 for now:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]    
+# - package-ecosystem: nuget
+#   directory: "/components/tests/Piipan.Components.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     # We’re staying with versions below 7.x of the .NET libraries in accordance with our decision to stay with .NET 6 for now:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]              
+# - package-ecosystem: nuget
+#   directory: "/dashboard/src/Piipan.Dashboard"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     # We’re staying with versions below 7.x of the .NET libraries in accordance with our decision to stay with .NET 6 for now:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]    
+#   open-pull-requests-limit: 10
+# - package-ecosystem: npm
+#   directory: "/dashboard/src/Piipan.Dashboard"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   open-pull-requests-limit: 10
+# - package-ecosystem: nuget
+#   directory: "/dashboard/tests/Piipan.Dashboard.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+#   open-pull-requests-limit: 10
+# - package-ecosystem: nuget
+#   directory: "/etl/src/Piipan.Etl/Piipan.Etl.Func.BulkUpload"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+#   open-pull-requests-limit: 10
+# - package-ecosystem: nuget
+#   directory: "/etl/tests/Piipan.Etl.Func.BulkUpload.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/etl/tests/Piipan.Etl.Func.BulkUpload.IntegrationTests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/maintenance/src/Piipan.Maintenance"
+#   schedule:
+#     interval: daily
+#     time: "09:00"   
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]         
+# - package-ecosystem: nuget
+#   directory: "/maintenance/tests/Piipan.Maintenance.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"   
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]               
+# - package-ecosystem: nuget
+#   directory: "/match/src/Piipan.Match.Shared"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/match/src/Piipan.Match.Orchestrator"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/match/src/Piipan.Match/Piipan.Match.Core"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/match/src/Piipan.Match/Piipan.Match.Api"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/match/src/Piipan.Match/Piipan.Match.Func.Api"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/match/tests/Piipan.Match.Orchestrator.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/match/tests/Piipan.Match.Orchestrator.IntegrationTests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/match/tests/Piipan.Match.Core.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/match/tests/Piipan.Match.Func.Api.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/metrics/src/Piipan.Metrics/Piipan.Metrics.Api"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/metrics/src/Piipan.Metrics/Piipan.Metrics.Func.Collect"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/metrics/src/Piipan.Metrics/Piipan.Metrics.Func.Api"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/metrics/src/Piipan.Metrics/Piipan.Metrics.Core"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/metrics/tests/Piipan.Metrics.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/notifications/src/Piipan.Notification.Common"
+#   schedule:
+#     interval: daily
+#     time: "09:00" 
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]        
+# - package-ecosystem: nuget
+#   directory: "/notifications/src/Piipan.Notifications.Core"
+#   schedule:
+#     interval: daily
+#     time: "09:00" 
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]    
+# - package-ecosystem: nuget
+#   directory: "/notifications/src/Piipan.Notifications.Func.Api"
+#   schedule:
+#     interval: daily
+#     time: "09:00" 
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]          
+# - package-ecosystem: nuget
+#   directory: "/notifications/tests/Piipan.Notifications.Common.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00" 
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]      
+# - package-ecosystem: nuget
+#   directory: "/notifications/tests/Piipan.Notifications.Core.Integration.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00" 
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]         
+# - package-ecosystem: nuget
+#   directory: "/notifications/tests/Piipan.Notifications.Core.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00" 
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]         
+# - package-ecosystem: nuget
+#   directory: "/notifications/tests/Piipan.Notifications.Func.Api.Integration.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00" 
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]        
+# - package-ecosystem: nuget
+#   directory: "/notifications/tests/Piipan.Notifications.Func.Api.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00" 
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]         
+# - package-ecosystem: nuget
+#   directory: "/shared/src/Piipan.Shared"
+#   schedule:
+#     interval: daily
+#     time: "09:00" 
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]       
+# - package-ecosystem: nuget
+#   directory: "/shared/src/Piipan.Shared.API"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]       
+# - package-ecosystem: nuget
+#   directory: "/shared/src/Piipan.Shared.Notifications"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/shared/src/Piipan.Shared.Cryptography"
+#   schedule:
+#     interval: daily
+#     time: "09:00"      
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]          
+# - package-ecosystem: nuget
+#   directory: "/shared/src/Piipan.Shared.Middleware"
+#   schedule:
+#     interval: daily
+#     time: "09:00"      
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]             
+# - package-ecosystem: nuget
+#   directory: "/shared/tests/Piipan.Shared.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+#   open-pull-requests-limit: 10
+# - package-ecosystem: nuget
+#   directory: "/shared/tests/Piipan.Shared.API.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"   
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]                                  
+# - package-ecosystem: nuget
+#   directory: "/shared/tests/Piipan.Shared.Notifications.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00" 
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]     
+# - package-ecosystem: nuget
+#   directory: "/shared/tests/Piipan.Shared.Cryptography.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]     
+# - package-ecosystem: nuget
+#   directory: "/query-tool/src/Piipan.QueryTool"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: npm
+#   directory: "/query-tool/src/Piipan.QueryTool"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+# - package-ecosystem: nuget
+#   directory: "/query-tool/tests/Piipan.QueryTool.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/participants/src/Piipan.Participants/Piipan.Participants.Api"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/participants/src/Piipan.Participants/Piipan.Participants.Core"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/participants/tests/Piipan.Participants.Core.IntegrationTests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/participants/tests/Piipan.Participants.Core.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]   
+# - package-ecosystem: nuget
+#   directory: "/states/src/Piipan.States/Piipan.States.Api"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]       
+# - package-ecosystem: nuget
+#   directory: "/states/src/Piipan.States/Piipan.States.Core"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]       
+# - package-ecosystem: nuget
+#   directory: "/states/tests/Piipan.States.Core.Integration.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]       
+# - package-ecosystem: nuget
+#   directory: "/states/tests/Piipan.States.Core.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]      
+# - package-ecosystem: nuget
+#   directory: "/support-tools/src/Piipan.SupportTools.Core"
+#   schedule:
+#     interval: daily
+#     time: "09:00"   
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]     
+# - package-ecosystem: nuget
+#   directory: "/support-tools/src/Piipan.SupportTools.Func.Api"
+#   schedule:
+#     interval: daily
+#     time: "09:00"   
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]     
+# - package-ecosystem: nuget
+#   directory: "/support-tools/tests/Piipan.SupportTools.Core.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"   
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]    
+# - package-ecosystem: nuget
+#   directory: "/support-tools/tests/Piipan.SupportTools.Func.Api.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"   
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]                         
+# - package-ecosystem: nuget
+#   directory: "/perf-tests/src/Etl.BulkUpload.Performance.TestRunner/Etl.BulkUpload.Performance.TestRunner"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]       
+# - package-ecosystem: nuget
+#   directory: "/shared/src/Piipan.Shared.TestFixtures"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]       
+# - package-ecosystem: nuget
+#   directory: "/shared/src/Piipan.Components"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]       
+# - package-ecosystem: nuget
+#   directory: "/shared/src/Piipan.Components.Demo"
+#   schedule:
+#     interval: daily
+#     time: "09:00"        
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]       
+# - package-ecosystem: nuget
+#   directory: "/shared/src/Piipan.Components.Tests"
+#   schedule:
+#     interval: daily
+#     time: "09:00"
+#   ignore:
+#     - dependency-name: "Microsoft.AspNetCore.Authorization"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.Web"
+#       versions: ["7.x"]    
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Components.WebAssembly.Server"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.AspNetCore.Mvc.Testing"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Azure.WebJobs.Extensions.EventGrid"
+#       versions: ["7.x"]
+#     - dependency-name: "Microsoft.Extensions.*"
+#       versions: ["7.x"]            
+#     - dependency-name: "Microsoft.NET.Sdk.Functions"
+#       versions: ["7.x"]
+#     - dependency-name: "System.Configuration.ConfigurationManager"
+#       versions: ["7.x"]      
+#     - dependency-name: "System.Text.Json"      
+#       versions: ["7.x"]    
    
