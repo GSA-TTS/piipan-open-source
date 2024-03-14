@@ -16,7 +16,7 @@
     "devDependencies": {
         "cypress-audit": "^1.1.0",
         "autoprefixer": "^10.4.13",
-        "cypress": "^12.5.1",
+        "cypress": "^13.7.0",
         "gulp": "^4.0.2",
         "gulp-postcss": "^9.0.1",
         "gulp-replace": "^1.1.4",
