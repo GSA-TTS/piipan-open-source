@@ -17,7 +17,7 @@
         "cypress-audit": "^1.1.0",
         "autoprefixer": "^10.4.13",
         "cypress": "^12.5.1",
-        "gulp": "^4.0.2",
+        "gulp": "^5.0.0",
         "gulp-postcss": "^9.0.1",
         "gulp-replace": "^1.1.4",
         "gulp-sass": "^5.1.0",
